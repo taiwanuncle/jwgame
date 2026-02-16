@@ -1,0 +1,270 @@
+.game-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Top bar */
+.game-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.game-round-badge {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+}
+
+.game-storyteller-info {
+  flex: 1;
+  text-align: center;
+}
+
+.game-storyteller-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.game-score-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.game-score-btn:hover {
+  background: var(--border);
+}
+
+/* Clue display */
+.game-clue-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.game-clue-label {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.game-clue-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* Content area */
+.game-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.game-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+}
+
+/* Instructions */
+.game-instruction {
+  text-align: center;
+  padding: 16px;
+}
+
+.game-instruction h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.game-instruction p {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* Hand */
+.game-hand {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px;
+  max-width: 100%;
+}
+
+.game-hand--small {
+  opacity: 0.5;
+}
+
+/* Board (shuffled cards) */
+.game-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px;
+  max-width: 100%;
+}
+
+/* Clue input */
+.game-clue-input-area {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 16px;
+}
+
+.game-clue-input {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.game-submit-area {
+  padding: 8px 16px;
+}
+
+/* Waiting states */
+.game-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  flex: 1;
+}
+
+.game-waiting-icon {
+  font-size: 48px;
+  animation: pulse 2s infinite;
+}
+
+.game-waiting p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.game-waiting-hint {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  animation: pulse 2s infinite;
+}
+
+.game-vote-progress {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+/* Shuffle animation */
+.game-shuffle {
+  justify-content: center;
+  flex: 1;
+}
+
+.shuffle-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+}
+
+.shuffle-card-wrapper {
+  display: inline-block;
+}
+
+/* Round result */
+.game-result-header {
+  text-align: center;
+  padding: 8px;
+}
+
+.game-result-message {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 10px 20px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+}
+
+.game-result-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.game-result-card-owner {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.game-result-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.game-result-score-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.game-result-points {
+  color: var(--success);
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .game-hand,
+  .game-board {
+    gap: 8px;
+  }
+
+  .game-clue-input-area {
+    flex-direction: column;
+    align-items: center;
+  }
+}

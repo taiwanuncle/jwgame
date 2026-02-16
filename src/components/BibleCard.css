@@ -1,0 +1,232 @@
+.bible-card {
+  position: relative;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  user-select: none;
+}
+
+.bible-card--sm {
+  width: 100px;
+  min-width: 100px;
+}
+
+.bible-card--md {
+  width: 140px;
+  min-width: 140px;
+}
+
+.bible-card--lg {
+  width: 180px;
+  min-width: 180px;
+}
+
+.bible-card--selected {
+  box-shadow: 0 0 0 3px var(--accent), var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.bible-card--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bible-card--correct {
+  box-shadow: 0 0 0 3px var(--success), var(--shadow-lg);
+}
+
+.bible-card--wrong {
+  box-shadow: 0 0 0 3px var(--danger), var(--shadow-lg);
+}
+
+.bible-card--mine {
+  box-shadow: 0 0 0 3px var(--warning), var(--shadow-lg);
+}
+
+.bible-card__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bible-card__image-container {
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  position: relative;
+}
+
+.bible-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #f0f0f5 0%, #e8e8ed 100%);
+  position: relative;
+}
+
+.bible-card__silhouette {
+  width: 60%;
+  opacity: 0.5;
+}
+
+.bible-card__silhouette svg {
+  width: 100%;
+  height: auto;
+}
+
+.bible-card__id {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.bible-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bible-card__info {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bg-card);
+}
+
+.bible-card__name-ko {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.bible-card__name-en {
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.bible-card__name-zh {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.3;
+}
+
+.bible-card--sm .bible-card__info {
+  padding: 5px 7px;
+}
+
+.bible-card--sm .bible-card__name-ko {
+  font-size: 11px;
+}
+
+.bible-card--sm .bible-card__name-en,
+.bible-card--sm .bible-card__name-zh {
+  font-size: 8px;
+}
+
+.bible-card--lg .bible-card__info {
+  padding: 10px 14px;
+}
+
+.bible-card--lg .bible-card__name-ko {
+  font-size: 15px;
+}
+
+.bible-card--lg .bible-card__name-en,
+.bible-card--lg .bible-card__name-zh {
+  font-size: 12px;
+}
+
+.bible-card__check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.bible-card__vote-count {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  min-width: 24px;
+  height: 24px;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.bible-card__highlight-badge {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.bible-card__highlight-badge--correct {
+  background: var(--success);
+  color: white;
+}
+
+/* Face down card */
+.bible-card--facedown {
+  cursor: default;
+}
+
+.bible-card__back {
+  aspect-ratio: 3/5;
+  background: linear-gradient(145deg, #4A6FA5 0%, #2D4A7A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+}
+
+.bible-card__back-pattern {
+  width: 70%;
+  height: 70%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bible-card__back-icon {
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.3);
+}
