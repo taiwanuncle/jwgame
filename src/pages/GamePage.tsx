@@ -28,7 +28,6 @@ export default function GamePage({
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [clue, setClue] = useState("");
   const [showScores, setShowScores] = useState(false);
-  const [shuffleAnim, setShuffleAnim] = useState(false);
 
   const myId = gameState.myId;
   const me = gameState.players.find((p) => p.id === myId);
@@ -40,13 +39,6 @@ export default function GamePage({
     setSelectedCard(null);
     setClue("");
   }, [gameState.phase, gameState.currentRound]);
-
-  useEffect(() => {
-    if (gameState.phase === "shuffle") {
-      setShuffleAnim(true);
-      setTimeout(() => setShuffleAnim(false), 3000);
-    }
-  }, [gameState.phase]);
 
   const handleSubmitClue = () => {
     if (selectedCard === null || !clue.trim()) return;
@@ -317,20 +309,15 @@ export default function GamePage({
                     <p>{t("game.voteCard")}</p>
                   </div>
                   <div className="game-board">
-                    {gameState.shuffledCards.map((cardId) => {
-                      const mySubmission = gameState.myHand
-                        ? undefined
-                        : undefined;
-                      return (
-                        <BibleCard
-                          key={cardId}
-                          cardId={cardId}
-                          selected={selectedCard === cardId}
-                          onClick={() => setSelectedCard(cardId)}
-                          size="md"
-                        />
-                      );
-                    })}
+                    {gameState.shuffledCards.map((cardId) => (
+                      <BibleCard
+                        key={cardId}
+                        cardId={cardId}
+                        selected={selectedCard === cardId}
+                        onClick={() => setSelectedCard(cardId)}
+                        size="md"
+                      />
+                    ))}
                   </div>
                   {selectedCard !== null && (
                     <motion.div

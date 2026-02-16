@@ -8,7 +8,6 @@ import GameOverPage from "./pages/GameOverPage";
 
 function App() {
   const {
-    connected,
     gameState,
     roundResult,
     errorMsg,
