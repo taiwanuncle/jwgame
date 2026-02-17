@@ -8,6 +8,7 @@ import CountdownBar from "../components/CountdownBar";
 import ChatOverlay from "../components/ChatOverlay";
 import type { GameStateFromServer, ChatMessage } from "../hooks/useSocket";
 import type { RoundResult } from "../types";
+import { playClick, playSelect, playSubmit, playError } from "../utils/sfx";
 import "./GamePage.css";
 
 interface GamePageProps {
@@ -79,6 +80,7 @@ export default function GamePage({
 
   const handleSubmitClue = () => {
     if (selectedCard === null || !clue.trim()) return;
+    playSubmit();
     onSubmitClue(selectedCard, clue.trim());
     setSelectedCard(null);
     setClue("");
@@ -86,6 +88,7 @@ export default function GamePage({
 
   const handleSubmitCard = () => {
     if (selectedCard === null) return;
+    playSubmit();
     onSubmitCard(selectedCard);
     setSelectedCard(null);
     showToast(t("toast.cardSubmitted"), "success");
@@ -94,14 +97,17 @@ export default function GamePage({
   // Voting: check if card belongs to this player
   const handleVoteClick = (cardId: number) => {
     if (gameState.mySubmittedCardId === cardId) {
+      playError();
       showToast(t("toast.cannotVoteOwnCard"), "warning");
       return;
     }
+    playClick();
     setSelectedCard(cardId);
   };
 
   const handleSubmitVote = () => {
     if (selectedCard === null) return;
+    playSubmit();
     onSubmitVote(selectedCard);
     setSelectedCard(null);
     showToast(t("toast.voteSubmitted"), "success");
@@ -211,7 +217,7 @@ export default function GamePage({
                     key={cardId}
                     cardId={cardId}
                     selected={selectedCard === cardId}
-                    onClick={() => setSelectedCard(cardId)}
+                    onClick={() => { playSelect(); setSelectedCard(cardId); }}
                     size="md"
                   />
                 ))}
@@ -283,7 +289,7 @@ export default function GamePage({
                         key={cardId}
                         cardId={cardId}
                         selected={selectedCard === cardId}
-                        onClick={() => setSelectedCard(cardId)}
+                        onClick={() => { playSelect(); setSelectedCard(cardId); }}
                         size="md"
                       />
                     ))}
