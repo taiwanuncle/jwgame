@@ -54,6 +54,58 @@
   color: var(--text-tertiary);
 }
 
+/* Round selection */
+.waiting-rounds-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.waiting-rounds-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.waiting-rounds-options {
+  display: flex;
+  gap: 6px;
+}
+
+.waiting-rounds-btn {
+  width: 40px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  transition: var(--transition-fast);
+}
+
+.waiting-rounds-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.waiting-rounds-btn--active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.waiting-rounds-btn:not(:disabled):not(.waiting-rounds-btn--active):hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .waiting-players-header {
   font-size: 13px;
   font-weight: 600;

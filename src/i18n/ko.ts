@@ -28,6 +28,7 @@ const ko = {
       leave: "나가기",
       copied: "복사됨!",
       copyCode: "코드 복사",
+      rounds: "라운드",
       needMorePlayers: "최소 3명이 필요합니다",
       notAllReady: "모든 플레이어가 준비되지 않았습니다",
     },

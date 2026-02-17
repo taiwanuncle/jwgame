@@ -157,13 +157,6 @@ export default function GamePage({
                     maxLength={50}
                     onKeyDown={(e) => e.key === "Enter" && handleSubmitClue()}
                   />
-                  <button
-                    className="btn-primary"
-                    onClick={handleSubmitClue}
-                    disabled={!clue.trim()}
-                  >
-                    {t("game.submitClue")}
-                  </button>
                 </motion.div>
               )}
             </motion.div>
@@ -213,17 +206,6 @@ export default function GamePage({
                       />
                     ))}
                   </div>
-                  {selectedCard !== null && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="game-submit-area"
-                    >
-                      <button className="btn-primary" onClick={handleSubmitCard}>
-                        {t("game.submitCard")}
-                      </button>
-                    </motion.div>
-                  )}
                 </>
               ) : (
                 <div className="game-waiting">
@@ -319,17 +301,6 @@ export default function GamePage({
                       />
                     ))}
                   </div>
-                  {selectedCard !== null && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="game-submit-area"
-                    >
-                      <button className="btn-primary" onClick={handleSubmitVote}>
-                        {t("game.vote")}
-                      </button>
-                    </motion.div>
-                  )}
                 </>
               ) : (
                 <div className="game-waiting">
@@ -430,20 +401,106 @@ export default function GamePage({
                   })}
               </div>
 
-              {(isStoryteller || me?.isHost) && (
-                <button className="btn-primary" onClick={onNextRound}>
-                  {t("game.nextRound")}
-                </button>
-              )}
-              {!isStoryteller && !me?.isHost && (
-                <p className="game-waiting-hint">
-                  {t("game.waitingForStoryteller")}
-                </p>
-              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Fixed bottom action bar */}
+      <AnimatePresence>
+        {/* Storyteller: submit clue */}
+        {gameState.phase === "storyteller_turn" && isStoryteller && selectedCard !== null && (
+          <motion.div
+            key="bar-clue"
+            className="game-bottombar"
+            initial={{ y: 80 }}
+            animate={{ y: 0 }}
+            exit={{ y: 80 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          >
+            <button
+              className="btn-primary game-bottombar-btn"
+              onClick={handleSubmitClue}
+              disabled={!clue.trim()}
+            >
+              {t("game.submitClue")}
+            </button>
+          </motion.div>
+        )}
+
+        {/* Players: submit card */}
+        {gameState.phase === "players_submit" && !isStoryteller && !gameState.hasSubmitted && selectedCard !== null && (
+          <motion.div
+            key="bar-card"
+            className="game-bottombar"
+            initial={{ y: 80 }}
+            animate={{ y: 0 }}
+            exit={{ y: 80 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          >
+            <button
+              className="btn-primary game-bottombar-btn"
+              onClick={handleSubmitCard}
+            >
+              {t("game.submitCard")}
+            </button>
+          </motion.div>
+        )}
+
+        {/* Players: vote */}
+        {gameState.phase === "voting" && !isStoryteller && !gameState.hasVoted && selectedCard !== null && (
+          <motion.div
+            key="bar-vote"
+            className="game-bottombar"
+            initial={{ y: 80 }}
+            animate={{ y: 0 }}
+            exit={{ y: 80 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          >
+            <button
+              className="btn-primary game-bottombar-btn"
+              onClick={handleSubmitVote}
+            >
+              {t("game.vote")}
+            </button>
+          </motion.div>
+        )}
+
+        {/* Next round */}
+        {gameState.phase === "round_result" && roundResult && (isStoryteller || me?.isHost) && (
+          <motion.div
+            key="bar-next"
+            className="game-bottombar"
+            initial={{ y: 80 }}
+            animate={{ y: 0 }}
+            exit={{ y: 80 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          >
+            <button
+              className="btn-primary game-bottombar-btn"
+              onClick={onNextRound}
+            >
+              {t("game.nextRound")} →
+            </button>
+          </motion.div>
+        )}
+
+        {/* Waiting for storyteller to proceed */}
+        {gameState.phase === "round_result" && roundResult && !isStoryteller && !me?.isHost && (
+          <motion.div
+            key="bar-wait"
+            className="game-bottombar game-bottombar--waiting"
+            initial={{ y: 80 }}
+            animate={{ y: 0 }}
+            exit={{ y: 80 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          >
+            <span className="game-bottombar-wait-text">
+              {t("game.waitingForStoryteller")}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Score board popup */}
       <ScoreBoard

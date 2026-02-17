@@ -8,14 +8,18 @@ import "./WaitingRoom.css";
 interface WaitingRoomProps {
   gameState: GameStateFromServer;
   onToggleReady: () => void;
+  onSetRounds: (rounds: number) => void;
   onStartGame: () => void;
   onLeave: () => void;
   errorMsg: string;
 }
 
+const ROUND_OPTIONS = [5, 7, 10, 15];
+
 export default function WaitingRoom({
   gameState,
   onToggleReady,
+  onSetRounds,
   onStartGame,
   onLeave,
   errorMsg,
@@ -56,6 +60,25 @@ export default function WaitingRoom({
           <span className="waiting-room-code-copy">
             {copied ? t("waiting.copied") : t("waiting.copyCode")}
           </span>
+        </div>
+
+        {/* 라운드 수 선택 */}
+        <div className="waiting-rounds-section">
+          <span className="waiting-rounds-label">{t("waiting.rounds")}</span>
+          <div className="waiting-rounds-options">
+            {ROUND_OPTIONS.map((r) => (
+              <button
+                key={r}
+                className={`waiting-rounds-btn ${
+                  gameState.totalRounds === r ? "waiting-rounds-btn--active" : ""
+                }`}
+                onClick={() => isHost && onSetRounds(r)}
+                disabled={!isHost}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="waiting-players-header">

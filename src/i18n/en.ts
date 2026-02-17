@@ -28,6 +28,7 @@ const en = {
       leave: "Leave",
       copied: "Copied!",
       copyCode: "Copy Code",
+      rounds: "Rounds",
       needMorePlayers: "Need at least 3 players",
       notAllReady: "Not all players are ready",
     },

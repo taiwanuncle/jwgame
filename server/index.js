@@ -243,6 +243,18 @@ io.on("connection", (socket) => {
     emitPersonalStates(room);
   });
 
+  socket.on("set_rounds", ({ rounds }) => {
+    const room = rooms.get(socket.roomCode);
+    if (!room) return;
+    const player = room.players.find((p) => p.id === socket.id);
+    if (!player || !player.isHost) return;
+    if (room.phase !== "waiting") return;
+    const allowed = [5, 7, 10, 15];
+    if (!allowed.includes(rounds)) return;
+    room.totalRounds = rounds;
+    emitPersonalStates(room);
+  });
+
   socket.on("start_game", () => {
     const room = rooms.get(socket.roomCode);
     if (!room) return;

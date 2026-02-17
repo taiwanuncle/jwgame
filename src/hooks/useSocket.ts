@@ -91,6 +91,10 @@ export function useSocket() {
     socketRef.current?.emit("toggle_ready");
   }, []);
 
+  const setRounds = useCallback((rounds: number) => {
+    socketRef.current?.emit("set_rounds", { rounds });
+  }, []);
+
   const startGame = useCallback(() => {
     socketRef.current?.emit("start_game");
   }, []);
@@ -132,6 +136,7 @@ export function useSocket() {
     createRoom,
     joinRoom,
     toggleReady,
+    setRounds,
     startGame,
     submitClue,
     submitCard,

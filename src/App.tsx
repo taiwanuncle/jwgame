@@ -14,6 +14,7 @@ function App() {
     createRoom,
     joinRoom,
     toggleReady,
+    setRounds,
     startGame,
     submitClue,
     submitCard,
@@ -40,6 +41,7 @@ function App() {
       <WaitingRoom
         gameState={gameState}
         onToggleReady={toggleReady}
+        onSetRounds={setRounds}
         onStartGame={startGame}
         onLeave={leaveRoom}
         errorMsg={errorMsg}
