@@ -22,6 +22,36 @@
   font-weight: 400;
 }
 
+.lobby-lang-selector {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.lobby-lang-btn {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.lobby-lang-btn:hover {
+  background: var(--border-light);
+}
+
+.lobby-lang-btn--active {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
 .lobby-menu {
   display: flex;
   flex-direction: column;

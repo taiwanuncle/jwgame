@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { AVATARS } from "./AvatarPicker";
+import AvatarIcon from "./AvatarIcon";
 import "./ScoreBoard.css";
 
 interface PlayerScore {
@@ -110,7 +110,7 @@ export default function ScoreBoard({
                         : `${index + 1}`}
                     </div>
                     <div className="scoreboard-avatar">
-                      {AVATARS[player.avatarIndex] || "👤"}
+                      <AvatarIcon index={player.avatarIndex} size={24} />
                     </div>
                     <div className="scoreboard-name">
                       <span>{player.nickname}</span>
@@ -136,7 +136,7 @@ export default function ScoreBoard({
                         <th className="scoreboard-th-round">R</th>
                         {players.map((p) => (
                           <th key={p.id} className="scoreboard-th-player">
-                            {AVATARS[p.avatarIndex]}
+                            <AvatarIcon index={p.avatarIndex} size={20} />
                             <span className="scoreboard-th-name">{p.nickname}</span>
                           </th>
                         ))}

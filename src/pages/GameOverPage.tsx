@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { AVATARS } from "../components/AvatarPicker";
+import AvatarIcon from "../components/AvatarIcon";
 import ChatOverlay from "../components/ChatOverlay";
 import type { GameStateFromServer, ChatMessage } from "../hooks/useSocket";
 import "./GameOverPage.css";
@@ -116,7 +116,7 @@ export default function GameOverPage({
             {winners.map((w) => (
               <div key={w.id} className="gameover-co-winner-item">
                 <span className="gameover-co-winner-avatar">
-                  {AVATARS[w.avatarIndex] || "👤"}
+                  <AvatarIcon index={w.avatarIndex} size={36} />
                 </span>
                 <span className="gameover-co-winner-name">{w.nickname}</span>
               </div>
@@ -132,7 +132,7 @@ export default function GameOverPage({
           transition={{ delay: 0.7 }}
         >
           <div className="gameover-winner-avatar">
-            {AVATARS[winners[0].avatarIndex] || "👤"}
+            <AvatarIcon index={winners[0].avatarIndex} size={56} />
           </div>
           <div className="gameover-winner-info">
             <span className="gameover-congrats">{t("result.congratulations")}</span>
@@ -165,7 +165,7 @@ export default function GameOverPage({
                 {getRankEmoji(rank)}
               </div>
               <div className="gameover-rank-avatar">
-                {AVATARS[player.avatarIndex] || "👤"}
+                <AvatarIcon index={player.avatarIndex} size={28} />
               </div>
               <div className="gameover-rank-name">{player.nickname}</div>
               <div className="gameover-rank-score">{player.score}</div>

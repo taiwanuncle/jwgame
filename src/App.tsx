@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import "./i18n";
 import "./styles/global.css";
 import { useSocket } from "./hooks/useSocket";
@@ -5,6 +6,8 @@ import LobbyPage from "./pages/LobbyPage";
 import WaitingRoom from "./pages/WaitingRoom";
 import GamePage from "./pages/GamePage";
 import GameOverPage from "./pages/GameOverPage";
+import MusicPlayer from "./components/MusicPlayer";
+import { audioManager } from "./utils/audioManager";
 
 function App() {
   const {
@@ -26,6 +29,20 @@ function App() {
     sendChat,
     leaveRoom,
   } = useSocket();
+
+  // Music: switch category based on game phase
+  useEffect(() => {
+    if (!gameState || !gameState.roomCode) {
+      audioManager.playCategory("start");
+    } else if (gameState.phase === "game_over") {
+      audioManager.playCategory("celebration");
+    } else if (gameState.phase === "waiting") {
+      // Keep lobby music during waiting
+      audioManager.playCategory("start");
+    } else {
+      audioManager.playCategory("playing");
+    }
+  }, [gameState?.roomCode, gameState?.phase]);
 
   // No game state = lobby
   if (!gameState || !gameState.roomCode) {
@@ -81,4 +98,14 @@ function App() {
   );
 }
 
-export default App;
+// Wrap with MusicPlayer
+function AppWithMusic() {
+  return (
+    <>
+      <App />
+      <MusicPlayer />
+    </>
+  );
+}
+
+export default AppWithMusic;

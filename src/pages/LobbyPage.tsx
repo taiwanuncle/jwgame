@@ -6,6 +6,12 @@ import InfoModal from "../components/InfoModal";
 import type { AvailableRoom } from "../hooks/useSocket";
 import "./LobbyPage.css";
 
+const LANGUAGES = [
+  { code: "ko", label: "한국어" },
+  { code: "en", label: "EN" },
+  { code: "zh", label: "中文" },
+] as const;
+
 interface LobbyPageProps {
   onCreateRoom: (nickname: string, avatarIndex: number) => void;
   onJoinRoom: (roomCode: string, nickname: string, avatarIndex: number) => void;
@@ -21,7 +27,7 @@ export default function LobbyPage({
   errorMsg,
   availableRooms,
 }: LobbyPageProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<Mode>("menu");
   const [nickname, setNickname] = useState("");
   const [roomCode, setRoomCode] = useState("");
@@ -55,6 +61,20 @@ export default function LobbyPage({
       >
         <h1 className="lobby-title">{t("app.title")}</h1>
         <p className="lobby-subtitle">{t("app.subtitle")}</p>
+        <div className="lobby-lang-selector">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              className={`lobby-lang-btn ${i18n.language === lang.code ? "lobby-lang-btn--active" : ""}`}
+              onClick={() => {
+                i18n.changeLanguage(lang.code);
+                try { localStorage.setItem("app_lang", lang.code); } catch { /* */ }
+              }}
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
       </motion.div>
 
       <AnimatePresence mode="wait">

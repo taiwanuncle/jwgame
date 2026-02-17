@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { AVATARS } from "../components/AvatarPicker";
+import AvatarIcon from "../components/AvatarIcon";
 import type { GameStateFromServer } from "../hooks/useSocket";
 import "./WaitingRoom.css";
 
@@ -99,7 +99,7 @@ export default function WaitingRoom({
               transition={{ delay: index * 0.05 }}
             >
               <span className="waiting-player-avatar">
-                {AVATARS[player.avatarIndex] || "👤"}
+                <AvatarIcon index={player.avatarIndex} size={26} />
               </span>
               <span className="waiting-player-name">
                 {player.nickname}

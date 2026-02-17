@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
+import AvatarIcon, { AVATAR_COUNT } from "./AvatarIcon";
 import "./AvatarPicker.css";
-
-export const AVATARS = [
-  "🕊️", "🐑", "🦁", "🐟", "🌿", "⭐", "🏔️", "🌊",
-  "🔥", "🌈", "🕯️", "📜", "🏺", "⚓", "🗡️", "🛡️",
-];
 
 interface AvatarPickerProps {
   selected: number;
@@ -14,7 +10,7 @@ interface AvatarPickerProps {
 export default function AvatarPicker({ selected, onSelect }: AvatarPickerProps) {
   return (
     <div className="avatar-picker">
-      {AVATARS.map((emoji, index) => (
+      {Array.from({ length: AVATAR_COUNT }, (_, index) => (
         <motion.button
           key={index}
           className={`avatar-item ${selected === index ? "avatar-item--selected" : ""}`}
@@ -22,7 +18,7 @@ export default function AvatarPicker({ selected, onSelect }: AvatarPickerProps) 
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          <span className="avatar-emoji">{emoji}</span>
+          <AvatarIcon index={index} size={40} />
         </motion.button>
       ))}
     </div>
