@@ -1,40 +1,46 @@
 .countdown-bar {
   position: relative;
   width: 100%;
-  height: 6px;
+  height: 28px;
   background: var(--bg-tertiary);
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .countdown-bar__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 100%;
   background: var(--accent);
   transition: width 0.2s linear;
-  border-radius: 0 3px 3px 0;
+  opacity: 0.2;
 }
 
 .countdown-bar__fill--urgent {
   background: #FF3B30;
+  opacity: 0.25;
   animation: urgentPulse 0.5s infinite alternate;
 }
 
 .countdown-bar__text {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 11px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-secondary);
   line-height: 1;
-  padding-top: 8px;
 }
 
 .countdown-bar__text--urgent {
   color: #FF3B30;
+  font-size: 14px;
 }
 
 @keyframes urgentPulse {
-  from { opacity: 1; }
-  to { opacity: 0.6; }
+  from { opacity: 0.25; }
+  to { opacity: 0.15; }
 }
