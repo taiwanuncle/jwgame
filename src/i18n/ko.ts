@@ -15,6 +15,11 @@ const ko = {
       join: "참여",
       create: "만들기",
       back: "뒤로",
+      openRooms: "열린 방 목록",
+      noRooms: "열린 방이 없습니다",
+      joinByCode: "방 코드로 참여",
+      host: "방장",
+      roundsSuffix: "라운드",
     },
     waiting: {
       waitingRoom: "대기실",

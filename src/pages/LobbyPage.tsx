@@ -3,20 +3,23 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import AvatarPicker from "../components/AvatarPicker";
 import InfoModal from "../components/InfoModal";
+import type { AvailableRoom } from "../hooks/useSocket";
 import "./LobbyPage.css";
 
 interface LobbyPageProps {
   onCreateRoom: (nickname: string, avatarIndex: number) => void;
   onJoinRoom: (roomCode: string, nickname: string, avatarIndex: number) => void;
   errorMsg: string;
+  availableRooms: AvailableRoom[];
 }
 
-type Mode = "menu" | "create" | "join";
+type Mode = "menu" | "create" | "join" | "join-code";
 
 export default function LobbyPage({
   onCreateRoom,
   onJoinRoom,
   errorMsg,
+  availableRooms,
 }: LobbyPageProps) {
   const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>("menu");
@@ -25,6 +28,7 @@ export default function LobbyPage({
   const [avatarIndex, setAvatarIndex] = useState(0);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
 
   const handleCreate = () => {
     if (!nickname.trim()) return;
@@ -34,6 +38,11 @@ export default function LobbyPage({
   const handleJoin = () => {
     if (!nickname.trim() || !roomCode.trim()) return;
     onJoinRoom(roomCode.trim().toUpperCase(), nickname.trim(), avatarIndex);
+  };
+
+  const handleJoinSelected = () => {
+    if (!nickname.trim() || !selectedRoom) return;
+    onJoinRoom(selectedRoom, nickname.trim(), avatarIndex);
   };
 
   return (
@@ -165,6 +174,83 @@ export default function LobbyPage({
               </div>
 
               <div className="lobby-form-section">
+                <label className="lobby-label">{t("lobby.openRooms")}</label>
+                <div className="lobby-room-list">
+                  {availableRooms.length === 0 ? (
+                    <div className="lobby-room-empty">
+                      {t("lobby.noRooms")}
+                    </div>
+                  ) : (
+                    availableRooms.map((room) => (
+                      <motion.div
+                        key={room.roomCode}
+                        className={`lobby-room-item ${
+                          selectedRoom === room.roomCode
+                            ? "lobby-room-item--selected"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedRoom(room.roomCode)}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="lobby-room-item-top">
+                          <span className="lobby-room-item-code">
+                            {room.roomCode}
+                          </span>
+                          <span className="lobby-room-item-count">
+                            {room.playerCount}/{room.maxPlayers}
+                          </span>
+                        </div>
+                        <div className="lobby-room-item-bottom">
+                          <span className="lobby-room-item-host">
+                            {t("lobby.host")}: {room.hostNickname}
+                          </span>
+                          <span className="lobby-room-item-rounds">
+                            {room.totalRounds}{t("lobby.roundsSuffix")}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+                <button
+                  className="btn-ghost lobby-code-link"
+                  onClick={() => { setMode("join-code"); setSelectedRoom(null); }}
+                >
+                  {t("lobby.joinByCode")} →
+                </button>
+              </div>
+
+              {errorMsg && <div className="lobby-error">{errorMsg}</div>}
+
+              <div className="lobby-actions">
+                <button className="btn-ghost" onClick={() => { setMode("menu"); setSelectedRoom(null); }}>
+                  {t("lobby.back")}
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={handleJoinSelected}
+                  disabled={!nickname.trim() || !selectedRoom}
+                >
+                  {t("lobby.join")}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {mode === "join-code" && (
+          <motion.div
+            key="join-code"
+            className="card-container"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="lobby-form">
+              <h2 className="lobby-form-title">{t("lobby.joinByCode")}</h2>
+
+              <div className="lobby-form-section">
                 <label className="lobby-label">{t("lobby.roomCode")}</label>
                 <input
                   className="input-field lobby-room-code-input"
@@ -183,7 +269,7 @@ export default function LobbyPage({
               {errorMsg && <div className="lobby-error">{errorMsg}</div>}
 
               <div className="lobby-actions">
-                <button className="btn-ghost" onClick={() => setMode("menu")}>
+                <button className="btn-ghost" onClick={() => setMode("join")}>
                   {t("lobby.back")}
                 </button>
                 <button

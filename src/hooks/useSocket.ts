@@ -10,6 +10,14 @@ export interface ChatMessage {
   timestamp: number;
 }
 
+export interface AvailableRoom {
+  roomCode: string;
+  hostNickname: string;
+  playerCount: number;
+  maxPlayers: number;
+  totalRounds: number;
+}
+
 const SERVER_URL =
   import.meta.env.VITE_SERVER_URL ||
   `${window.location.protocol}//${window.location.hostname}:3001`;
@@ -53,6 +61,7 @@ export function useSocket() {
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [availableRooms, setAvailableRooms] = useState<AvailableRoom[]>([]);
 
   useEffect(() => {
     const socket = io(SERVER_URL, {
@@ -94,6 +103,13 @@ export function useSocket() {
       if (leavingRef.current) return;
       setChatMessages((prev) => [...prev.slice(-50), msg]);
     });
+
+    socket.on("rooms_updated", (rooms: AvailableRoom[]) => {
+      setAvailableRooms(rooms);
+    });
+
+    // Request initial room list
+    socket.emit("get_rooms");
 
     return () => {
       socket.disconnect();
@@ -153,6 +169,10 @@ export function useSocket() {
     socketRef.current?.emit("send_chat", { message });
   }, []);
 
+  const refreshRooms = useCallback(() => {
+    socketRef.current?.emit("get_rooms");
+  }, []);
+
   const leaveRoom = useCallback(() => {
     leavingRef.current = true;
     socketRef.current?.emit("leave_room");
@@ -167,6 +187,7 @@ export function useSocket() {
     roundResult,
     errorMsg,
     chatMessages,
+    availableRooms,
     socketId: socketRef.current?.id || "",
     createRoom,
     joinRoom,
@@ -179,6 +200,7 @@ export function useSocket() {
     nextRound,
     playAgain,
     sendChat,
+    refreshRooms,
     leaveRoom,
   };
 }

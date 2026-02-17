@@ -15,6 +15,11 @@ const en = {
       join: "Join",
       create: "Create",
       back: "Back",
+      openRooms: "Open Rooms",
+      noRooms: "No open rooms",
+      joinByCode: "Join by code",
+      host: "Host",
+      roundsSuffix: "rounds",
     },
     waiting: {
       waitingRoom: "Waiting Room",

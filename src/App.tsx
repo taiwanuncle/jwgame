@@ -12,6 +12,7 @@ function App() {
     roundResult,
     errorMsg,
     chatMessages,
+    availableRooms,
     createRoom,
     joinRoom,
     toggleReady,
@@ -33,6 +34,7 @@ function App() {
         onCreateRoom={createRoom}
         onJoinRoom={joinRoom}
         errorMsg={errorMsg}
+        availableRooms={availableRooms}
       />
     );
   }

@@ -350,8 +350,37 @@ function calculateScores(room) {
   };
 }
 
+// --- Room listing for lobby ---
+function getAvailableRooms() {
+  const list = [];
+  rooms.forEach((room) => {
+    if (room.phase === "waiting" && room.players.length < MAX_PLAYERS) {
+      const host = room.players.find((p) => p.isHost);
+      list.push({
+        roomCode: room.roomCode,
+        hostNickname: host ? host.nickname : "???",
+        playerCount: room.players.length,
+        maxPlayers: MAX_PLAYERS,
+        totalRounds: room.totalRounds,
+      });
+    }
+  });
+  return list;
+}
+
+function broadcastRoomsToLobby() {
+  io.to("lobby").emit("rooms_updated", getAvailableRooms());
+}
+
 io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
+
+  // Auto-join lobby room on connect (for room browsing)
+  socket.join("lobby");
+
+  socket.on("get_rooms", () => {
+    socket.emit("rooms_updated", getAvailableRooms());
+  });
 
   socket.on("create_room", ({ nickname, avatarIndex }) => {
     const roomCode = generateRoomCode();
@@ -385,11 +414,13 @@ io.on("connection", (socket) => {
     };
 
     rooms.set(roomCode, room);
+    socket.leave("lobby");
     socket.join(roomCode);
     socket.roomCode = roomCode;
 
     socket.emit("room_created", { roomCode, player });
     emitPersonalStates(room);
+    broadcastRoomsToLobby();
   });
 
   socket.on("join_room", ({ roomCode, nickname, avatarIndex }) => {
@@ -419,11 +450,13 @@ io.on("connection", (socket) => {
     };
 
     room.players.push(player);
+    socket.leave("lobby");
     socket.join(roomCode);
     socket.roomCode = roomCode;
 
     socket.emit("room_joined", { roomCode, player });
     emitPersonalStates(room);
+    broadcastRoomsToLobby();
   });
 
   socket.on("toggle_ready", () => {
@@ -445,6 +478,7 @@ io.on("connection", (socket) => {
     if (!allowed.includes(rounds)) return;
     room.totalRounds = rounds;
     emitPersonalStates(room);
+    broadcastRoomsToLobby();
   });
 
   socket.on("start_game", () => {
@@ -486,6 +520,7 @@ io.on("connection", (socket) => {
     io.to(room.roomCode).emit("game_started");
     startPhaseTimer(room);
     emitPersonalStates(room);
+    broadcastRoomsToLobby();
   });
 
   socket.on("submit_clue", ({ cardId, clue }) => {
@@ -669,6 +704,9 @@ function handleDisconnect(socket) {
     room.players.splice(playerIndex, 1);
     if (room.players.length === 0) {
       rooms.delete(roomCode);
+      socket.leave(roomCode);
+      socket.join("lobby");
+      broadcastRoomsToLobby();
       return;
     }
     if (!room.players.some((p) => p.isHost)) {
@@ -681,6 +719,9 @@ function handleDisconnect(socket) {
     if (room.players.every((p) => !p.connected)) {
       clearRoomTimer(room);
       rooms.delete(roomCode);
+      socket.leave(roomCode);
+      socket.join("lobby");
+      broadcastRoomsToLobby();
       return;
     }
 
@@ -696,7 +737,9 @@ function handleDisconnect(socket) {
   }
 
   socket.leave(roomCode);
+  socket.join("lobby");
   emitPersonalStates(room);
+  broadcastRoomsToLobby();
 }
 
 function sanitizeRoomForBroadcast(room) {
