@@ -11,68 +11,91 @@ interface GlobalChatProps {
 }
 
 export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) {
-  const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [input, setInput] = useState("");
-  const [unread, setUnread] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const prevCountRef = useRef(messages.length);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Track unread messages when chat is closed
+  // Auto-scroll on new messages
   useEffect(() => {
-    if (!open && messages.length > prevCountRef.current) {
-      const newCount = messages.length - prevCountRef.current;
-      setUnread((u) => u + newCount);
-    }
-    prevCountRef.current = messages.length;
-  }, [messages.length, open]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  // Clear unread when opening
+  // Focus input when expanding
   useEffect(() => {
-    if (open) {
-      setUnread(0);
-      // Scroll to bottom
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+    if (expanded) {
+      setTimeout(() => inputRef.current?.focus(), 200);
     }
-  }, [open]);
-
-  // Scroll on new messages while open
-  useEffect(() => {
-    if (open) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, open]);
+  }, [expanded]);
 
   const handleSend = () => {
     if (!input.trim()) return;
     onSend(input.trim());
     setInput("");
+    inputRef.current?.focus();
   };
 
+  // Last message preview for collapsed bar
+  const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
+
   return (
-    <div className="global-chat">
+    <div className={`global-chat-bar ${expanded ? "global-chat-bar--expanded" : ""}`}>
+      {/* Collapsed: single-line preview + input */}
+      {!expanded && (
+        <div className="gchat-collapsed">
+          <div className="gchat-preview" onClick={() => setExpanded(true)}>
+            {lastMsg ? (
+              <span className="gchat-preview-text">
+                <strong>{lastMsg.playerId === myId ? "나" : lastMsg.nickname}</strong>: {lastMsg.message}
+              </span>
+            ) : (
+              <span className="gchat-preview-empty">💬 채팅</span>
+            )}
+          </div>
+          <div className="gchat-input-row">
+            <input
+              ref={inputRef}
+              className="gchat-input"
+              placeholder="메시지 입력..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              maxLength={100}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              onFocus={() => setExpanded(true)}
+            />
+            <button
+              className="gchat-send"
+              onClick={handleSend}
+              disabled={!input.trim()}
+            >
+              ↑
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Expanded: messages + input */}
       <AnimatePresence>
-        {open && (
+        {expanded && (
           <motion.div
-            className="global-chat-panel"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="gchat-expanded"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 35 }}
           >
-            <div className="global-chat-header">
-              <span className="global-chat-title">💬 채팅</span>
+            <div className="gchat-expanded-header">
+              <span className="gchat-expanded-title">💬 채팅</span>
               <button
-                className="global-chat-close"
-                onClick={() => setOpen(false)}
+                className="gchat-collapse-btn"
+                onClick={() => setExpanded(false)}
               >
-                ✕
+                ▼
               </button>
             </div>
-            <div className="global-chat-messages">
+            <div className="gchat-messages">
               {messages.length === 0 && (
-                <div className="global-chat-empty">메시지가 없습니다</div>
+                <div className="gchat-empty">메시지가 없습니다</div>
               )}
               {messages.map((msg, i) => {
                 const isMine = msg.playerId === myId;
@@ -84,9 +107,7 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
                     {!isMine && (
                       <div className="gchat-bubble-header">
                         <AvatarIcon index={msg.avatarIndex} size={16} />
-                        <span className="gchat-bubble-name">
-                          {msg.nickname}
-                        </span>
+                        <span className="gchat-bubble-name">{msg.nickname}</span>
                       </div>
                     )}
                     <span className="gchat-bubble-text">{msg.message}</span>
@@ -95,18 +116,18 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
               })}
               <div ref={messagesEndRef} />
             </div>
-            <div className="global-chat-input-bar">
+            <div className="gchat-input-row">
               <input
-                className="global-chat-input"
+                ref={inputRef}
+                className="gchat-input"
                 placeholder="메시지 입력..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={100}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                autoFocus
               />
               <button
-                className="global-chat-send"
+                className="gchat-send"
                 onClick={handleSend}
                 disabled={!input.trim()}
               >
@@ -116,19 +137,6 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
           </motion.div>
         )}
       </AnimatePresence>
-
-      <motion.button
-        className={`global-chat-fab ${open ? "global-chat-fab--active" : ""}`}
-        onClick={() => setOpen((o) => !o)}
-        whileTap={{ scale: 0.9 }}
-      >
-        {open ? "✕" : "💬"}
-        {!open && unread > 0 && (
-          <span className="global-chat-badge">
-            {unread > 9 ? "9+" : unread}
-          </span>
-        )}
-      </motion.button>
     </div>
   );
 }

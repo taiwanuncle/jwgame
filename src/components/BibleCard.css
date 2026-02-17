@@ -171,7 +171,7 @@
 .bible-card__vote-count {
   position: absolute;
   top: 8px;
-  left: 8px;
+  right: 8px;
   min-width: 24px;
   height: 24px;
   background: var(--accent);
