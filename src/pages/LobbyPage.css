@@ -228,3 +228,45 @@
   padding: 8px;
   margin-top: 4px;
 }
+
+/* Donate section: mobile link + desktop QR */
+.donate-link--mobile {
+  display: inline-block;
+}
+
+.donate-qr-desktop {
+  display: none;
+  text-align: center;
+}
+
+.donate-qr-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.donate-qr-img {
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-light);
+}
+
+/* On desktop (no hover = touch device heuristic won't work perfectly,
+   so use min-width as a proxy) */
+@media (min-width: 768px) {
+  .donate-link--mobile {
+    display: none;
+  }
+  .donate-qr-desktop {
+    display: block;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  /* Touch devices = mobile: show link, hide QR */
+  .donate-link--mobile {
+    display: inline-block !important;
+  }
+  .donate-qr-desktop {
+    display: none !important;
+  }
+}

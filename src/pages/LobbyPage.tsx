@@ -366,7 +366,7 @@ export default function LobbyPage({
         </p>
 
         <p className="copyright-notice">
-          ※ 사용되는 모든 그림은 AI로 제작되었습니다.
+          ※ 사용되는 모든 그림과 음악은 AI로 제작되었습니다.
         </p>
       </InfoModal>
 
@@ -388,22 +388,51 @@ export default function LobbyPage({
           개선 사항이나 건의가 있다면 언제든 연락해 주세요.
         </p>
 
+        <h3>개발자에게 연락하기</h3>
+        <div className="contact-section">
+          <div className="contact-row">
+            <span className="contact-label">📧 이메일</span>
+            <a href="mailto:atshane81@gmail.com" className="contact-value">
+              atshane81@gmail.com
+            </a>
+          </div>
+          <a
+            href="https://pf.kakao.com/_exghAX"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact-kakao-btn"
+          >
+            💬 카카오톡 채널
+          </a>
+        </div>
+
         <h3>후원</h3>
         <div className="donate-section">
           <p>이 게임이 도움이 되셨다면 후원으로 응원해 주세요!</p>
+          {/* Mobile: direct link / Desktop: QR code to scan */}
           <a
             href="https://qr.kakaopay.com/FN0023EGr"
             target="_blank"
             rel="noopener noreferrer"
-            className="donate-link"
+            className="donate-link donate-link--mobile"
           >
             💛 카카오페이로 후원하기
           </a>
+          <div className="donate-qr-desktop">
+            <p className="donate-qr-label">PC에서는 QR코드를 스캔해 주세요</p>
+            <img
+              className="donate-qr-img"
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent("https://qr.kakaopay.com/FN0023EGr")}`}
+              alt="카카오페이 후원 QR코드"
+              width={180}
+              height={180}
+            />
+          </div>
         </div>
 
         <h3>저작권 안내</h3>
         <p>
-          사용되는 모든 그림은 AI로 제작되었습니다.
+          사용되는 모든 그림과 음악은 AI로 제작되었습니다.
           본 게임은 비영리 목적으로 제작되었습니다.
         </p>
       </InfoModal>

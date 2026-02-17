@@ -146,6 +146,63 @@
   transform: scale(1.02);
 }
 
+/* Contact section */
+.info-modal-body .contact-section {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-modal-body .contact-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-modal-body .contact-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.info-modal-body .contact-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.info-modal-body .contact-value:hover {
+  text-decoration: underline;
+}
+
+.info-modal-body .contact-kakao-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: #FEE500;
+  color: #191919;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: var(--transition-fast);
+  text-align: center;
+}
+
+.info-modal-body .contact-kakao-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}
+
 .info-modal-body .copyright-notice {
   margin-top: 20px;
   padding-top: 16px;
