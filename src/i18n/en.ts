@@ -67,6 +67,7 @@ const en = {
       playAgain: "Play Again",
       backToLobby: "Back to Lobby",
       congratulations: "Congratulations!",
+      coWinners: "Co-Winners!",
       st: "st",
       nd: "nd",
       rd: "rd",

@@ -23,7 +23,18 @@ export default function GameOverPage({
   const isHost = me?.isHost || false;
 
   const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
-  const winner = sorted[0];
+  const topScore = sorted[0]?.score ?? 0;
+  const winners = sorted.filter((p) => p.score === topScore);
+  const isCoWin = winners.length > 1;
+
+  // Proper rank assignment (same score = same rank)
+  const getRank = (index: number): number => {
+    if (index === 0) return 1;
+    if (sorted[index].score === sorted[index - 1].score) {
+      return getRank(index - 1);
+    }
+    return index + 1;
+  };
 
   useEffect(() => {
     const duration = 3000;
@@ -60,11 +71,11 @@ export default function GameOverPage({
     };
   }, []);
 
-  const getRankSuffix = (rank: number) => {
-    if (rank === 1) return t("result.st");
-    if (rank === 2) return t("result.nd");
-    if (rank === 3) return t("result.rd");
-    return t("result.th");
+  const getRankEmoji = (rank: number) => {
+    if (rank === 1) return "🥇";
+    if (rank === 2) return "🥈";
+    if (rank === 3) return "🥉";
+    return `${rank}${t("result.th")}`;
   };
 
   return (
@@ -87,54 +98,75 @@ export default function GameOverPage({
         {t("result.gameOver")}
       </motion.h1>
 
-      <motion.div
-        className="gameover-winner"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.7 }}
-      >
-        <div className="gameover-winner-avatar">
-          {AVATARS[winner.avatarIndex] || "👤"}
-        </div>
-        <div className="gameover-winner-info">
-          <span className="gameover-congrats">{t("result.congratulations")}</span>
-          <span className="gameover-winner-name">{winner.nickname}</span>
-          <span className="gameover-winner-score">{winner.score} pts</span>
-        </div>
-      </motion.div>
+      {/* Winner section */}
+      {isCoWin ? (
+        <motion.div
+          className="gameover-co-winners"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <span className="gameover-congrats">{t("result.coWinners")}</span>
+          <div className="gameover-co-winner-list">
+            {winners.map((w) => (
+              <div key={w.id} className="gameover-co-winner-item">
+                <span className="gameover-co-winner-avatar">
+                  {AVATARS[w.avatarIndex] || "👤"}
+                </span>
+                <span className="gameover-co-winner-name">{w.nickname}</span>
+              </div>
+            ))}
+          </div>
+          <span className="gameover-winner-score">{topScore} pts</span>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="gameover-winner"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <div className="gameover-winner-avatar">
+            {AVATARS[winners[0].avatarIndex] || "👤"}
+          </div>
+          <div className="gameover-winner-info">
+            <span className="gameover-congrats">{t("result.congratulations")}</span>
+            <span className="gameover-winner-name">{winners[0].nickname}</span>
+            <span className="gameover-winner-score">{topScore} pts</span>
+          </div>
+        </motion.div>
+      )}
 
+      {/* Rankings */}
       <motion.div
         className="card-container gameover-rankings"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
       >
-        {sorted.map((player, index) => (
-          <motion.div
-            key={player.id}
-            className={`gameover-rank-row ${
-              player.id === gameState.myId ? "gameover-rank-row--me" : ""
-            }`}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.1 + index * 0.1 }}
-          >
-            <div className="gameover-rank-position">
-              {index === 0
-                ? "🥇"
-                : index === 1
-                ? "🥈"
-                : index === 2
-                ? "🥉"
-                : `${index + 1}${getRankSuffix(index + 1)}`}
-            </div>
-            <div className="gameover-rank-avatar">
-              {AVATARS[player.avatarIndex] || "👤"}
-            </div>
-            <div className="gameover-rank-name">{player.nickname}</div>
-            <div className="gameover-rank-score">{player.score}</div>
-          </motion.div>
-        ))}
+        {sorted.map((player, index) => {
+          const rank = getRank(index);
+          return (
+            <motion.div
+              key={player.id}
+              className={`gameover-rank-row ${
+                player.id === gameState.myId ? "gameover-rank-row--me" : ""
+              }`}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.1 + index * 0.1 }}
+            >
+              <div className="gameover-rank-position">
+                {getRankEmoji(rank)}
+              </div>
+              <div className="gameover-rank-avatar">
+                {AVATARS[player.avatarIndex] || "👤"}
+              </div>
+              <div className="gameover-rank-name">{player.nickname}</div>
+              <div className="gameover-rank-score">{player.score}</div>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       <motion.div

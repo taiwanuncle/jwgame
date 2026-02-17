@@ -67,6 +67,7 @@ const ko = {
       playAgain: "다시 게임하기",
       backToLobby: "로비로 돌아가기",
       congratulations: "축하합니다!",
+      coWinners: "공동 우승!",
       st: "위",
       nd: "위",
       rd: "위",
