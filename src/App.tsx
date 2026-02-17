@@ -30,23 +30,31 @@ function App() {
     leaveRoom,
   } = useSocket();
 
+  const isLobby = !gameState || !gameState.roomCode;
+  const isWaiting = gameState?.phase === "waiting";
+
   // Music: switch category based on game phase
   useEffect(() => {
-    if (!gameState || !gameState.roomCode) {
+    if (isLobby || isWaiting) {
       audioManager.playCategory("start");
-    } else if (gameState.phase === "game_over") {
+    } else if (gameState?.phase === "game_over") {
       audioManager.playCategory("celebration");
-    } else if (gameState.phase === "waiting") {
-      // Keep lobby music during waiting
-      audioManager.playCategory("start");
     } else {
       audioManager.playCategory("playing");
     }
-  }, [gameState?.roomCode, gameState?.phase]);
+  }, [isLobby, isWaiting, gameState?.phase]);
 
-  // No game state = lobby
-  if (!gameState || !gameState.roomCode) {
-    return (
+  // When leaving lobby/waiting (entering game), exit playlist mode
+  useEffect(() => {
+    if (!isLobby && !isWaiting) {
+      audioManager.exitPlaylistMode();
+    }
+  }, [isLobby, isWaiting]);
+
+  let page: React.ReactNode;
+
+  if (isLobby) {
+    page = (
       <LobbyPage
         onCreateRoom={createRoom}
         onJoinRoom={joinRoom}
@@ -54,11 +62,8 @@ function App() {
         availableRooms={availableRooms}
       />
     );
-  }
-
-  // Waiting room
-  if (gameState.phase === "waiting") {
-    return (
+  } else if (isWaiting) {
+    page = (
       <WaitingRoom
         gameState={gameState}
         onToggleReady={toggleReady}
@@ -68,11 +73,8 @@ function App() {
         errorMsg={errorMsg}
       />
     );
-  }
-
-  // Game over
-  if (gameState.phase === "game_over") {
-    return (
+  } else if (gameState.phase === "game_over") {
+    page = (
       <GameOverPage
         gameState={gameState}
         onPlayAgain={playAgain}
@@ -81,31 +83,27 @@ function App() {
         onSendChat={sendChat}
       />
     );
+  } else {
+    page = (
+      <GamePage
+        gameState={gameState}
+        roundResult={roundResult}
+        onSubmitClue={submitClue}
+        onSubmitCard={submitCard}
+        onSubmitVote={submitVote}
+        onNextRound={nextRound}
+        chatMessages={chatMessages}
+        onSendChat={sendChat}
+      />
+    );
   }
 
-  // Game in progress
-  return (
-    <GamePage
-      gameState={gameState}
-      roundResult={roundResult}
-      onSubmitClue={submitClue}
-      onSubmitCard={submitCard}
-      onSubmitVote={submitVote}
-      onNextRound={nextRound}
-      chatMessages={chatMessages}
-      onSendChat={sendChat}
-    />
-  );
-}
-
-// Wrap with MusicPlayer
-function AppWithMusic() {
   return (
     <>
-      <App />
-      <MusicPlayer />
+      {page}
+      <MusicPlayer isLobby={isLobby || isWaiting} />
     </>
   );
 }
 
-export default AppWithMusic;
+export default App;

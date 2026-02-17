@@ -4,7 +4,12 @@ import { useTranslation } from "react-i18next";
 import { audioManager, ALL_TRACKS, type Track } from "../utils/audioManager";
 import "./MusicPlayer.css";
 
-export default function MusicPlayer() {
+interface MusicPlayerProps {
+  /** Show playlist button only in lobby/waiting */
+  isLobby: boolean;
+}
+
+export default function MusicPlayer({ isLobby }: MusicPlayerProps) {
   const { t } = useTranslation();
   const [, forceUpdate] = useState(0);
   const [expanded, setExpanded] = useState(false);
@@ -16,17 +21,30 @@ export default function MusicPlayer() {
     return unsub;
   }, []);
 
+  // If we leave lobby while playlist is open, close it
+  useEffect(() => {
+    if (!isLobby && showPlaylist) {
+      setShowPlaylist(false);
+      audioManager.exitPlaylistMode();
+    }
+  }, [isLobby, showPlaylist]);
+
   const track = audioManager.currentTrack;
   const playing = audioManager.playing;
   const muted = audioManager.muted;
   const volume = audioManager.volume;
+  const inPlaylistMode = audioManager.playlistMode;
 
   const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     audioManager.setVolume(Number(e.target.value));
   }, []);
 
+  const handleClosePlaylist = () => {
+    setShowPlaylist(false);
+    audioManager.exitPlaylistMode();
+  };
+
   const trackDisplayName = (t2: Track) => {
-    // Show friendly names
     const names: Record<string, string> = {
       start1: "Start 1",
       start2: "Start 2",
@@ -86,6 +104,7 @@ export default function MusicPlayer() {
               {track && (
                 <span className="music-track-category">
                   {categoryLabel(track.category)}
+                  {inPlaylistMode && " · Playlist"}
                 </span>
               )}
             </div>
@@ -131,13 +150,15 @@ export default function MusicPlayer() {
               <span className="music-volume-icon">🔊</span>
             </div>
 
-            {/* Playlist button */}
-            <button
-              className="music-playlist-btn"
-              onClick={(e) => { e.stopPropagation(); setShowPlaylist(true); setExpanded(false); }}
-            >
-              {t("music.playlist")}
-            </button>
+            {/* Playlist button — only in lobby/waiting */}
+            {isLobby && (
+              <button
+                className="music-playlist-btn"
+                onClick={(e) => { e.stopPropagation(); setShowPlaylist(true); setExpanded(false); }}
+              >
+                {t("music.playlist")}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -150,7 +171,7 @@ export default function MusicPlayer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowPlaylist(false)}
+            onClick={handleClosePlaylist}
           >
             <motion.div
               className="music-playlist-modal glass-card"
@@ -162,7 +183,7 @@ export default function MusicPlayer() {
             >
               <div className="music-playlist-header">
                 <h2>{t("music.playlist")}</h2>
-                <button className="music-playlist-close" onClick={() => setShowPlaylist(false)}>
+                <button className="music-playlist-close" onClick={handleClosePlaylist}>
                   ✕
                 </button>
               </div>

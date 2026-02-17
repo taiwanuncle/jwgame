@@ -1,8 +1,7 @@
 .avatar-icon {
   display: inline-block;
-  border-radius: 50%;
-  background-repeat: no-repeat;
   flex-shrink: 0;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }

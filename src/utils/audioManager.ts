@@ -1,6 +1,12 @@
 /**
  * AudioManager — Background music player with categories, shuffle, auto-next.
  * Categories: "start" (lobby), "playing" (in-game), "celebration" (game over), "secret" (hidden tracks)
+ *
+ * Two modes:
+ * 1. Auto mode (default): App.tsx switches category based on game phase.
+ * 2. Playlist mode: User manually picks a track from playlist modal.
+ *    In playlist mode, auto category switching is ignored.
+ *    When playlist mode ends, auto mode resumes with the pending category.
  */
 
 export type MusicCategory = "start" | "playing" | "celebration" | "secret";
@@ -54,6 +60,8 @@ class AudioManager {
   private _muted = false;
   private _playing = false;
   private _currentCategory: MusicCategory | null = null;
+  private _playlistMode = false;
+  private _pendingCategory: MusicCategory | null = null;
   private listeners = new Set<Listener>();
 
   constructor() {
@@ -81,10 +89,23 @@ class AudioManager {
   get muted() { return this._muted; }
   get playing() { return this._playing; }
   get currentCategory() { return this._currentCategory; }
+  get playlistMode() { return this._playlistMode; }
 
-  /** Play a specific category (shuffled). If same category already playing, do nothing. */
+  /**
+   * Auto mode: play a category (shuffled).
+   * If same category already playing, do nothing.
+   * If in playlist mode, just remember the pending category.
+   */
   playCategory(category: MusicCategory) {
+    // Always update pending so we know what to resume after playlist
+    this._pendingCategory = category;
+
+    // If in playlist mode, don't interrupt — just save pending
+    if (this._playlistMode) return;
+
+    // If same category already playing, skip
     if (this._currentCategory === category && this._playing) return;
+
     const tracks = ALL_TRACKS.filter((t) => t.category === category);
     if (tracks.length === 0) return;
     this._currentCategory = category;
@@ -93,25 +114,34 @@ class AudioManager {
     this.playTrack(this.queue[0]);
   }
 
-  /** Play a specific track by id */
-  playTrackById(id: string) {
-    const track = ALL_TRACKS.find((t) => t.id === id);
-    if (!track) return;
-    this._currentCategory = track.category;
-    this.queue = ALL_TRACKS.filter((t) => t.category === track.category);
-    this.queueIndex = this.queue.findIndex((t) => t.id === id);
-    if (this.queueIndex === -1) this.queueIndex = 0;
-    this.playTrack(track);
-  }
-
-  /** Play from playlist modal (all tracks, starting from given track) */
+  /**
+   * Playlist mode: user picks a track manually.
+   * Stops auto music and plays selected track, then shuffles through all tracks.
+   */
   playFromPlaylist(track: Track) {
-    // Keep entire list as queue in a shuffled order but start with selected
+    this._playlistMode = true;
+    this._currentCategory = track.category;
+    // Queue: selected first, then rest shuffled
     const rest = ALL_TRACKS.filter((t) => t.id !== track.id);
     this.queue = [track, ...shuffle(rest)];
     this.queueIndex = 0;
-    this._currentCategory = track.category;
     this.playTrack(track);
+  }
+
+  /**
+   * Exit playlist mode: stop playlist music, resume auto category.
+   */
+  exitPlaylistMode() {
+    if (!this._playlistMode) return;
+    this._playlistMode = false;
+    this.stop();
+    this.notify();
+    // Resume the pending auto category
+    if (this._pendingCategory) {
+      const cat = this._pendingCategory;
+      this._currentCategory = null; // reset so playCategory doesn't skip
+      this.playCategory(cat);
+    }
   }
 
   private playTrack(track: Track) {
@@ -175,8 +205,9 @@ class AudioManager {
       this.pause();
     } else if (this.audio) {
       this.resume();
-    } else if (this._currentCategory) {
-      this.playCategory(this._currentCategory);
+    } else if (this._pendingCategory) {
+      this._currentCategory = null;
+      this.playCategory(this._pendingCategory);
     }
   }
 
