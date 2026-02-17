@@ -3,24 +3,19 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import AvatarIcon from "../components/AvatarIcon";
-import ChatOverlay from "../components/ChatOverlay";
-import type { GameStateFromServer, ChatMessage } from "../hooks/useSocket";
+import type { GameStateFromServer } from "../hooks/useSocket";
 import "./GameOverPage.css";
 
 interface GameOverPageProps {
   gameState: GameStateFromServer;
   onPlayAgain: () => void;
   onBackToLobby: () => void;
-  chatMessages: ChatMessage[];
-  onSendChat: (message: string) => void;
 }
 
 export default function GameOverPage({
   gameState,
   onPlayAgain,
   onBackToLobby,
-  chatMessages,
-  onSendChat,
 }: GameOverPageProps) {
   const { t } = useTranslation();
 
@@ -172,19 +167,6 @@ export default function GameOverPage({
             </motion.div>
           );
         })}
-      </motion.div>
-
-      <motion.div
-        className="gameover-chat"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-      >
-        <ChatOverlay
-          messages={chatMessages}
-          onSend={onSendChat}
-          myId={gameState.myId}
-        />
       </motion.div>
 
       <motion.div

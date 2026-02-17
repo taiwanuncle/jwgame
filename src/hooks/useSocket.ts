@@ -96,7 +96,6 @@ export function useSocket() {
     });
     socket.on("game_started", () => {
       setRoundResult(null);
-      setChatMessages([]);
     });
 
     socket.on("chat_message", (msg: ChatMessage) => {
@@ -157,7 +156,6 @@ export function useSocket() {
   const nextRound = useCallback(() => {
     socketRef.current?.emit("next_round");
     setRoundResult(null);
-    setChatMessages([]);
   }, []);
 
   const playAgain = useCallback(() => {

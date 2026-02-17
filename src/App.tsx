@@ -7,6 +7,7 @@ import WaitingRoom from "./pages/WaitingRoom";
 import GamePage from "./pages/GamePage";
 import GameOverPage from "./pages/GameOverPage";
 import MusicPlayer from "./components/MusicPlayer";
+import GlobalChat from "./components/GlobalChat";
 import { audioManager } from "./utils/audioManager";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
 
   const isLobby = !gameState || !gameState.roomCode;
   const isWaiting = gameState?.phase === "waiting";
+  const inRoom = !isLobby; // Show chat whenever player is in a room
 
   // Music: switch category based on game phase
   useEffect(() => {
@@ -79,8 +81,6 @@ function App() {
         gameState={gameState}
         onPlayAgain={playAgain}
         onBackToLobby={leaveRoom}
-        chatMessages={chatMessages}
-        onSendChat={sendChat}
       />
     );
   } else {
@@ -92,8 +92,6 @@ function App() {
         onSubmitCard={submitCard}
         onSubmitVote={submitVote}
         onNextRound={nextRound}
-        chatMessages={chatMessages}
-        onSendChat={sendChat}
       />
     );
   }
@@ -102,6 +100,13 @@ function App() {
     <>
       {page}
       <MusicPlayer isLobby={isLobby || isWaiting} />
+      {inRoom && (
+        <GlobalChat
+          messages={chatMessages}
+          onSend={sendChat}
+          myId={gameState?.myId}
+        />
+      )}
     </>
   );
 }

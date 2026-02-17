@@ -667,8 +667,7 @@ io.on("connection", (socket) => {
     if (!room) return;
     const player = room.players.find((p) => p.id === socket.id);
     if (!player) return;
-    // Only allow chat during round_result or game_over phases
-    if (room.phase !== "round_result" && room.phase !== "game_over") return;
+    // Allow chat in all phases except lobby (player must be in a room)
     if (!message || message.trim().length === 0) return;
     const trimmed = message.trim().slice(0, 100);
     io.to(room.roomCode).emit("chat_message", {

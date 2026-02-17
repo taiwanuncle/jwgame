@@ -5,8 +5,7 @@ import BibleCard from "../components/BibleCard";
 import ScoreBoard from "../components/ScoreBoard";
 import Toast from "../components/Toast";
 import CountdownBar from "../components/CountdownBar";
-import ChatOverlay from "../components/ChatOverlay";
-import type { GameStateFromServer, ChatMessage } from "../hooks/useSocket";
+import type { GameStateFromServer } from "../hooks/useSocket";
 import type { RoundResult } from "../types";
 import { playClick, playSelect, playSubmit, playError } from "../utils/sfx";
 import "./GamePage.css";
@@ -18,8 +17,6 @@ interface GamePageProps {
   onSubmitCard: (cardId: number) => void;
   onSubmitVote: (cardId: number) => void;
   onNextRound: () => void;
-  chatMessages: ChatMessage[];
-  onSendChat: (message: string) => void;
 }
 
 export default function GamePage({
@@ -29,8 +26,6 @@ export default function GamePage({
   onSubmitCard,
   onSubmitVote,
   onNextRound,
-  chatMessages,
-  onSendChat,
 }: GamePageProps) {
   const { t } = useTranslation();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
@@ -533,12 +528,6 @@ export default function GamePage({
                   );
                 })}
               </div>
-
-              <ChatOverlay
-                messages={chatMessages}
-                onSend={onSendChat}
-                myId={myId}
-              />
 
             </motion.div>
           )}
