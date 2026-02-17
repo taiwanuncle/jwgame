@@ -57,6 +57,7 @@ const en = {
       proceedToNext: "Proceed",
       cardsSubmitted: "cards submitted",
       votesSubmitted: "votes submitted",
+      waitingFor: "Waiting:",
     },
     result: {
       gameOver: "Game Over!",

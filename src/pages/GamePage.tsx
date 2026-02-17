@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import BibleCard from "../components/BibleCard";
 import ScoreBoard from "../components/ScoreBoard";
 import Toast from "../components/Toast";
+import CountdownBar from "../components/CountdownBar";
 import type { GameStateFromServer } from "../hooks/useSocket";
 import type { RoundResult } from "../types";
 import "./GamePage.css";
@@ -118,6 +119,25 @@ export default function GamePage({
     return null;
   };
 
+  // Who hasn't submitted/voted yet?
+  const getWaitingNames = (): string[] => {
+    const submittedIds = gameState.submittedPlayerIds || [];
+    const votedIds = gameState.votedPlayerIds || [];
+
+    if (gameState.phase === "players_submit") {
+      return gameState.players
+        .filter((p) => !submittedIds.includes(p.id))
+        .map((p) => p.nickname);
+    }
+    if (gameState.phase === "voting") {
+      return gameState.players
+        .filter((p) => p.id !== storyteller?.id && !votedIds.includes(p.id))
+        .map((p) => p.nickname);
+    }
+    return [];
+  };
+  const waitingNames = getWaitingNames();
+
   return (
     <div className="game-page">
       {/* Top bar */}
@@ -143,6 +163,9 @@ export default function GamePage({
           {t("game.scores")}
         </button>
       </div>
+
+      {/* Timer bar */}
+      <CountdownBar timerEnd={gameState.timerEnd} />
 
       {/* Clue display */}
       {gameState.clue && gameState.phase !== "storyteller_turn" && (
@@ -256,6 +279,11 @@ export default function GamePage({
                     {t("game.waitingForCards")} ({gameState.submittedCount}/
                     {gameState.players.length})
                   </p>
+                  {waitingNames.length > 0 && (
+                    <p className="game-waiting-names">
+                      {t("game.waitingFor")} {waitingNames.join(", ")}
+                    </p>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -275,6 +303,11 @@ export default function GamePage({
                 {t("game.waitingForCards")} ({gameState.submittedCount}/
                 {gameState.players.length})
               </p>
+              {waitingNames.length > 0 && (
+                <p className="game-waiting-names">
+                  {t("game.waitingFor")} {waitingNames.join(", ")}
+                </p>
+              )}
             </motion.div>
           )}
 
@@ -351,6 +384,11 @@ export default function GamePage({
                     {t("game.waitingForVotes")} ({gameState.votedCount}/
                     {gameState.players.length - 1})
                   </p>
+                  {waitingNames.length > 0 && (
+                    <p className="game-waiting-names">
+                      {t("game.waitingFor")} {waitingNames.join(", ")}
+                    </p>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -366,11 +404,15 @@ export default function GamePage({
               exit={{ opacity: 0 }}
             >
               <div className="game-waiting-icon">🗳️</div>
-              <p>{t("game.waitingForStoryteller")}</p>
               <p className="game-vote-progress">
                 {gameState.votedCount}/{gameState.players.length - 1}{" "}
                 {t("game.votesSubmitted")}
               </p>
+              {waitingNames.length > 0 && (
+                <p className="game-waiting-names">
+                  {t("game.waitingFor")} {waitingNames.join(", ")}
+                </p>
+              )}
             </motion.div>
           )}
 

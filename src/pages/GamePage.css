@@ -189,6 +189,14 @@
   color: var(--text-tertiary);
 }
 
+.game-waiting-names {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 4px;
+  text-align: center;
+}
+
 /* Shuffle animation */
 .game-shuffle {
   justify-content: center;

@@ -25,6 +25,14 @@ const HAND_SIZE = 6;
 const TOTAL_ROUNDS = 10;
 const MAX_PLAYERS = 10;
 
+// Timer durations (seconds)
+const TIMER = {
+  storyteller_turn: 30,
+  players_submit: 20,
+  voting: 15,
+  round_result: 10,
+};
+
 function generateRoomCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
@@ -53,6 +61,189 @@ function shuffleArray(arr) {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
+}
+
+// --- Timer management ---
+function clearRoomTimer(room) {
+  if (room.timer) {
+    clearTimeout(room.timer);
+    room.timer = null;
+  }
+  room.timerEnd = null;
+}
+
+function startPhaseTimer(room) {
+  clearRoomTimer(room);
+
+  const phase = room.phase;
+  const duration = TIMER[phase];
+  if (!duration) return;
+
+  room.timerEnd = Date.now() + duration * 1000;
+
+  room.timer = setTimeout(() => {
+    room.timer = null;
+    room.timerEnd = null;
+    handleTimerExpired(room);
+  }, duration * 1000);
+}
+
+function handleTimerExpired(room) {
+  if (!room) return;
+  const phase = room.phase;
+
+  if (phase === "storyteller_turn") {
+    // Auto-submit random card + default clue for storyteller
+    const storyteller = room.players[room.storytellerIndex];
+    if (storyteller.hand.length > 0) {
+      const randomIndex = Math.floor(Math.random() * storyteller.hand.length);
+      const cardId = storyteller.hand[randomIndex];
+      room.clue = "...";
+      room.storytellerCardId = cardId;
+      room.submittedCards = [{ playerId: storyteller.id, cardId }];
+      storyteller.hand = storyteller.hand.filter((c) => c !== cardId);
+      room.phase = "players_submit";
+      startPhaseTimer(room);
+      emitPersonalStates(room);
+      // Check if all non-storyteller players are disconnected
+      checkDisconnectAutoAdvance(room);
+    }
+  } else if (phase === "players_submit") {
+    // Auto-submit random card for players who haven't submitted
+    const storyteller = room.players[room.storytellerIndex];
+    room.players.forEach((p) => {
+      if (p.id === storyteller.id) return;
+      const alreadySubmitted = room.submittedCards.some(
+        (s) => s.playerId === p.id
+      );
+      if (!alreadySubmitted && p.hand.length > 0) {
+        const randomIndex = Math.floor(Math.random() * p.hand.length);
+        const cardId = p.hand[randomIndex];
+        room.submittedCards.push({ playerId: p.id, cardId });
+        p.hand = p.hand.filter((c) => c !== cardId);
+      }
+    });
+
+    // Move to shuffle -> voting
+    room.phase = "shuffle";
+    room.shuffledCards = shuffleArray(
+      room.submittedCards.map((s) => s.cardId)
+    );
+    emitPersonalStates(room);
+
+    setTimeout(() => {
+      if (room.phase !== "shuffle") return; // guard
+      room.phase = "voting";
+      startPhaseTimer(room);
+      emitPersonalStates(room);
+      checkDisconnectAutoAdvance(room);
+    }, 3000);
+  } else if (phase === "voting") {
+    // Auto-vote random for players who haven't voted
+    const storyteller = room.players[room.storytellerIndex];
+    room.players.forEach((p) => {
+      if (p.id === storyteller.id) return;
+      const alreadyVoted = room.votes.some((v) => v.voterId === p.id);
+      if (!alreadyVoted) {
+        const mySubmission = room.submittedCards.find(
+          (s) => s.playerId === p.id
+        );
+        const votableCards = room.shuffledCards.filter(
+          (cardId) => !mySubmission || mySubmission.cardId !== cardId
+        );
+        if (votableCards.length > 0) {
+          const randomCard =
+            votableCards[Math.floor(Math.random() * votableCards.length)];
+          room.votes.push({ voterId: p.id, cardId: randomCard });
+        }
+      }
+    });
+
+    const roundResult = calculateScores(room);
+    roundResult.round = room.currentRound;
+    room.roundHistory.push(roundResult);
+    room.phase = "round_result";
+    io.to(room.roomCode).emit("round_result", roundResult);
+    startPhaseTimer(room);
+    emitPersonalStates(room);
+  } else if (phase === "round_result") {
+    advanceToNextRound(room);
+  }
+}
+
+// Check if disconnected players are the only ones we're waiting on
+function checkDisconnectAutoAdvance(room) {
+  const phase = room.phase;
+  const storyteller = room.players[room.storytellerIndex];
+
+  if (phase === "storyteller_turn") {
+    if (!storyteller.connected) {
+      clearRoomTimer(room);
+      handleTimerExpired(room);
+      return true;
+    }
+  } else if (phase === "players_submit") {
+    const waitingOn = room.players.filter((p) => {
+      if (p.id === storyteller.id) return false;
+      if (!p.connected) return false;
+      return !room.submittedCards.some((s) => s.playerId === p.id);
+    });
+    if (waitingOn.length === 0) {
+      clearRoomTimer(room);
+      handleTimerExpired(room);
+      return true;
+    }
+  } else if (phase === "voting") {
+    const waitingOn = room.players.filter((p) => {
+      if (p.id === storyteller.id) return false;
+      if (!p.connected) return false;
+      return !room.votes.some((v) => v.voterId === p.id);
+    });
+    if (waitingOn.length === 0) {
+      clearRoomTimer(room);
+      handleTimerExpired(room);
+      return true;
+    }
+  }
+  return false;
+}
+
+// --- Advance round ---
+function advanceToNextRound(room) {
+  clearRoomTimer(room);
+
+  if (room.currentRound >= room.totalRounds) {
+    room.phase = "game_over";
+    emitPersonalStates(room);
+    return;
+  }
+
+  room.currentRound += 1;
+
+  // Find next connected storyteller (skip disconnected)
+  let nextIndex = (room.storytellerIndex + 1) % room.players.length;
+  let attempts = 0;
+  while (!room.players[nextIndex].connected && attempts < room.players.length) {
+    nextIndex = (nextIndex + 1) % room.players.length;
+    attempts++;
+  }
+  room.storytellerIndex = nextIndex;
+
+  room.players.forEach((p) => {
+    if (room.deck.length > 0) {
+      p.hand.push(room.deck.shift());
+    }
+  });
+
+  room.clue = "";
+  room.submittedCards = [];
+  room.shuffledCards = [];
+  room.votes = [];
+  room.storytellerCardId = null;
+  room.phase = "storyteller_turn";
+
+  startPhaseTimer(room);
+  emitPersonalStates(room);
 }
 
 function calculateScores(room) {
@@ -190,6 +381,8 @@ io.on("connection", (socket) => {
       deck: [],
       storytellerCardId: null,
       roundHistory: [],
+      timer: null,
+      timerEnd: null,
     };
 
     rooms.set(roomCode, room);
@@ -292,6 +485,7 @@ io.on("connection", (socket) => {
     room.votes = [];
 
     io.to(room.roomCode).emit("game_started");
+    startPhaseTimer(room);
     emitPersonalStates(room);
   });
 
@@ -310,7 +504,10 @@ io.on("connection", (socket) => {
     storyteller.hand = storyteller.hand.filter((c) => c !== cardId);
 
     room.phase = "players_submit";
+    startPhaseTimer(room);
     emitPersonalStates(room);
+
+    checkDisconnectAutoAdvance(room);
   });
 
   socket.on("submit_card", ({ cardId }) => {
@@ -334,6 +531,7 @@ io.on("connection", (socket) => {
 
     const expectedSubmissions = room.players.length;
     if (room.submittedCards.length === expectedSubmissions) {
+      clearRoomTimer(room);
       room.phase = "shuffle";
       room.shuffledCards = shuffleArray(
         room.submittedCards.map((s) => s.cardId)
@@ -341,8 +539,11 @@ io.on("connection", (socket) => {
       emitPersonalStates(room);
 
       setTimeout(() => {
+        if (room.phase !== "shuffle") return;
         room.phase = "voting";
+        startPhaseTimer(room);
         emitPersonalStates(room);
+        checkDisconnectAutoAdvance(room);
       }, 3000);
     } else {
       emitPersonalStates(room);
@@ -370,11 +571,13 @@ io.on("connection", (socket) => {
 
     const expectedVotes = room.players.length - 1;
     if (room.votes.length === expectedVotes) {
+      clearRoomTimer(room);
       const roundResult = calculateScores(room);
       roundResult.round = room.currentRound;
       room.roundHistory.push(roundResult);
       room.phase = "round_result";
       io.to(room.roomCode).emit("round_result", roundResult);
+      startPhaseTimer(room);
       emitPersonalStates(room);
     } else {
       emitPersonalStates(room);
@@ -383,51 +586,15 @@ io.on("connection", (socket) => {
 
   socket.on("next_round", () => {
     const room = rooms.get(socket.roomCode);
-    if (!room) {
-      console.log("next_round: room not found for", socket.roomCode);
-      return;
-    }
-    if (room.phase !== "round_result") {
-      console.log("next_round: wrong phase", room.phase);
-      return;
-    }
-    const player = room.players.find(p => p.id === socket.id);
-    if (!player) {
-      console.log("next_round: player not found", socket.id);
-      return;
-    }
+    if (!room) return;
+    if (room.phase !== "round_result") return;
+    const player = room.players.find((p) => p.id === socket.id);
+    if (!player) return;
     const storyteller = room.players[room.storytellerIndex];
-    if (storyteller.id !== socket.id && !player.isHost) {
-      console.log("next_round: not authorized", socket.id, "storyteller:", storyteller.id, "isHost:", player.isHost);
-      return;
-    }
+    if (storyteller.id !== socket.id && !player.isHost) return;
 
-    console.log("next_round: proceeding, round", room.currentRound, "/", room.totalRounds);
-
-    if (room.currentRound >= room.totalRounds) {
-      room.phase = "game_over";
-      emitPersonalStates(room);
-      return;
-    }
-
-    room.currentRound += 1;
-    room.storytellerIndex =
-      (room.storytellerIndex + 1) % room.players.length;
-
-    room.players.forEach((p) => {
-      if (room.deck.length > 0) {
-        p.hand.push(room.deck.shift());
-      }
-    });
-
-    room.clue = "";
-    room.submittedCards = [];
-    room.shuffledCards = [];
-    room.votes = [];
-    room.storytellerCardId = null;
-    room.phase = "storyteller_turn";
-
-    emitPersonalStates(room);
+    clearRoomTimer(room);
+    advanceToNextRound(room);
   });
 
   socket.on("play_again", () => {
@@ -435,6 +602,8 @@ io.on("connection", (socket) => {
     if (!room) return;
     const player = room.players.find((p) => p.id === socket.id);
     if (!player || !player.isHost) return;
+
+    clearRoomTimer(room);
 
     room.deck = createDeck();
     room.currentRound = 1;
@@ -455,6 +624,7 @@ io.on("connection", (socket) => {
     room.roundHistory = [];
 
     io.to(room.roomCode).emit("game_started");
+    startPhaseTimer(room);
     emitPersonalStates(room);
   });
 
@@ -489,6 +659,23 @@ function handleDisconnect(socket) {
     }
   } else {
     room.players[playerIndex].connected = false;
+
+    // If all disconnected, clean up
+    if (room.players.every((p) => !p.connected)) {
+      clearRoomTimer(room);
+      rooms.delete(roomCode);
+      return;
+    }
+
+    // Transfer host if host disconnected
+    if (room.players[playerIndex].isHost) {
+      room.players[playerIndex].isHost = false;
+      const newHost = room.players.find((p) => p.connected);
+      if (newHost) newHost.isHost = true;
+    }
+
+    // Check if we should auto-advance
+    checkDisconnectAutoAdvance(room);
   }
 
   socket.leave(roomCode);
@@ -520,10 +707,13 @@ function sanitizeRoomForBroadcast(room) {
         ? room.shuffledCards
         : [],
     submittedCount: room.submittedCards.length,
+    submittedPlayerIds: room.submittedCards.map((s) => s.playerId),
     votedCount: room.votes.length,
+    votedPlayerIds: room.votes.map((v) => v.voterId),
     storytellerCardId:
       room.phase === "round_result" ? room.storytellerCardId : null,
     roundHistory: room.roundHistory || [],
+    timerEnd: room.timerEnd || null,
   };
 }
 

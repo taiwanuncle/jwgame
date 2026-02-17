@@ -57,6 +57,7 @@ const ko = {
       proceedToNext: "다음으로 진행",
       cardsSubmitted: "명이 카드를 제출함",
       votesSubmitted: "명이 투표함",
+      waitingFor: "대기 중:",
     },
     result: {
       gameOver: "게임 종료!",

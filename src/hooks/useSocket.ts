@@ -25,13 +25,16 @@ export interface GameStateFromServer {
   clue: string;
   shuffledCards: number[];
   submittedCount: number;
+  submittedPlayerIds: string[];
   votedCount: number;
+  votedPlayerIds: string[];
   storytellerCardId: number | null;
   myHand?: number[];
   myId?: string;
   hasSubmitted?: boolean;
   mySubmittedCardId?: number | null;
   hasVoted?: boolean;
+  timerEnd?: number | null;
 }
 
 export function useSocket() {
