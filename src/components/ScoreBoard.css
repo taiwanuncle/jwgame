@@ -11,18 +11,18 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 101;
-  width: 90%;
-  max-width: 420px;
-  max-height: 80vh;
+  width: calc(100% - 32px);
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
   overflow-y: auto;
-  padding: 24px;
+  padding: 20px;
 }
 
 .scoreboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .scoreboard-header h2 {
@@ -41,23 +41,52 @@
   justify-content: center;
   font-size: 14px;
   color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .scoreboard-close:hover {
   background: var(--border);
 }
 
+/* Tabs */
+.scoreboard-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: 16px;
+}
+
+.scoreboard-tab {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: var(--transition-fast);
+}
+
+.scoreboard-tab--active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Summary list */
 .scoreboard-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .scoreboard-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 10px;
+  padding: 10px 12px;
   background: var(--bg-tertiary);
   border-radius: var(--radius-md);
   transition: var(--transition-fast);
@@ -73,16 +102,18 @@
 }
 
 .scoreboard-rank {
-  width: 32px;
+  width: 28px;
   text-align: center;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .scoreboard-avatar {
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .scoreboard-name {
@@ -90,19 +121,156 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.scoreboard-name span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .scoreboard-name .badge {
   font-size: 10px;
-  padding: 2px 8px;
+  padding: 2px 6px;
+  flex-shrink: 0;
 }
 
 .scoreboard-score {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--accent);
-  min-width: 40px;
+  min-width: 36px;
   text-align: right;
+  flex-shrink: 0;
+}
+
+/* Detail table */
+.scoreboard-detail {
+  overflow: hidden;
+}
+
+.scoreboard-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -8px;
+  padding: 0 8px;
+}
+
+.scoreboard-table {
+  width: 100%;
+  min-width: 300px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.scoreboard-table th,
+.scoreboard-table td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.scoreboard-th-round {
+  width: 60px;
+  min-width: 60px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.scoreboard-th-player {
+  font-size: 16px;
+  line-height: 1;
+  min-width: 50px;
+}
+
+.scoreboard-th-name {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60px;
+  margin: 2px auto 0;
+}
+
+.scoreboard-td-round {
+  text-align: left;
+}
+
+.scoreboard-round-num {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.scoreboard-round-clue {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70px;
+}
+
+.scoreboard-td-score {
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.scoreboard-td-score--positive {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.scoreboard-td-score--storyteller {
+  font-size: 16px;
+}
+
+.scoreboard-total-row {
+  border-top: 2px solid var(--border);
+}
+
+.scoreboard-td-total {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .scoreboard-panel {
+    width: calc(100% - 24px);
+    padding: 16px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .scoreboard-row {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .scoreboard-rank {
+    width: 24px;
+    font-size: 14px;
+  }
+
+  .scoreboard-avatar {
+    font-size: 20px;
+  }
+
+  .scoreboard-name {
+    font-size: 13px;
+  }
+
+  .scoreboard-score {
+    font-size: 18px;
+    min-width: 30px;
+  }
 }

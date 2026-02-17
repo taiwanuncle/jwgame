@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import AvatarPicker from "../components/AvatarPicker";
+import InfoModal from "../components/InfoModal";
 import "./LobbyPage.css";
 
 interface LobbyPageProps {
@@ -22,6 +23,8 @@ export default function LobbyPage({
   const [nickname, setNickname] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [avatarIndex, setAvatarIndex] = useState(0);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const handleCreate = () => {
     if (!nickname.trim()) return;
@@ -68,6 +71,20 @@ export default function LobbyPage({
               >
                 {t("lobby.joinRoom")}
               </button>
+              <div className="lobby-info-btns">
+                <button
+                  className="btn-ghost lobby-info-btn"
+                  onClick={() => setShowHowToPlay(true)}
+                >
+                  {t("info.howToPlay")}
+                </button>
+                <button
+                  className="btn-ghost lobby-info-btn"
+                  onClick={() => setShowAbout(true)}
+                >
+                  {t("info.about")}
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
@@ -177,6 +194,100 @@ export default function LobbyPage({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 게임 방법 모달 */}
+      <InfoModal
+        isOpen={showHowToPlay}
+        onClose={() => setShowHowToPlay(false)}
+        title={t("info.howToPlay")}
+      >
+        <h3>게임 개요</h3>
+        <p>
+          성서인물게임은 성서 인물 카드를 사용하는 상상력 제시어 게임입니다.
+          3~10명이 함께 즐길 수 있으며, 총 10라운드로 진행됩니다.
+        </p>
+
+        <h3>게임 진행 방법</h3>
+        <ol>
+          <li>각 플레이어에게 <span className="highlight">6장</span>의 카드가 배분됩니다.</li>
+          <li>순서대로 한 명이 <strong>제시자</strong>가 됩니다.</li>
+          <li>제시자는 자기 카드 중 1장을 고르고, 그 카드를 떠올리게 하는 <strong>제시어</strong>를 입력합니다.</li>
+          <li>다른 플레이어들은 제시어를 보고, 자기 카드 중 가장 어울리는 카드 1장을 제출합니다.</li>
+          <li>모든 카드가 섞여서 공개되면, 제시자를 제외한 플레이어들이 <strong>"이게 제시자의 카드다!"</strong>라고 생각하는 카드에 투표합니다.</li>
+          <li>투표 결과에 따라 점수가 계산됩니다.</li>
+          <li>새 카드 1장을 보충받고 다음 라운드로!</li>
+        </ol>
+
+        <h3>점수 계산</h3>
+        <table className="score-table">
+          <thead>
+            <tr>
+              <th>상황</th>
+              <th>제시자</th>
+              <th>나머지</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>모두 정답</strong></td>
+              <td>0점</td>
+              <td>각 2점</td>
+            </tr>
+            <tr>
+              <td><strong>모두 오답</strong></td>
+              <td>0점</td>
+              <td>각 2점</td>
+            </tr>
+            <tr>
+              <td><strong>일부 정답</strong></td>
+              <td>3점</td>
+              <td>맞춘 사람 3점</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          추가로, 다른 플레이어의 카드가 선택될 때마다 그 카드의 주인에게 <span className="highlight">+1점</span>이 부여됩니다!
+        </p>
+
+        <h3>팁</h3>
+        <p>
+          제시어는 너무 쉬우면 모두가 맞춰서 0점, 너무 어려우면 아무도 못 맞춰서 0점!
+          적절한 난이도의 제시어를 내는 것이 핵심입니다.
+        </p>
+      </InfoModal>
+
+      {/* 제작계기 & 후원 모달 */}
+      <InfoModal
+        isOpen={showAbout}
+        onClose={() => setShowAbout(false)}
+        title={t("info.about")}
+      >
+        <h3>제작 계기</h3>
+        <p>
+          이 게임은 성서 인물들을 더 친숙하고 재미있게 알아가자는 취지에서 만들어졌습니다.
+          모임이나 가족 숭배 시간에 함께 즐기면서 성서 인물들에 대해 생각해볼 수 있는 기회가 되길 바랍니다.
+        </p>
+
+        <h3>만든 사람</h3>
+        <p>
+          이 게임은 사랑하는 형제 자매들을 위해 제작되었습니다.
+          개선 사항이나 건의가 있다면 언제든 연락해 주세요.
+        </p>
+
+        <h3>후원</h3>
+        <div className="donate-section">
+          <p>이 게임이 도움이 되셨다면 후원으로 응원해 주세요!</p>
+          <p style={{ marginTop: "8px", fontSize: "13px", color: "var(--text-tertiary)" }}>
+            (후원 계좌 또는 링크를 여기에 입력하세요)
+          </p>
+        </div>
+
+        <h3>저작권 안내</h3>
+        <p>
+          카드 이미지는 추후 업데이트 예정입니다.
+          본 게임은 비영리 목적으로 제작되었습니다.
+        </p>
+      </InfoModal>
     </div>
   );
 }

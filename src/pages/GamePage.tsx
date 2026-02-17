@@ -452,6 +452,7 @@ export default function GamePage({
         onClose={() => setShowScores(false)}
         storytellerId={storyteller?.id}
         currentPlayerId={myId}
+        roundHistory={(gameState as any).roundHistory}
       />
     </div>
   );

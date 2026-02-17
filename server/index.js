@@ -189,6 +189,7 @@ io.on("connection", (socket) => {
       votes: [],
       deck: [],
       storytellerCardId: null,
+      roundHistory: [],
     };
 
     rooms.set(roomCode, room);
@@ -358,6 +359,8 @@ io.on("connection", (socket) => {
     const expectedVotes = room.players.length - 1;
     if (room.votes.length === expectedVotes) {
       const roundResult = calculateScores(room);
+      roundResult.round = room.currentRound;
+      room.roundHistory.push(roundResult);
       room.phase = "round_result";
       io.to(room.roomCode).emit("round_result", roundResult);
       emitPersonalStates(room);
@@ -368,9 +371,26 @@ io.on("connection", (socket) => {
 
   socket.on("next_round", () => {
     const room = rooms.get(socket.roomCode);
-    if (!room) return;
+    if (!room) {
+      console.log("next_round: room not found for", socket.roomCode);
+      return;
+    }
+    if (room.phase !== "round_result") {
+      console.log("next_round: wrong phase", room.phase);
+      return;
+    }
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) {
+      console.log("next_round: player not found", socket.id);
+      return;
+    }
     const storyteller = room.players[room.storytellerIndex];
-    if (storyteller.id !== socket.id && !room.players.find(p => p.id === socket.id)?.isHost) return;
+    if (storyteller.id !== socket.id && !player.isHost) {
+      console.log("next_round: not authorized", socket.id, "storyteller:", storyteller.id, "isHost:", player.isHost);
+      return;
+    }
+
+    console.log("next_round: proceeding, round", room.currentRound, "/", room.totalRounds);
 
     if (room.currentRound >= room.totalRounds) {
       room.phase = "game_over";
@@ -420,6 +440,7 @@ io.on("connection", (socket) => {
     room.shuffledCards = [];
     room.votes = [];
     room.storytellerCardId = null;
+    room.roundHistory = [];
 
     io.to(room.roomCode).emit("game_started");
     emitPersonalStates(room);
@@ -490,6 +511,7 @@ function sanitizeRoomForBroadcast(room) {
     votedCount: room.votes.length,
     storytellerCardId:
       room.phase === "round_result" ? room.storytellerCardId : null,
+    roundHistory: room.roundHistory || [],
   };
 }
 

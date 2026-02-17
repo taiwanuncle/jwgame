@@ -76,6 +76,13 @@ const en = {
       nobodyCorrect: "Nobody guessed! Storyteller 0pts, others 2pts each",
       someCorrect: "Storyteller +3pts, correct guessers +3pts",
       bonusPoint: "'s card was chosen, +1pt",
+      summary: "Summary",
+      detail: "By Round",
+      total: "Total",
+    },
+    info: {
+      howToPlay: "How to Play",
+      about: "About & Support",
     },
   },
 };

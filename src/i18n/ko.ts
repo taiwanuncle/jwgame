@@ -76,6 +76,13 @@ const ko = {
       nobodyCorrect: "모두 오답! 제시자 0점, 나머지 각 2점",
       someCorrect: "제시자 +3점, 맞춘 사람 +3점",
       bonusPoint: "의 카드를 선택받아 +1점",
+      summary: "합산",
+      detail: "라운드별",
+      total: "합계",
+    },
+    info: {
+      howToPlay: "게임 방법",
+      about: "제작계기 & 후원",
     },
   },
 };
