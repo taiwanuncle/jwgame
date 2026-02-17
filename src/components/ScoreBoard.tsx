@@ -150,10 +150,9 @@ export default function ScoreBoard({
                             <div className="scoreboard-round-clue">{rh.clue}</div>
                           </td>
                           {players.map((p) => {
-                            const sc = rh.scoreChanges.find(
-                              (s) => s.playerId === p.id
-                            );
-                            const pts = sc ? sc.points : 0;
+                            const pts = rh.scoreChanges
+                              .filter((s) => s.playerId === p.id)
+                              .reduce((sum, s) => sum + s.points, 0);
                             const isST = rh.storytellerId === p.id;
                             return (
                               <td
