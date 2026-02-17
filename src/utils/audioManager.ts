@@ -63,6 +63,7 @@ class AudioManager {
   private _playlistMode = false;
   private _pendingCategory: MusicCategory | null = null;
   private listeners = new Set<Listener>();
+  private _userInteracted = false;
 
   constructor() {
     // Restore volume & muted from localStorage
@@ -72,6 +73,22 @@ class AudioManager {
       if (savedVol !== null) this._volume = Number(savedVol);
       if (savedMuted !== null) this._muted = savedMuted === "true";
     } catch { /* ignore */ }
+
+    // Listen for first user interaction to unlock audio playback
+    const onInteract = () => {
+      this._userInteracted = true;
+      window.removeEventListener("click", onInteract);
+      window.removeEventListener("touchstart", onInteract);
+      window.removeEventListener("keydown", onInteract);
+      // If a category was queued before interaction, play it now
+      if (this._pendingCategory && !this._playing && !this._playlistMode) {
+        this._currentCategory = null; // reset so playCategory runs
+        this.playCategory(this._pendingCategory);
+      }
+    };
+    window.addEventListener("click", onInteract);
+    window.addEventListener("touchstart", onInteract);
+    window.addEventListener("keydown", onInteract);
   }
 
   /** Subscribe to state changes */
@@ -102,6 +119,9 @@ class AudioManager {
 
     // If in playlist mode, don't interrupt — just save pending
     if (this._playlistMode) return;
+
+    // If user hasn't interacted yet, defer — will auto-play on first click
+    if (!this._userInteracted) return;
 
     // If same category already playing, skip
     if (this._currentCategory === category && this._playing) return;
