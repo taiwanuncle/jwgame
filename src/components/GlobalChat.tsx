@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AvatarIcon from "./AvatarIcon";
 import type { ChatMessage } from "../hooks/useSocket";
@@ -15,6 +15,7 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -28,7 +29,22 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
     }
   }, [expanded]);
 
-  // Toggle body class for other fixed elements to react
+  // Set CSS variable for chat bar height so FAB can follow
+  const updateBarHeight = useCallback(() => {
+    if (barRef.current) {
+      const h = barRef.current.offsetHeight;
+      document.documentElement.style.setProperty("--gchat-bar-h", `${h}px`);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update height after render/animation
+    updateBarHeight();
+    const timer = setTimeout(updateBarHeight, 350);
+    return () => clearTimeout(timer);
+  }, [expanded, messages.length, updateBarHeight]);
+
+  // Toggle body class
   useEffect(() => {
     document.body.classList.toggle("gchat-is-expanded", expanded);
     return () => document.body.classList.remove("gchat-is-expanded");
@@ -41,11 +57,13 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
     inputRef.current?.focus();
   };
 
-  // Last message preview for collapsed bar
   const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
 
   return (
-    <div className={`global-chat-bar ${expanded ? "global-chat-bar--expanded" : ""}`}>
+    <div
+      ref={barRef}
+      className={`global-chat-bar ${expanded ? "global-chat-bar--expanded" : ""}`}
+    >
       {/* Collapsed: single-line preview + input */}
       {!expanded && (
         <div className="gchat-collapsed">
@@ -88,6 +106,7 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
+            onAnimationComplete={updateBarHeight}
           >
             <div className="gchat-expanded-header">
               <span className="gchat-expanded-title">💬 채팅</span>

@@ -206,7 +206,7 @@ export default function GamePage({
                 <p>{selectedCard === null ? t("game.selectCard") : t("game.enterClueHint")}</p>
               </div>
 
-              {/* Clue input — above cards for visibility */}
+              {/* Clue input — above cards, highlighted */}
               {selectedCard !== null && (
                 <motion.div
                   className="game-clue-input-area game-clue-input-area--highlight"

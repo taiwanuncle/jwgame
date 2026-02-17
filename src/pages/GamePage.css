@@ -332,10 +332,10 @@
   font-weight: 700;
 }
 
-/* Fixed bottom action bar — sits above chat bar (48px) */
+/* Fixed bottom action bar — sits above chat bar */
 .game-bottombar {
   position: fixed;
-  bottom: 48px;
+  bottom: var(--gchat-bar-h, 48px);
   left: 0;
   right: 0;
   z-index: 60;

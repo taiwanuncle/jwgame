@@ -43,7 +43,7 @@ const zh = {
       yourTurn: "轮到你了!",
       selectCard: "选择一张卡牌并输入提示词",
       enterClue: "请输入提示词",
-      enterClueHint: "已选卡牌！请在上方输入提示词 ↑",
+      enterClueHint: "已选卡牌！请在下方输入提示词 ↓",
       submitClue: "提交",
       waitingForClue: "等待提示词...",
       selectMatchingCard: "选择与提示词匹配的卡牌",

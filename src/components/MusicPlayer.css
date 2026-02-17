@@ -1,7 +1,7 @@
-/* Floating action button — sits above chat bar (48px) */
+/* Floating action button — uses --gchat-bar-h CSS variable to stay above chat */
 .music-fab {
   position: fixed;
-  bottom: 60px;
+  bottom: calc(var(--gchat-bar-h, 48px) + 12px);
   left: 20px;
   width: 44px;
   height: 44px;
@@ -17,15 +17,6 @@
   z-index: 1000;
   user-select: none;
   transition: bottom 0.3s ease;
-}
-
-/* When chat is expanded, push FAB and panel higher */
-.gchat-is-expanded .music-fab {
-  bottom: 300px;
-}
-
-.gchat-is-expanded .music-panel {
-  bottom: 352px;
 }
 
 .music-fab-pulse {
@@ -45,7 +36,7 @@
 /* Mini player panel */
 .music-panel {
   position: fixed;
-  bottom: 112px;
+  bottom: calc(var(--gchat-bar-h, 48px) + 64px);
   left: 20px;
   width: 240px;
   padding: 16px;
@@ -277,7 +268,6 @@
 
 @media (max-width: 480px) {
   .music-fab {
-    bottom: 52px;
     left: 12px;
     width: 40px;
     height: 40px;
@@ -285,17 +275,8 @@
   }
 
   .music-panel {
-    bottom: 100px;
     left: 12px;
     width: 220px;
     padding: 12px;
-  }
-
-  .gchat-is-expanded .music-fab {
-    bottom: 260px;
-  }
-
-  .gchat-is-expanded .music-panel {
-    bottom: 308px;
   }
 }

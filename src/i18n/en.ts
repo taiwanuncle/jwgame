@@ -43,7 +43,7 @@ const en = {
       yourTurn: "Your Turn!",
       selectCard: "Select a card and enter your clue",
       enterClue: "Enter your clue",
-      enterClueHint: "Card selected! Enter your clue above ↑",
+      enterClueHint: "Card selected! Enter your clue below ↓",
       submitClue: "Submit",
       waitingForClue: "Waiting for clue...",
       selectMatchingCard: "Select a card matching the clue",

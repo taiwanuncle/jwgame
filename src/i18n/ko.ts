@@ -43,7 +43,7 @@ const ko = {
       yourTurn: "당신의 차례입니다!",
       selectCard: "카드를 선택하고 제시어를 입력하세요",
       enterClue: "제시어를 입력하세요",
-      enterClueHint: "카드를 골랐어요! 위에 제시어를 입력하세요 ↑",
+      enterClueHint: "카드를 골랐어요! 아래에 제시어를 입력하세요 ↓",
       submitClue: "제시",
       waitingForClue: "제시어를 기다리는 중...",
       selectMatchingCard: "제시어에 맞는 카드를 선택하세요",
