@@ -35,15 +35,15 @@
 }
 
 .bible-card--correct {
-  box-shadow: 0 0 0 3px var(--success), var(--shadow-lg);
+  box-shadow: 0 0 0 4px var(--success), 0 0 12px rgba(52, 199, 89, 0.4);
 }
 
 .bible-card--wrong {
-  box-shadow: 0 0 0 3px var(--danger), var(--shadow-lg);
+  box-shadow: 0 0 0 4px var(--danger), 0 0 12px rgba(255, 59, 48, 0.4);
 }
 
 .bible-card--mine {
-  box-shadow: 0 0 0 3px var(--warning), var(--shadow-lg);
+  box-shadow: 0 0 0 4px var(--warning), 0 0 12px rgba(255, 149, 0, 0.4);
 }
 
 .bible-card__inner {

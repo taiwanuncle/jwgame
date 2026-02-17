@@ -5,7 +5,8 @@ import BibleCard from "../components/BibleCard";
 import ScoreBoard from "../components/ScoreBoard";
 import Toast from "../components/Toast";
 import CountdownBar from "../components/CountdownBar";
-import type { GameStateFromServer } from "../hooks/useSocket";
+import ChatOverlay from "../components/ChatOverlay";
+import type { GameStateFromServer, ChatMessage } from "../hooks/useSocket";
 import type { RoundResult } from "../types";
 import "./GamePage.css";
 
@@ -16,6 +17,8 @@ interface GamePageProps {
   onSubmitCard: (cardId: number) => void;
   onSubmitVote: (cardId: number) => void;
   onNextRound: () => void;
+  chatMessages: ChatMessage[];
+  onSendChat: (message: string) => void;
 }
 
 export default function GamePage({
@@ -25,6 +28,8 @@ export default function GamePage({
   onSubmitCard,
   onSubmitVote,
   onNextRound,
+  chatMessages,
+  onSendChat,
 }: GamePageProps) {
   const { t } = useTranslation();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
@@ -191,6 +196,10 @@ export default function GamePage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              <div className="game-phase-step">
+                <span className="game-phase-step-num">{t("game.phase1")}</span>
+                <span className="game-phase-step-label">{t("game.phase1Desc")}</span>
+              </div>
               <div className="game-instruction">
                 <h3>{t("game.yourTurn")}</h3>
                 <p>{t("game.selectCard")}</p>
@@ -236,6 +245,10 @@ export default function GamePage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              <div className="game-phase-step">
+                <span className="game-phase-step-num">{t("game.phase1")}</span>
+                <span className="game-phase-step-label">{t("game.phase1Desc")}</span>
+              </div>
               <div className="game-waiting-icon">⏳</div>
               <p>{t("game.waitingForClue")}</p>
               <div className="game-hand game-hand--small">
@@ -255,10 +268,14 @@ export default function GamePage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              <div className="game-phase-step">
+                <span className="game-phase-step-num">{t("game.phase2")}</span>
+                <span className="game-phase-step-label">{t("game.phase2Desc")}</span>
+              </div>
               {!gameState.hasSubmitted ? (
                 <>
                   <div className="game-instruction">
-                    <p>{t("game.selectMatchingCard")}</p>
+                    <p>{t("game.phase2Sub", { name: storyteller?.nickname })}</p>
                   </div>
                   <div className="game-hand">
                     {myHand.map((cardId) => (
@@ -298,6 +315,10 @@ export default function GamePage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              <div className="game-phase-step">
+                <span className="game-phase-step-num">{t("game.phase2")}</span>
+                <span className="game-phase-step-label">{t("game.phase2Desc")}</span>
+              </div>
               <div className="game-waiting-icon">📋</div>
               <p>
                 {t("game.waitingForCards")} ({gameState.submittedCount}/
@@ -360,10 +381,14 @@ export default function GamePage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              <div className="game-phase-step">
+                <span className="game-phase-step-num">{t("game.phase3")}</span>
+                <span className="game-phase-step-label">{t("game.phase3Desc")}</span>
+              </div>
               {!gameState.hasVoted ? (
                 <>
                   <div className="game-instruction">
-                    <p>{t("game.voteCard")}</p>
+                    <p>{t("game.phase3Sub", { name: storyteller?.nickname })}</p>
                   </div>
                   <div className="game-board">
                     {gameState.shuffledCards.map((cardId) => (
@@ -403,6 +428,10 @@ export default function GamePage({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              <div className="game-phase-step">
+                <span className="game-phase-step-num">{t("game.phase3")}</span>
+                <span className="game-phase-step-label">{t("game.phase3Desc")}</span>
+              </div>
               <div className="game-waiting-icon">🗳️</div>
               <p className="game-vote-progress">
                 {gameState.votedCount}/{gameState.players.length - 1}{" "}
@@ -443,32 +472,6 @@ export default function GamePage({
                 )}
               </div>
 
-              <div className="game-board">
-                {gameState.shuffledCards.map((cardId) => (
-                  <div key={cardId} className="game-result-card-wrapper">
-                    <BibleCard
-                      cardId={cardId}
-                      highlight={getCardHighlight(cardId)}
-                      showVoteCount={getVoteCountForCard(cardId)}
-                      size="md"
-                      disabled
-                    />
-                    <div className="game-result-card-owner">
-                      {(() => {
-                        const sub = roundResult.submissions.find(
-                          (s) => s.cardId === cardId
-                        );
-                        if (!sub) return "";
-                        const player = gameState.players.find(
-                          (p) => p.id === sub.playerId
-                        );
-                        return player?.nickname || "";
-                      })()}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
               <div className="game-result-scores">
                 {roundResult.scoreChanges
                   .filter((sc) => sc.points > 0)
@@ -484,6 +487,52 @@ export default function GamePage({
                     );
                   })}
               </div>
+
+              <div className="game-board">
+                {gameState.shuffledCards.map((cardId) => {
+                  const sub = roundResult.submissions.find(
+                    (s) => s.cardId === cardId
+                  );
+                  const cardOwner = sub
+                    ? gameState.players.find((p) => p.id === sub.playerId)
+                    : null;
+                  const isStorytellerCard = cardId === roundResult.storytellerCardId;
+                  const isMySubmission = sub?.playerId === myId;
+                  const highlight = getCardHighlight(cardId);
+
+                  return (
+                    <div key={cardId} className="game-result-card-wrapper">
+                      {/* Card label */}
+                      {isStorytellerCard && (
+                        <div className="game-result-card-label game-result-card-label--correct">
+                          {t("game.correct")}
+                        </div>
+                      )}
+                      {!isStorytellerCard && isMySubmission && (
+                        <div className="game-result-card-label game-result-card-label--mine">
+                          {t("game.yourCard")}
+                        </div>
+                      )}
+                      <BibleCard
+                        cardId={cardId}
+                        highlight={highlight}
+                        showVoteCount={getVoteCountForCard(cardId)}
+                        size="md"
+                        disabled
+                      />
+                      <div className="game-result-card-owner">
+                        {cardOwner?.nickname || ""}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <ChatOverlay
+                messages={chatMessages}
+                onSend={onSendChat}
+                myId={myId}
+              />
 
             </motion.div>
           )}
@@ -550,8 +599,8 @@ export default function GamePage({
           </motion.div>
         )}
 
-        {/* Next round */}
-        {gameState.phase === "round_result" && roundResult && (isStoryteller || me?.isHost) && (
+        {/* Next round - host only */}
+        {gameState.phase === "round_result" && roundResult && me?.isHost && (
           <motion.div
             key="bar-next"
             className="game-bottombar"
@@ -569,8 +618,8 @@ export default function GamePage({
           </motion.div>
         )}
 
-        {/* Waiting for storyteller to proceed */}
-        {gameState.phase === "round_result" && roundResult && !isStoryteller && !me?.isHost && (
+        {/* Waiting for host to proceed */}
+        {gameState.phase === "round_result" && roundResult && !me?.isHost && (
           <motion.div
             key="bar-wait"
             className="game-bottombar game-bottombar--waiting"

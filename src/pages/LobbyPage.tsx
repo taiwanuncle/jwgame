@@ -172,6 +172,10 @@ export default function LobbyPage({
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                   maxLength={5}
+                  inputMode="text"
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                  pattern="[A-Z0-9]*"
                   onKeyDown={(e) => e.key === "Enter" && handleJoin()}
                 />
               </div>

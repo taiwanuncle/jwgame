@@ -137,10 +137,17 @@
   color: var(--accent);
 }
 
+.gameover-chat {
+  width: 100%;
+  max-width: 420px;
+  padding: 0 16px;
+}
+
 .gameover-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 8px;
+  padding-bottom: 40px;
 }

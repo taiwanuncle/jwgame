@@ -11,6 +11,7 @@ function App() {
     gameState,
     roundResult,
     errorMsg,
+    chatMessages,
     createRoom,
     joinRoom,
     toggleReady,
@@ -21,6 +22,7 @@ function App() {
     submitVote,
     nextRound,
     playAgain,
+    sendChat,
     leaveRoom,
   } = useSocket();
 
@@ -56,6 +58,8 @@ function App() {
         gameState={gameState}
         onPlayAgain={playAgain}
         onBackToLobby={leaveRoom}
+        chatMessages={chatMessages}
+        onSendChat={sendChat}
       />
     );
   }
@@ -69,6 +73,8 @@ function App() {
       onSubmitCard={submitCard}
       onSubmitVote={submitVote}
       onNextRound={nextRound}
+      chatMessages={chatMessages}
+      onSendChat={sendChat}
     />
   );
 }

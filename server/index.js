@@ -27,10 +27,10 @@ const MAX_PLAYERS = 10;
 
 // Timer durations (seconds)
 const TIMER = {
-  storyteller_turn: 30,
+  storyteller_turn: 60,
   players_submit: 20,
   voting: 15,
-  round_result: 10,
+  // round_result: no timer - host manually proceeds (chat time)
 };
 
 function generateRoomCode() {
@@ -166,8 +166,7 @@ function handleTimerExpired(room) {
     io.to(room.roomCode).emit("round_result", roundResult);
     startPhaseTimer(room);
     emitPersonalStates(room);
-  } else if (phase === "round_result") {
-    advanceToNextRound(room);
+  // round_result: no auto-advance, host clicks "next round"
   }
 }
 
@@ -626,6 +625,24 @@ io.on("connection", (socket) => {
     io.to(room.roomCode).emit("game_started");
     startPhaseTimer(room);
     emitPersonalStates(room);
+  });
+
+  socket.on("send_chat", ({ message }) => {
+    const room = rooms.get(socket.roomCode);
+    if (!room) return;
+    const player = room.players.find((p) => p.id === socket.id);
+    if (!player) return;
+    // Only allow chat during round_result or game_over phases
+    if (room.phase !== "round_result" && room.phase !== "game_over") return;
+    if (!message || message.trim().length === 0) return;
+    const trimmed = message.trim().slice(0, 100);
+    io.to(room.roomCode).emit("chat_message", {
+      playerId: player.id,
+      nickname: player.nickname,
+      avatarIndex: player.avatarIndex,
+      message: trimmed,
+      timestamp: Date.now(),
+    });
   });
 
   socket.on("leave_room", () => {

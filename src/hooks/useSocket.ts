@@ -2,6 +2,14 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 import type { RoundResult } from "../types";
 
+export interface ChatMessage {
+  playerId: string;
+  nickname: string;
+  avatarIndex: number;
+  message: string;
+  timestamp: number;
+}
+
 const SERVER_URL =
   import.meta.env.VITE_SERVER_URL ||
   `${window.location.protocol}//${window.location.hostname}:3001`;
@@ -44,6 +52,7 @@ export function useSocket() {
   const [gameState, setGameState] = useState<GameStateFromServer | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     const socket = io(SERVER_URL, {
@@ -78,6 +87,12 @@ export function useSocket() {
     });
     socket.on("game_started", () => {
       setRoundResult(null);
+      setChatMessages([]);
+    });
+
+    socket.on("chat_message", (msg: ChatMessage) => {
+      if (leavingRef.current) return;
+      setChatMessages((prev) => [...prev.slice(-50), msg]);
     });
 
     return () => {
@@ -126,6 +141,7 @@ export function useSocket() {
   const nextRound = useCallback(() => {
     socketRef.current?.emit("next_round");
     setRoundResult(null);
+    setChatMessages([]);
   }, []);
 
   const playAgain = useCallback(() => {
@@ -133,11 +149,16 @@ export function useSocket() {
     setRoundResult(null);
   }, []);
 
+  const sendChat = useCallback((message: string) => {
+    socketRef.current?.emit("send_chat", { message });
+  }, []);
+
   const leaveRoom = useCallback(() => {
     leavingRef.current = true;
     socketRef.current?.emit("leave_room");
     setGameState(null);
     setRoundResult(null);
+    setChatMessages([]);
   }, []);
 
   return {
@@ -145,6 +166,7 @@ export function useSocket() {
     gameState,
     roundResult,
     errorMsg,
+    chatMessages,
     socketId: socketRef.current?.id || "",
     createRoom,
     joinRoom,
@@ -156,6 +178,7 @@ export function useSocket() {
     submitVote,
     nextRound,
     playAgain,
+    sendChat,
     leaveRoom,
   };
 }
