@@ -196,7 +196,7 @@ io.on("connection", (socket) => {
     socket.roomCode = roomCode;
 
     socket.emit("room_created", { roomCode, player });
-    io.to(roomCode).emit("game_state", sanitizeRoomForBroadcast(room));
+    emitPersonalStates(room);
   });
 
   socket.on("join_room", ({ roomCode, nickname, avatarIndex }) => {
@@ -230,7 +230,7 @@ io.on("connection", (socket) => {
     socket.roomCode = roomCode;
 
     socket.emit("room_joined", { roomCode, player });
-    io.to(roomCode).emit("game_state", sanitizeRoomForBroadcast(room));
+    emitPersonalStates(room);
   });
 
   socket.on("toggle_ready", () => {
@@ -239,7 +239,7 @@ io.on("connection", (socket) => {
     const player = room.players.find((p) => p.id === socket.id);
     if (!player) return;
     player.ready = !player.ready;
-    io.to(room.roomCode).emit("game_state", sanitizeRoomForBroadcast(room));
+    emitPersonalStates(room);
   });
 
   socket.on("start_game", () => {
@@ -459,7 +459,7 @@ function handleDisconnect(socket) {
   }
 
   socket.leave(roomCode);
-  io.to(roomCode).emit("game_state", sanitizeRoomForBroadcast(room));
+  emitPersonalStates(room);
 }
 
 function sanitizeRoomForBroadcast(room) {
