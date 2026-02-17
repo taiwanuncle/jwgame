@@ -30,11 +30,13 @@ export interface GameStateFromServer {
   myHand?: number[];
   myId?: string;
   hasSubmitted?: boolean;
+  mySubmittedCardId?: number | null;
   hasVoted?: boolean;
 }
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
+  const leavingRef = useRef(false);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState<GameStateFromServer | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
@@ -50,10 +52,13 @@ export function useSocket() {
     socket.on("disconnect", () => setConnected(false));
 
     socket.on("game_state", (state: GameStateFromServer) => {
+      // Ignore game_state updates after user chose to leave
+      if (leavingRef.current) return;
       setGameState(state);
     });
 
     socket.on("round_result", (result: RoundResult) => {
+      if (leavingRef.current) return;
       setRoundResult(result);
     });
 
@@ -62,8 +67,12 @@ export function useSocket() {
       setTimeout(() => setErrorMsg(""), 3000);
     });
 
-    socket.on("room_created", () => {});
-    socket.on("room_joined", () => {});
+    socket.on("room_created", () => {
+      leavingRef.current = false;
+    });
+    socket.on("room_joined", () => {
+      leavingRef.current = false;
+    });
     socket.on("game_started", () => {
       setRoundResult(null);
     });
@@ -122,6 +131,7 @@ export function useSocket() {
   }, []);
 
   const leaveRoom = useCallback(() => {
+    leavingRef.current = true;
     socketRef.current?.emit("leave_room");
     setGameState(null);
     setRoundResult(null);

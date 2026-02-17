@@ -28,8 +28,10 @@ export default function GameOverPage({
   useEffect(() => {
     const duration = 3000;
     const end = Date.now() + duration;
+    let cancelled = false;
 
     const frame = () => {
+      if (cancelled) return;
       confetti({
         particleCount: 3,
         angle: 60,
@@ -45,12 +47,17 @@ export default function GameOverPage({
         colors: ["#007AFF", "#34C759", "#FF9500", "#FF3B30", "#AF52DE"],
       });
 
-      if (Date.now() < end) {
+      if (Date.now() < end && !cancelled) {
         requestAnimationFrame(frame);
       }
     };
 
     frame();
+
+    return () => {
+      cancelled = true;
+      confetti.reset();
+    };
   }, []);
 
   const getRankSuffix = (rank: number) => {

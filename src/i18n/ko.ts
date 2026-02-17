@@ -72,6 +72,15 @@ const ko = {
       rd: "위",
       th: "위",
     },
+    toast: {
+      cannotVoteOwnCard: "본인 카드는 선택할 수 없어요!",
+      lastRound: "마지막 라운드에요! 🔥",
+      everyoneCorrectTip: "제시어를 너무 쉽게 내면 이렇게 돼요!",
+      nobodyCorrectTip: "너무 어렵게 생각한거 아닌가요? 아무도 못 맞추면 0점!",
+      someCorrectTip: "좋은 제시어였어요! 👏",
+      cardSubmitted: "카드를 제출했어요!",
+      voteSubmitted: "투표 완료!",
+    },
     score: {
       everyoneCorrect: "모두 정답! 제시자 0점, 나머지 각 2점",
       nobodyCorrect: "모두 오답! 제시자 0점, 나머지 각 2점",

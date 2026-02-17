@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import BibleCard from "../components/BibleCard";
 import ScoreBoard from "../components/ScoreBoard";
+import Toast from "../components/Toast";
 import type { GameStateFromServer } from "../hooks/useSocket";
 import type { RoundResult } from "../types";
 import "./GamePage.css";
@@ -28,6 +29,7 @@ export default function GamePage({
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [clue, setClue] = useState("");
   const [showScores, setShowScores] = useState(false);
+  const [toast, setToast] = useState({ message: "", visible: false, type: "info" as "info" | "warning" | "success" });
 
   const myId = gameState.myId;
   const me = gameState.players.find((p) => p.id === myId);
@@ -35,10 +37,39 @@ export default function GamePage({
   const isStoryteller = storyteller?.id === myId;
   const myHand = gameState.myHand || [];
 
+  const showToast = useCallback((message: string, type: "info" | "warning" | "success" = "info") => {
+    setToast({ message, visible: true, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast((prev) => ({ ...prev, visible: false }));
+  }, []);
+
+  // Reset selection on phase change
   useEffect(() => {
     setSelectedCard(null);
     setClue("");
   }, [gameState.phase, gameState.currentRound]);
+
+  // Last round notification
+  useEffect(() => {
+    if (gameState.currentRound === gameState.totalRounds && gameState.phase === "storyteller_turn") {
+      showToast(t("toast.lastRound"), "warning");
+    }
+  }, [gameState.currentRound, gameState.totalRounds, gameState.phase, showToast, t]);
+
+  // Round result tips
+  useEffect(() => {
+    if (gameState.phase === "round_result" && roundResult) {
+      if (roundResult.allCorrect) {
+        showToast(t("toast.everyoneCorrectTip"), "warning");
+      } else if (roundResult.noneCorrect) {
+        showToast(t("toast.nobodyCorrectTip"), "warning");
+      } else {
+        showToast(t("toast.someCorrectTip"), "success");
+      }
+    }
+  }, [gameState.phase, roundResult, showToast, t]);
 
   const handleSubmitClue = () => {
     if (selectedCard === null || !clue.trim()) return;
@@ -51,12 +82,23 @@ export default function GamePage({
     if (selectedCard === null) return;
     onSubmitCard(selectedCard);
     setSelectedCard(null);
+    showToast(t("toast.cardSubmitted"), "success");
+  };
+
+  // Voting: check if card belongs to this player
+  const handleVoteClick = (cardId: number) => {
+    if (gameState.mySubmittedCardId === cardId) {
+      showToast(t("toast.cannotVoteOwnCard"), "warning");
+      return;
+    }
+    setSelectedCard(cardId);
   };
 
   const handleSubmitVote = () => {
     if (selectedCard === null) return;
     onSubmitVote(selectedCard);
     setSelectedCard(null);
+    showToast(t("toast.voteSubmitted"), "success");
   };
 
   const getVoteCountForCard = (cardId: number): number => {
@@ -296,7 +338,7 @@ export default function GamePage({
                         key={cardId}
                         cardId={cardId}
                         selected={selectedCard === cardId}
-                        onClick={() => setSelectedCard(cardId)}
+                        onClick={() => handleVoteClick(cardId)}
                         size="md"
                       />
                     ))}
@@ -510,6 +552,14 @@ export default function GamePage({
         storytellerId={storyteller?.id}
         currentPlayerId={myId}
         roundHistory={(gameState as any).roundHistory}
+      />
+
+      {/* Toast notifications */}
+      <Toast
+        message={toast.message}
+        isVisible={toast.visible}
+        onHide={hideToast}
+        type={toast.type}
       />
     </div>
   );

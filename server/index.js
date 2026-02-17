@@ -531,11 +531,13 @@ function emitPersonalStates(room) {
   const broadcastState = sanitizeRoomForBroadcast(room);
 
   room.players.forEach((p) => {
+    const mySubmission = room.submittedCards.find((s) => s.playerId === p.id);
     const personalState = {
       ...broadcastState,
       myHand: p.hand,
       myId: p.id,
-      hasSubmitted: room.submittedCards.some((s) => s.playerId === p.id),
+      hasSubmitted: !!mySubmission,
+      mySubmittedCardId: mySubmission ? mySubmission.cardId : null,
       hasVoted: room.votes.some((v) => v.voterId === p.id),
     };
     io.to(p.id).emit("game_state", personalState);

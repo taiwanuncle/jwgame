@@ -72,6 +72,15 @@ const en = {
       rd: "rd",
       th: "th",
     },
+    toast: {
+      cannotVoteOwnCard: "You can't vote for your own card!",
+      lastRound: "Final round! 🔥",
+      everyoneCorrectTip: "Too easy! Everyone guessed it!",
+      nobodyCorrectTip: "Too hard! Nobody got it — 0 points!",
+      someCorrectTip: "Great clue! 👏",
+      cardSubmitted: "Card submitted!",
+      voteSubmitted: "Vote submitted!",
+    },
     score: {
       everyoneCorrect: "Everyone guessed! Storyteller 0pts, others 2pts each",
       nobodyCorrect: "Nobody guessed! Storyteller 0pts, others 2pts each",
