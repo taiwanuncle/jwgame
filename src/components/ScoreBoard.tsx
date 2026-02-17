@@ -47,20 +47,20 @@ export default function ScoreBoard({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          <motion.div
-            className="scoreboard-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
+        <motion.div
+          className="scoreboard-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
           <motion.div
             className="scoreboard-panel glass-card"
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+            exit={{ opacity: 0, y: 40, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="scoreboard-header">
               <h2>{t("game.scores")}</h2>
@@ -182,7 +182,7 @@ export default function ScoreBoard({
               </div>
             )}
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );

@@ -277,9 +277,14 @@ export default function LobbyPage({
         <h3>후원</h3>
         <div className="donate-section">
           <p>이 게임이 도움이 되셨다면 후원으로 응원해 주세요!</p>
-          <p style={{ marginTop: "8px", fontSize: "13px", color: "var(--text-tertiary)" }}>
-            (후원 계좌 또는 링크를 여기에 입력하세요)
-          </p>
+          <a
+            href="https://qr.kakaopay.com/FN0023EGr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="donate-link"
+          >
+            💛 카카오페이로 후원하기
+          </a>
         </div>
 
         <h3>저작권 안내</h3>
