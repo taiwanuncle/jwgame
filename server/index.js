@@ -16,6 +16,10 @@ const io = new Server(server, {
 });
 
 const rooms = new Map();
+
+app.get("/", (req, res) => {
+  res.json({ status: "ok", rooms: rooms.size });
+});
 const TOTAL_CARDS = 128;
 const HAND_SIZE = 6;
 const TOTAL_ROUNDS = 10;
