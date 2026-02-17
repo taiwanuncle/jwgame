@@ -254,6 +254,10 @@ export default function LobbyPage({
           제시어는 너무 쉬우면 모두가 맞춰서 0점, 너무 어려우면 아무도 못 맞춰서 0점!
           적절한 난이도의 제시어를 내는 것이 핵심입니다.
         </p>
+
+        <p className="copyright-notice">
+          ※ 사용되는 모든 그림은 AI로 제작되었습니다.
+        </p>
       </InfoModal>
 
       {/* 제작계기 & 후원 모달 */}
@@ -289,7 +293,7 @@ export default function LobbyPage({
 
         <h3>저작권 안내</h3>
         <p>
-          카드 이미지는 추후 업데이트 예정입니다.
+          사용되는 모든 그림은 AI로 제작되었습니다.
           본 게임은 비영리 목적으로 제작되었습니다.
         </p>
       </InfoModal>

@@ -146,6 +146,15 @@
   transform: scale(1.02);
 }
 
+.info-modal-body .copyright-notice {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
 @media (max-width: 480px) {
   .info-modal-overlay {
     padding: 12px;

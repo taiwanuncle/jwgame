@@ -24,7 +24,7 @@ export default function BibleCard({
   size = "md",
   showVoteCount,
 }: BibleCardProps) {
-  const [imgError, setImgError] = useState(true);
+  const [imgError, setImgError] = useState(false);
   const character = characters.find((c) => c.id === cardId);
 
   if (!character) return null;
