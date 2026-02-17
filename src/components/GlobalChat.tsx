@@ -28,6 +28,12 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
     }
   }, [expanded]);
 
+  // Toggle body class for other fixed elements to react
+  useEffect(() => {
+    document.body.classList.toggle("gchat-is-expanded", expanded);
+    return () => document.body.classList.remove("gchat-is-expanded");
+  }, [expanded]);
+
   const handleSend = () => {
     if (!input.trim()) return;
     onSend(input.trim());
@@ -54,7 +60,6 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
           </div>
           <div className="gchat-input-row">
             <input
-              ref={inputRef}
               className="gchat-input"
               placeholder="메시지 입력..."
               value={input}

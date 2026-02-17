@@ -203,8 +203,28 @@ export default function GamePage({
               </div>
               <div className="game-instruction">
                 <h3>{t("game.yourTurn")}</h3>
-                <p>{t("game.selectCard")}</p>
+                <p>{selectedCard === null ? t("game.selectCard") : t("game.enterClueHint")}</p>
               </div>
+
+              {/* Clue input — above cards for visibility */}
+              {selectedCard !== null && (
+                <motion.div
+                  className="game-clue-input-area game-clue-input-area--highlight"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <label className="game-clue-input-label">✏️ {t("game.enterClue")}</label>
+                  <input
+                    className="input-field game-clue-input"
+                    placeholder={t("game.enterClue")}
+                    value={clue}
+                    onChange={(e) => setClue(e.target.value)}
+                    maxLength={50}
+                    onKeyDown={(e) => e.key === "Enter" && handleSubmitClue()}
+                    autoFocus
+                  />
+                </motion.div>
+              )}
 
               <div className="game-hand">
                 {myHand.map((cardId) => (
@@ -217,23 +237,6 @@ export default function GamePage({
                   />
                 ))}
               </div>
-
-              {selectedCard !== null && (
-                <motion.div
-                  className="game-clue-input-area"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <input
-                    className="input-field game-clue-input"
-                    placeholder={t("game.enterClue")}
-                    value={clue}
-                    onChange={(e) => setClue(e.target.value)}
-                    maxLength={50}
-                    onKeyDown={(e) => e.key === "Enter" && handleSubmitClue()}
-                  />
-                </motion.div>
-              )}
             </motion.div>
           )}
 
