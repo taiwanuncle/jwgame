@@ -2,7 +2,7 @@ const en = {
   translation: {
     app: {
       title: "Bible Character Game",
-      subtitle: "Dixit-style Bible Card Game",
+      subtitle: "Imagination Clue Card Game",
     },
     lobby: {
       createRoom: "Create Room",

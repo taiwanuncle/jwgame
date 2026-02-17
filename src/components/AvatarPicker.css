@@ -1,8 +1,10 @@
 .avatar-picker {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   padding: 4px;
+  max-width: 240px;
+  margin: 0 auto;
 }
 
 .avatar-item {
@@ -34,8 +36,9 @@
 
 @media (max-width: 480px) {
   .avatar-picker {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
+    max-width: 200px;
   }
 
   .avatar-item {

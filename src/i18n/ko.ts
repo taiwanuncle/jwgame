@@ -2,7 +2,7 @@ const ko = {
   translation: {
     app: {
       title: "성서인물게임",
-      subtitle: "딕시트 스타일 성서 카드 게임",
+      subtitle: "상상 제시어 카드 게임",
     },
     lobby: {
       createRoom: "방 만들기",
