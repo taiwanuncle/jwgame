@@ -22,6 +22,32 @@ const SERVER_URL =
   import.meta.env.VITE_SERVER_URL ||
   `${window.location.protocol}//${window.location.hostname}:3001`;
 
+// Session persistence keys
+const SESSION_KEY = "game_session";
+
+interface SavedSession {
+  roomCode: string;
+  persistentId: string;
+}
+
+function saveSession(roomCode: string, persistentId: string) {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ roomCode, persistentId }));
+  } catch { /* ignore */ }
+}
+
+function loadSession(): SavedSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function clearSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+}
+
 export interface GameStateFromServer {
   roomCode: string;
   players: {
@@ -56,6 +82,7 @@ export interface GameStateFromServer {
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const leavingRef = useRef(false);
+  const rejoinAttemptedRef = useRef(false);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState<GameStateFromServer | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
@@ -69,7 +96,21 @@ export function useSocket() {
     });
     socketRef.current = socket;
 
-    socket.on("connect", () => setConnected(true));
+    socket.on("connect", () => {
+      setConnected(true);
+
+      // Auto-rejoin on reconnect if we have a saved session
+      if (!rejoinAttemptedRef.current) {
+        rejoinAttemptedRef.current = true;
+        const session = loadSession();
+        if (session) {
+          socket.emit("rejoin_room", {
+            roomCode: session.roomCode,
+            persistentId: session.persistentId,
+          });
+        }
+      }
+    });
     socket.on("disconnect", () => setConnected(false));
 
     socket.on("game_state", (state: GameStateFromServer) => {
@@ -88,11 +129,17 @@ export function useSocket() {
       setTimeout(() => setErrorMsg(""), 3000);
     });
 
-    socket.on("room_created", () => {
+    socket.on("room_created", ({ persistentId, roomCode }: { persistentId: string; roomCode: string }) => {
       leavingRef.current = false;
+      saveSession(roomCode, persistentId);
     });
-    socket.on("room_joined", () => {
+    socket.on("room_joined", ({ persistentId, roomCode }: { persistentId: string; roomCode: string }) => {
       leavingRef.current = false;
+      saveSession(roomCode, persistentId);
+    });
+    socket.on("rejoin_success", ({ persistentId, roomCode }: { persistentId: string; roomCode: string }) => {
+      leavingRef.current = false;
+      saveSession(roomCode, persistentId);
     });
     socket.on("game_started", () => {
       setRoundResult(null);
@@ -171,12 +218,17 @@ export function useSocket() {
     socketRef.current?.emit("get_rooms");
   }, []);
 
+  const phaseReady = useCallback(() => {
+    socketRef.current?.emit("phase_ready");
+  }, []);
+
   const leaveRoom = useCallback(() => {
     leavingRef.current = true;
     socketRef.current?.emit("leave_room");
     setGameState(null);
     setRoundResult(null);
     setChatMessages([]);
+    clearSession();
   }, []);
 
   return {
@@ -199,6 +251,7 @@ export function useSocket() {
     playAgain,
     sendChat,
     refreshRooms,
+    phaseReady,
     leaveRoom,
   };
 }

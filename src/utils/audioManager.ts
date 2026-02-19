@@ -64,6 +64,7 @@ class AudioManager {
   private _pendingCategory: MusicCategory | null = null;
   private listeners = new Set<Listener>();
   private _userInteracted = false;
+  private _userPaused = false; // true if user explicitly paused/stopped
 
   constructor() {
     // Restore volume & muted from localStorage
@@ -122,6 +123,9 @@ class AudioManager {
 
     // If user hasn't interacted yet, defer — will auto-play on first click
     if (!this._userInteracted) return;
+
+    // If user explicitly paused or muted, don't auto-play on category change
+    if (this._userPaused || this._muted) return;
 
     // If same category already playing, skip
     if (this._currentCategory === category && this._playing) return;
@@ -207,12 +211,14 @@ class AudioManager {
     if (this.audio && this._playing) {
       this.audio.pause();
       this._playing = false;
+      this._userPaused = true;
       this.notify();
     }
   }
 
   resume() {
     if (this.audio && !this._playing) {
+      this._userPaused = false;
       this.audio.play().then(() => {
         this._playing = true;
         this.notify();
@@ -226,6 +232,7 @@ class AudioManager {
     } else if (this.audio) {
       this.resume();
     } else if (this._pendingCategory) {
+      this._userPaused = false;
       this._currentCategory = null;
       this.playCategory(this._pendingCategory);
     }

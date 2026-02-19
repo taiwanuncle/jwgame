@@ -14,8 +14,6 @@ interface WaitingRoomProps {
   errorMsg: string;
 }
 
-const ROUND_OPTIONS = [5, 7, 10, 15];
-
 export default function WaitingRoom({
   gameState,
   onToggleReady,
@@ -29,6 +27,10 @@ export default function WaitingRoom({
 
   const me = gameState.players.find((p) => p.id === gameState.myId);
   const isHost = me?.isHost || false;
+
+  // Round options = multiples of player count (1x ~ 5x)
+  const playerCount = gameState.players.length;
+  const roundOptions = Array.from({ length: 5 }, (_, i) => playerCount * (i + 1));
 
   const handleCopyCode = async () => {
     try {
@@ -66,7 +68,7 @@ export default function WaitingRoom({
         <div className="waiting-rounds-section">
           <span className="waiting-rounds-label">{t("waiting.rounds")}</span>
           <div className="waiting-rounds-options">
-            {ROUND_OPTIONS.map((r) => (
+            {roundOptions.map((r) => (
               <button
                 key={r}
                 className={`waiting-rounds-btn ${

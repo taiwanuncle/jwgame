@@ -17,6 +17,7 @@ interface GamePageProps {
   onSubmitCard: (cardId: number) => void;
   onSubmitVote: (cardId: number) => void;
   onNextRound: () => void;
+  onPhaseReady: () => void;
 }
 
 export default function GamePage({
@@ -26,18 +27,46 @@ export default function GamePage({
   onSubmitCard,
   onSubmitVote,
   onNextRound,
+  onPhaseReady,
 }: GamePageProps) {
   const { t } = useTranslation();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [clue, setClue] = useState("");
   const [showScores, setShowScores] = useState(false);
   const [toast, setToast] = useState({ message: "", visible: false, type: "info" as "info" | "warning" | "success" });
+  const [phaseGuideAcked, setPhaseGuideAcked] = useState<string | null>(null);
 
   const myId = gameState.myId;
   const me = gameState.players.find((p) => p.id === myId);
   const storyteller = gameState.players[gameState.storytellerIndex];
   const isStoryteller = storyteller?.id === myId;
   const myHand = gameState.myHand || [];
+
+  // Determine current guide key (phase + role)
+  const getGuideKey = (): string | null => {
+    const phase = gameState.phase;
+    if (phase === "storyteller_turn") return isStoryteller ? "storyteller_turn" : "storyteller_wait";
+    if (phase === "players_submit") return isStoryteller ? "submit_wait" : "players_submit";
+    if (phase === "shuffle") return "shuffle";
+    if (phase === "voting") return isStoryteller ? "voting_wait" : "voting";
+    if (phase === "round_result") return "round_result";
+    return null;
+  };
+  const currentGuideKey = getGuideKey();
+  const showGuide = currentGuideKey !== null && phaseGuideAcked !== currentGuideKey;
+
+  // Reset guide on phase/round change
+  useEffect(() => {
+    setPhaseGuideAcked(null);
+  }, [gameState.phase, gameState.currentRound]);
+
+  // Auto-dismiss shuffle guide after 1.5s
+  useEffect(() => {
+    if (currentGuideKey === "shuffle" && showGuide) {
+      const timer = setTimeout(() => setPhaseGuideAcked("shuffle"), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentGuideKey, showGuide]);
 
   const showToast = useCallback((message: string, type: "info" | "warning" | "success" = "info") => {
     setToast({ message, visible: true, type });
@@ -650,6 +679,57 @@ export default function GamePage({
         onHide={hideToast}
         type={toast.type}
       />
+
+      {/* Phase guide overlay */}
+      <AnimatePresence>
+        {showGuide && currentGuideKey !== "shuffle" && (
+          <motion.div
+            key="phase-guide"
+            className="phase-guide-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="phase-guide-card"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            >
+              <div className="phase-guide-icon">
+                {currentGuideKey === "storyteller_turn" && "🎨"}
+                {currentGuideKey === "storyteller_wait" && "⏳"}
+                {currentGuideKey === "players_submit" && "🃏"}
+                {currentGuideKey === "submit_wait" && "📋"}
+                {currentGuideKey === "voting" && "🗳️"}
+                {currentGuideKey === "voting_wait" && "🗳️"}
+                {currentGuideKey === "round_result" && "📊"}
+              </div>
+              <h3 className="phase-guide-title">
+                {t(`guide.${currentGuideKey}_title`)}
+              </h3>
+              <p className="phase-guide-text">
+                {t(`guide.${currentGuideKey}_desc`)}
+              </p>
+              {currentGuideKey !== "round_result" && (
+                <p className="phase-guide-tip">
+                  {t(`guide.${currentGuideKey}_tip`)}
+                </p>
+              )}
+              <button
+                className="btn-primary phase-guide-btn"
+                onClick={() => {
+                  playClick();
+                  setPhaseGuideAcked(currentGuideKey);
+                  onPhaseReady();
+                }}
+              >
+                {t("guide.ok")}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

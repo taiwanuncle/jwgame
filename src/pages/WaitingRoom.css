@@ -96,9 +96,10 @@
 }
 
 .waiting-rounds-btn--active {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #5856D6 100%);
   color: white;
   border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
 }
 
 .waiting-rounds-btn:not(:disabled):not(.waiting-rounds-btn--active):hover {
@@ -175,11 +176,12 @@
 }
 
 .btn-ready-active {
-  background: var(--success) !important;
+  background: linear-gradient(135deg, var(--success) 0%, #2DB84E 100%) !important;
+  box-shadow: 0 4px 14px rgba(52, 199, 89, 0.3) !important;
 }
 
 .btn-ready-active:hover {
-  background: #2DB84E !important;
+  background: linear-gradient(135deg, #2DB84E 0%, #28A745 100%) !important;
 }
 
 .waiting-hint {

@@ -28,6 +28,7 @@ function App() {
     nextRound,
     playAgain,
     sendChat,
+    phaseReady,
     leaveRoom,
   } = useSocket();
 
@@ -92,6 +93,7 @@ function App() {
         onSubmitCard={submitCard}
         onSubmitVote={submitVote}
         onNextRound={nextRound}
+        onPhaseReady={phaseReady}
       />
     );
   }

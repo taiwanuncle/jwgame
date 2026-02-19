@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import AvatarPicker from "../components/AvatarPicker";
 import InfoModal from "../components/InfoModal";
+import InstallPrompt from "../components/InstallPrompt";
 import type { AvailableRoom } from "../hooks/useSocket";
 import "./LobbyPage.css";
 
@@ -35,6 +36,38 @@ export default function LobbyPage({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [showKakaoWarning, setShowKakaoWarning] = useState(false);
+  const [kakaoHideToday, setKakaoHideToday] = useState(false);
+
+  // Detect KakaoTalk in-app browser
+  useEffect(() => {
+    const ua = navigator.userAgent.toLowerCase();
+    const isKakao = ua.includes("kakaotalk") || ua.includes("kakao");
+    if (isKakao) {
+      const hideUntil = localStorage.getItem("kakao_warn_hide");
+      if (hideUntil) {
+        const hideDate = new Date(hideUntil);
+        if (new Date() < hideDate) return; // still within "hide today" window
+      }
+      setShowKakaoWarning(true);
+    }
+  }, []);
+
+  const handleKakaoClose = () => {
+    if (kakaoHideToday) {
+      // Set hide until end of today
+      const tomorrow = new Date();
+      tomorrow.setHours(23, 59, 59, 999);
+      localStorage.setItem("kakao_warn_hide", tomorrow.toISOString());
+    }
+    setShowKakaoWarning(false);
+  };
+
+  const handleOpenExternal = () => {
+    // Try to open in external browser
+    const url = window.location.href;
+    window.location.href = `intent://${url.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+  };
 
   const handleCreate = () => {
     if (!nickname.trim()) return;
@@ -369,6 +402,52 @@ export default function LobbyPage({
           ※ 사용되는 모든 그림과 음악은 AI로 제작되었습니다.
         </p>
       </InfoModal>
+
+      {/* PWA 홈 화면 추가 안내 */}
+      <InstallPrompt />
+
+      {/* 카카오톡 브라우저 경고 */}
+      <AnimatePresence>
+        {showKakaoWarning && (
+          <motion.div
+            className="kakao-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="kakao-popup"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            >
+              <div className="kakao-popup-icon">⚠️</div>
+              <h3 className="kakao-popup-title">카카오톡 브라우저 안내</h3>
+              <p className="kakao-popup-text">
+                카카오톡 브라우저에서 접속하셨습니다.<br />
+                카톡 알림이 오면 게임이 튕길 수 있어요!<br />
+                <strong>다른 브라우저</strong>로 열면 안정적으로 즐길 수 있습니다.
+              </p>
+              <button className="btn-primary kakao-popup-btn" onClick={handleOpenExternal}>
+                🌐 외부 브라우저로 열기
+              </button>
+              <div className="kakao-popup-bottom">
+                <label className="kakao-popup-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={kakaoHideToday}
+                    onChange={(e) => setKakaoHideToday(e.target.checked)}
+                  />
+                  <span>오늘 하루 보지 않기</span>
+                </label>
+                <button className="btn-ghost kakao-popup-close" onClick={handleKakaoClose}>
+                  닫기
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 제작계기 & 후원 모달 */}
       <InfoModal

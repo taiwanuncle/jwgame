@@ -1,0 +1,18 @@
+{
+  "name": "Bible Character Game",
+  "short_name": "BibleGame",
+  "description": "Dixit-style multiplayer Bible character card game",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#007AFF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/0.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

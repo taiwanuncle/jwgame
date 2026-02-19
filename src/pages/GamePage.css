@@ -11,22 +11,23 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 50;
 }
 
 .game-round-badge {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--accent);
-  background: var(--accent-light);
-  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, #5856D6 100%);
+  padding: 6px 16px;
   border-radius: var(--radius-full);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
 }
 
 .game-storyteller-info {
@@ -56,24 +57,56 @@
 /* Clue display */
 .game-clue-display {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 14px 24px;
+  gap: 6px;
+  padding: 18px 28px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-clue-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  animation: clueShimmer 4s ease-in-out infinite;
+}
+
+@keyframes clueShimmer {
+  0%, 100% { transform: translate(-30%, -30%); }
+  50% { transform: translate(30%, 30%); }
 }
 
 .game-clue-label {
-  font-size: 13px;
-  font-weight: 500;
-  opacity: 0.8;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
 }
 
 .game-clue-text {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .game-clue-text {
+    font-size: 24px;
+  }
 }
 
 /* Content area */
@@ -271,11 +304,12 @@
 
 .game-result-message {
   font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  padding: 10px 20px;
-  background: var(--bg-tertiary);
+  font-weight: 700;
+  color: white;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: var(--radius-full);
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
 }
 
 .game-result-card-wrapper {
@@ -319,17 +353,23 @@
 .game-result-score-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--bg-tertiary);
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-full);
   font-size: 14px;
   font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .game-result-points {
-  color: var(--success);
-  font-weight: 700;
+  color: white;
+  font-weight: 800;
+  font-size: 13px;
+  background: linear-gradient(135deg, var(--success) 0%, #2DB84E 100%);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
 }
 
 /* Fixed bottom action bar — sits above chat bar */
@@ -386,4 +426,67 @@
     font-size: 16px;
     padding: 14px 24px;
   }
+}
+
+/* Phase guide overlay */
+.phase-guide-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.phase-guide-card {
+  background: white;
+  border-radius: 24px;
+  padding: 36px 28px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+}
+
+.phase-guide-icon {
+  font-size: 52px;
+  margin-bottom: 16px;
+}
+
+.phase-guide-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.phase-guide-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 12px;
+  word-break: keep-all;
+}
+
+.phase-guide-tip {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 10px 16px;
+  background: var(--accent-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.phase-guide-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
 }

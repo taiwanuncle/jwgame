@@ -29,7 +29,7 @@ const MAX_PLAYERS = 10;
 const TIMER = {
   storyteller_turn: 60,
   players_submit: 20,
-  voting: 15,
+  voting: 20,
   // round_result: no timer - host manually proceeds (chat time)
 };
 
@@ -52,6 +52,18 @@ function createDeck() {
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
   return deck;
+}
+
+// Auto-adjust totalRounds when player count changes (waiting phase only)
+function adjustRoundsForPlayerCount(room) {
+  if (room.phase !== "waiting") return;
+  const count = room.players.length;
+  if (count < 1) return;
+  // If current totalRounds is not a multiple of player count, pick nearest multiple
+  if (room.totalRounds % count !== 0) {
+    const nearest = Math.round(room.totalRounds / count) * count;
+    room.totalRounds = Math.max(count, Math.min(count * 5, nearest || count));
+  }
 }
 
 function shuffleArray(arr) {
@@ -79,6 +91,21 @@ function startPhaseTimer(room) {
   const duration = TIMER[phase];
   if (!duration) return;
 
+  // Defer timer start — wait for phase_ready from players
+  room.timerPaused = true;
+  room.phaseReadyPlayers = new Set();
+  // Don't set timerEnd yet — it starts when ready
+}
+
+// Actually start the countdown (called when phase_ready condition met)
+function activatePhaseTimer(room) {
+  if (!room.timerPaused) return;
+  room.timerPaused = false;
+
+  const phase = room.phase;
+  const duration = TIMER[phase];
+  if (!duration) return;
+
   room.timerEnd = Date.now() + duration * 1000;
 
   room.timer = setTimeout(() => {
@@ -86,6 +113,8 @@ function startPhaseTimer(room) {
     room.timerEnd = null;
     handleTimerExpired(room);
   }, duration * 1000);
+
+  emitPersonalStates(room);
 }
 
 function handleTimerExpired(room) {
@@ -384,8 +413,10 @@ io.on("connection", (socket) => {
 
   socket.on("create_room", ({ nickname, avatarIndex }) => {
     const roomCode = generateRoomCode();
+    const persistentId = uuidv4();
     const player = {
       id: socket.id,
+      persistentId,
       nickname,
       avatarIndex,
       ready: false,
@@ -411,6 +442,8 @@ io.on("connection", (socket) => {
       roundHistory: [],
       timer: null,
       timerEnd: null,
+      timerPaused: false,
+      phaseReadyPlayers: new Set(),
     };
 
     rooms.set(roomCode, room);
@@ -418,7 +451,7 @@ io.on("connection", (socket) => {
     socket.join(roomCode);
     socket.roomCode = roomCode;
 
-    socket.emit("room_created", { roomCode, player });
+    socket.emit("room_created", { roomCode, player, persistentId });
     emitPersonalStates(room);
     broadcastRoomsToLobby();
   });
@@ -438,8 +471,10 @@ io.on("connection", (socket) => {
       return;
     }
 
+    const persistentId = uuidv4();
     const player = {
       id: socket.id,
+      persistentId,
       nickname,
       avatarIndex,
       ready: false,
@@ -454,7 +489,10 @@ io.on("connection", (socket) => {
     socket.join(roomCode);
     socket.roomCode = roomCode;
 
-    socket.emit("room_joined", { roomCode, player });
+    // Auto-adjust totalRounds to nearest valid multiple of new player count
+    adjustRoundsForPlayerCount(room);
+
+    socket.emit("room_joined", { roomCode, player, persistentId });
     emitPersonalStates(room);
     broadcastRoomsToLobby();
   });
@@ -474,8 +512,11 @@ io.on("connection", (socket) => {
     const player = room.players.find((p) => p.id === socket.id);
     if (!player || !player.isHost) return;
     if (room.phase !== "waiting") return;
-    const allowed = [5, 7, 10, 15];
-    if (!allowed.includes(rounds)) return;
+    // Validate rounds: must be a multiple of player count, between playerCount and playerCount*5
+    const playerCount = room.players.length;
+    const minRounds = playerCount;
+    const maxRounds = playerCount * 5;
+    if (rounds < minRounds || rounds > maxRounds || rounds % playerCount !== 0) return;
     room.totalRounds = rounds;
     emitPersonalStates(room);
     broadcastRoomsToLobby();
@@ -662,6 +703,94 @@ io.on("connection", (socket) => {
     emitPersonalStates(room);
   });
 
+  // Phase ready: player acknowledged the phase guide popup
+  socket.on("phase_ready", () => {
+    const room = rooms.get(socket.roomCode);
+    if (!room) return;
+    if (!room.timerPaused) return;
+
+    room.phaseReadyPlayers.add(socket.id);
+
+    const phase = room.phase;
+    const storyteller = room.players[room.storytellerIndex];
+    let shouldStart = false;
+
+    if (phase === "storyteller_turn") {
+      // Storyteller must be ready
+      shouldStart = room.phaseReadyPlayers.has(storyteller.id);
+    } else if (phase === "players_submit" || phase === "voting") {
+      // Any non-storyteller ready → start timer for everyone
+      const nonStoryteller = room.players.filter(
+        (p) => p.id !== storyteller.id && p.connected
+      );
+      shouldStart = nonStoryteller.some((p) => room.phaseReadyPlayers.has(p.id));
+    }
+
+    if (shouldStart) {
+      activatePhaseTimer(room);
+    }
+  });
+
+  // Rejoin: reconnect a disconnected player to an ongoing game
+  socket.on("rejoin_room", ({ roomCode, persistentId }) => {
+    const room = rooms.get(roomCode);
+    if (!room) {
+      socket.emit("error_msg", { message: "방을 찾을 수 없습니다." });
+      return;
+    }
+
+    const player = room.players.find(
+      (p) => p.persistentId === persistentId && !p.connected
+    );
+    if (!player) {
+      socket.emit("error_msg", { message: "재접속할 수 없습니다." });
+      return;
+    }
+
+    // Update socket references
+    const oldId = player.id;
+    player.id = socket.id;
+    player.connected = true;
+
+    // Update submittedCards references
+    room.submittedCards.forEach((s) => {
+      if (s.playerId === oldId) s.playerId = socket.id;
+    });
+    // Update votes references
+    room.votes.forEach((v) => {
+      if (v.voterId === oldId) v.voterId = socket.id;
+    });
+    // Update roundHistory references
+    room.roundHistory.forEach((rr) => {
+      if (rr.storytellerId === oldId) rr.storytellerId = socket.id;
+      rr.submissions.forEach((s) => {
+        if (s.playerId === oldId) s.playerId = socket.id;
+      });
+      rr.votes.forEach((v) => {
+        if (v.voterId === oldId) v.voterId = socket.id;
+      });
+      rr.scoreChanges.forEach((sc) => {
+        if (sc.playerId === oldId) sc.playerId = socket.id;
+      });
+    });
+
+    socket.leave("lobby");
+    socket.join(roomCode);
+    socket.roomCode = roomCode;
+
+    socket.emit("rejoin_success", { roomCode, persistentId });
+    emitPersonalStates(room);
+
+    // Notify others
+    io.to(roomCode).emit("chat_message", {
+      playerId: "system",
+      nickname: "System",
+      avatarIndex: 0,
+      message: `${player.nickname} 님이 다시 접속했습니다!`,
+      timestamp: Date.now(),
+    });
+  });
+
   socket.on("send_chat", ({ message }) => {
     const room = rooms.get(socket.roomCode);
     if (!room) return;
@@ -711,6 +840,8 @@ function handleDisconnect(socket) {
     if (!room.players.some((p) => p.isHost)) {
       room.players[0].isHost = true;
     }
+    // Adjust rounds for new player count
+    adjustRoundsForPlayerCount(room);
   } else {
     room.players[playerIndex].connected = false;
 
