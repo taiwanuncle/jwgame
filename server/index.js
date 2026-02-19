@@ -81,6 +81,10 @@ function clearRoomTimer(room) {
     clearTimeout(room.timer);
     room.timer = null;
   }
+  if (room.guideTimeout) {
+    clearTimeout(room.guideTimeout);
+    room.guideTimeout = null;
+  }
   room.timerEnd = null;
 }
 
@@ -94,13 +98,26 @@ function startPhaseTimer(room) {
   // Defer timer start — wait for phase_ready from players
   room.timerPaused = true;
   room.phaseReadyPlayers = new Set();
-  // Don't set timerEnd yet — it starts when ready
+
+  // Safety: auto-activate after 5 seconds if nobody sends phase_ready
+  room.guideTimeout = setTimeout(() => {
+    room.guideTimeout = null;
+    if (room.timerPaused) {
+      activatePhaseTimer(room);
+    }
+  }, 5000);
 }
 
 // Actually start the countdown (called when phase_ready condition met)
 function activatePhaseTimer(room) {
   if (!room.timerPaused) return;
   room.timerPaused = false;
+
+  // Clear guide safety timeout
+  if (room.guideTimeout) {
+    clearTimeout(room.guideTimeout);
+    room.guideTimeout = null;
+  }
 
   const phase = room.phase;
   const duration = TIMER[phase];
@@ -443,6 +460,7 @@ io.on("connection", (socket) => {
       timer: null,
       timerEnd: null,
       timerPaused: false,
+      guideTimeout: null,
       phaseReadyPlayers: new Set(),
     };
 

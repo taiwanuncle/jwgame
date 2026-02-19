@@ -11,6 +11,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 16px;
   z-index: 2000;
+  box-sizing: border-box;
 }
 
 .install-prompt-content {
@@ -21,7 +22,7 @@
 }
 
 .install-prompt-icon {
-  font-size: 32px;
+  font-size: 28px;
   flex-shrink: 0;
   line-height: 1;
 }
@@ -42,6 +43,7 @@
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
+  word-break: keep-all;
 }
 
 .install-prompt-actions {
@@ -80,4 +82,30 @@
 .install-prompt-close {
   font-size: 13px;
   padding: 6px 12px;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .install-prompt-banner {
+    width: calc(100% - 24px);
+    bottom: 70px;
+    padding: 14px;
+  }
+
+  .install-prompt-icon {
+    font-size: 24px;
+  }
+
+  .install-prompt-title {
+    font-size: 14px;
+  }
+
+  .install-prompt-desc {
+    font-size: 12px;
+  }
+
+  .install-prompt-install-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
 }
