@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import BibleCard from "../components/BibleCard";
@@ -20,6 +20,74 @@ interface GamePageProps {
   onPhaseReady: () => void;
 }
 
+/* Typing text effect component */
+function TypingText({ text, className }: { text: string; className?: string }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    setDisplayedText("");
+    setDone(false);
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setDisplayedText(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(interval);
+        setDone(true);
+      }
+    }, 60);
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return (
+    <span className={className}>
+      {displayedText}
+      {!done && <span className="typing-cursor">|</span>}
+    </span>
+  );
+}
+
+/* Particle burst effect */
+function ParticleBurst({ active }: { active: boolean }) {
+  const particles = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      angle: (360 / 12) * i,
+      distance: 40 + Math.random() * 30,
+      size: 4 + Math.random() * 4,
+      color: ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF3B30', '#FFD700'][i % 6],
+      delay: Math.random() * 0.15,
+    })), []);
+
+  if (!active) return null;
+
+  return (
+    <div className="particle-burst">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="particle"
+          style={{
+            width: p.size,
+            height: p.size,
+            background: p.color,
+            borderRadius: '50%',
+          }}
+          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+          animate={{
+            x: Math.cos((p.angle * Math.PI) / 180) * p.distance,
+            y: Math.sin((p.angle * Math.PI) / 180) * p.distance,
+            opacity: 0,
+            scale: 0.3,
+          }}
+          transition={{ duration: 0.6, delay: p.delay, ease: "easeOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function GamePage({
   gameState,
   roundResult,
@@ -35,6 +103,7 @@ export default function GamePage({
   const [showScores, setShowScores] = useState(false);
   const [toast, setToast] = useState({ message: "", visible: false, type: "info" as "info" | "warning" | "success" });
   const [phaseGuideAcked, setPhaseGuideAcked] = useState<string | null>(null);
+  const [showParticles, setShowParticles] = useState(false);
   const [guideDisabledToday, setGuideDisabledToday] = useState(() => {
     try {
       const hideUntil = localStorage.getItem("guide_hide_today");
@@ -96,6 +165,7 @@ export default function GamePage({
   useEffect(() => {
     setSelectedCard(null);
     setClue("");
+    setShowParticles(false);
   }, [gameState.phase, gameState.currentRound]);
 
   // Last round notification
@@ -143,6 +213,9 @@ export default function GamePage({
     }
     playClick();
     setSelectedCard(cardId);
+    // Particle burst on vote selection
+    setShowParticles(true);
+    setTimeout(() => setShowParticles(false), 700);
   };
 
   const handleSubmitVote = () => {
@@ -189,6 +262,14 @@ export default function GamePage({
   };
   const waitingNames = getWaitingNames();
 
+  // Phase transition variants
+  const pageTransition = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+  };
+
   return (
     <div className="game-page">
       {/* Top bar */}
@@ -218,7 +299,7 @@ export default function GamePage({
       {/* Timer bar */}
       <CountdownBar timerEnd={gameState.timerEnd} />
 
-      {/* Clue display */}
+      {/* Clue display with typing effect */}
       {gameState.clue && gameState.phase !== "storyteller_turn" && (
         <motion.div
           className="game-clue-display"
@@ -226,7 +307,7 @@ export default function GamePage({
           animate={{ opacity: 1, y: 0 }}
         >
           <span className="game-clue-label">{t("game.clue")}:</span>
-          <span className="game-clue-text">{gameState.clue}</span>
+          <TypingText text={gameState.clue} className="game-clue-text" />
         </motion.div>
       )}
 
@@ -238,9 +319,7 @@ export default function GamePage({
             <motion.div
               key="storyteller"
               className="game-phase"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-phase-step">
                 <span className="game-phase-step-num">{t("game.phase1")}</span>
@@ -272,13 +351,14 @@ export default function GamePage({
               )}
 
               <div className="game-hand">
-                {myHand.map((cardId) => (
+                {myHand.map((cardId, index) => (
                   <BibleCard
                     key={cardId}
                     cardId={cardId}
                     selected={selectedCard === cardId}
                     onClick={() => { playSelect(); setSelectedCard(cardId); }}
                     size="md"
+                    dealDelay={index * 0.08}
                   />
                 ))}
               </div>
@@ -290,9 +370,7 @@ export default function GamePage({
             <motion.div
               key="waiting-clue"
               className="game-phase game-waiting"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-phase-step">
                 <span className="game-phase-step-num">{t("game.phase1")}</span>
@@ -301,8 +379,8 @@ export default function GamePage({
               <div className="game-waiting-icon">⏳</div>
               <p>{t("game.waitingForClue")}</p>
               <div className="game-hand game-hand--small">
-                {myHand.map((cardId) => (
-                  <BibleCard key={cardId} cardId={cardId} size="sm" disabled />
+                {myHand.map((cardId, index) => (
+                  <BibleCard key={cardId} cardId={cardId} size="sm" disabled dealDelay={index * 0.06} />
                 ))}
               </div>
             </motion.div>
@@ -313,9 +391,7 @@ export default function GamePage({
             <motion.div
               key="submit"
               className="game-phase"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-phase-step">
                 <span className="game-phase-step-num">{t("game.phase2")}</span>
@@ -327,13 +403,14 @@ export default function GamePage({
                     <p>{t("game.phase2Sub", { name: storyteller?.nickname })}</p>
                   </div>
                   <div className="game-hand">
-                    {myHand.map((cardId) => (
+                    {myHand.map((cardId, index) => (
                       <BibleCard
                         key={cardId}
                         cardId={cardId}
                         selected={selectedCard === cardId}
                         onClick={() => { playSelect(); setSelectedCard(cardId); }}
                         size="md"
+                        dealDelay={index * 0.08}
                       />
                     ))}
                   </div>
@@ -360,9 +437,7 @@ export default function GamePage({
             <motion.div
               key="st-wait-submit"
               className="game-phase game-waiting"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-phase-step">
                 <span className="game-phase-step-num">{t("game.phase2")}</span>
@@ -386,9 +461,7 @@ export default function GamePage({
             <motion.div
               key="shuffle"
               className="game-phase game-shuffle"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="shuffle-container">
                 {gameState.shuffledCards.map((cardId, index) => (
@@ -426,9 +499,7 @@ export default function GamePage({
             <motion.div
               key="voting"
               className="game-phase"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-phase-step">
                 <span className="game-phase-step-num">{t("game.phase3")}</span>
@@ -440,14 +511,19 @@ export default function GamePage({
                     <p>{t("game.phase3Sub", { name: storyteller?.nickname })}</p>
                   </div>
                   <div className="game-board">
-                    {gameState.shuffledCards.map((cardId) => (
-                      <BibleCard
-                        key={cardId}
-                        cardId={cardId}
-                        selected={selectedCard === cardId}
-                        onClick={() => handleVoteClick(cardId)}
-                        size="md"
-                      />
+                    {gameState.shuffledCards.map((cardId, index) => (
+                      <div key={cardId} className="vote-card-wrapper" style={{ position: 'relative' }}>
+                        <BibleCard
+                          cardId={cardId}
+                          selected={selectedCard === cardId}
+                          onClick={() => handleVoteClick(cardId)}
+                          size="md"
+                          dealDelay={index * 0.1}
+                        />
+                        {selectedCard === cardId && showParticles && (
+                          <ParticleBurst active={true} />
+                        )}
+                      </div>
                     ))}
                   </div>
                 </>
@@ -473,9 +549,7 @@ export default function GamePage({
             <motion.div
               key="st-wait-vote"
               className="game-phase game-waiting"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-phase-step">
                 <span className="game-phase-step-num">{t("game.phase3")}</span>
@@ -494,14 +568,12 @@ export default function GamePage({
             </motion.div>
           )}
 
-          {/* Round result */}
+          {/* Round result — cards flip to reveal! */}
           {gameState.phase === "round_result" && roundResult && (
             <motion.div
               key="result"
               className="game-phase"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...pageTransition}
             >
               <div className="game-result-header">
                 {roundResult.allCorrect && (
@@ -524,24 +596,30 @@ export default function GamePage({
               <div className="game-result-scores">
                 {roundResult.scoreChanges
                   .filter((sc) => sc.points > 0)
-                  .map((sc) => {
+                  .map((sc, index) => {
                     const player = gameState.players.find(
                       (p) => p.id === sc.playerId
                     );
                     const isBonus = sc.reason === "bonus";
                     return (
-                      <div key={`${sc.playerId}-${sc.reason}`} className={`game-result-score-item ${isBonus ? "game-result-score-item--bonus" : ""}`}>
+                      <motion.div
+                        key={`${sc.playerId}-${sc.reason}`}
+                        className={`game-result-score-item ${isBonus ? "game-result-score-item--bonus" : ""}`}
+                        initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: 0.3 + index * 0.1, type: "spring", stiffness: 300 }}
+                      >
                         <span>{player?.nickname}</span>
                         <span className={`game-result-points ${isBonus ? "game-result-points--bonus" : ""}`}>
                           +{sc.points}{isBonus ? ` ${t("score.bonus")}` : ""}
                         </span>
-                      </div>
+                      </motion.div>
                     );
                   })}
               </div>
 
               <div className="game-board">
-                {gameState.shuffledCards.map((cardId) => {
+                {gameState.shuffledCards.map((cardId, index) => {
                   const sub = roundResult.submissions.find(
                     (s) => s.cardId === cardId
                   );
@@ -553,29 +631,51 @@ export default function GamePage({
                   const highlight = getCardHighlight(cardId);
 
                   return (
-                    <div key={cardId} className="game-result-card-wrapper">
+                    <motion.div
+                      key={cardId}
+                      className="game-result-card-wrapper"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.15 }}
+                    >
                       {/* Card label */}
-                      {isStorytellerCard && (
-                        <div className="game-result-card-label game-result-card-label--correct">
-                          {t("game.correct")}
-                        </div>
-                      )}
-                      {!isStorytellerCard && isMySubmission && (
-                        <div className="game-result-card-label game-result-card-label--mine">
-                          {t("game.yourCard")}
-                        </div>
-                      )}
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.15 + 0.6 }}
+                      >
+                        {isStorytellerCard && (
+                          <div className="game-result-card-label game-result-card-label--correct">
+                            {t("game.correct")}
+                          </div>
+                        )}
+                        {!isStorytellerCard && isMySubmission && (
+                          <div className="game-result-card-label game-result-card-label--mine">
+                            {t("game.yourCard")}
+                          </div>
+                        )}
+                        {!isStorytellerCard && !isMySubmission && (
+                          <div className="game-result-card-label game-result-card-label--spacer" />
+                        )}
+                      </motion.div>
                       <BibleCard
                         cardId={cardId}
                         highlight={highlight}
                         showVoteCount={getVoteCountForCard(cardId)}
                         size="md"
                         disabled
+                        flipReveal
+                        flipDelay={index * 0.15}
                       />
-                      <div className="game-result-card-owner">
+                      <motion.div
+                        className="game-result-card-owner"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: index * 0.15 + 0.5 }}
+                      >
                         {cardOwner?.nickname || ""}
-                      </div>
-                    </div>
+                      </motion.div>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -771,4 +871,3 @@ export default function GamePage({
     </div>
   );
 }
-

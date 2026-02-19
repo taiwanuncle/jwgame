@@ -85,6 +85,7 @@ input {
   border-radius: var(--radius-full);
 }
 
+/* === Primary button with ripple effect === */
 .btn-primary {
   background: linear-gradient(135deg, var(--accent) 0%, #0056CC 100%);
   color: white;
@@ -107,6 +108,29 @@ input {
   pointer-events: none;
 }
 
+/* Ripple animation on click */
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-primary:active::before {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transition: width 0s, height 0s, opacity 0s;
+}
+
 .btn-primary:hover {
   background: linear-gradient(135deg, #0068E0 0%, #004ABB 100%);
   transform: translateY(-2px);
@@ -125,6 +149,11 @@ input {
   box-shadow: none;
 }
 
+.btn-primary:disabled::before {
+  display: none;
+}
+
+/* === Secondary button === */
 .btn-secondary {
   background: var(--bg-tertiary);
   color: var(--text-primary);
@@ -133,6 +162,30 @@ input {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-secondary:active::before {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transition: width 0s, height 0s, opacity 0s;
 }
 
 .btn-secondary:hover {
@@ -140,6 +193,7 @@ input {
   transform: translateY(-1px);
 }
 
+/* === Ghost button === */
 .btn-ghost {
   background: transparent;
   color: var(--accent);
@@ -147,12 +201,37 @@ input {
   border-radius: var(--radius-full);
   font-size: 14px;
   font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ghost::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.08);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-ghost:active::before {
+  width: 200px;
+  height: 200px;
+  opacity: 1;
+  transition: width 0s, height 0s, opacity 0s;
 }
 
 .btn-ghost:hover {
   background: var(--accent-light);
 }
 
+/* === Input field === */
 .input-field {
   width: 100%;
   padding: 14px 18px;

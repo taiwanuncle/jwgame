@@ -35,15 +35,15 @@
 }
 
 .bible-card--correct {
-  box-shadow: 0 0 0 4px var(--success), 0 0 12px rgba(52, 199, 89, 0.4);
+  box-shadow: 0 0 0 4px var(--success), 0 0 16px rgba(52, 199, 89, 0.5);
 }
 
 .bible-card--wrong {
-  box-shadow: 0 0 0 4px var(--danger), 0 0 12px rgba(255, 59, 48, 0.4);
+  box-shadow: 0 0 0 4px var(--danger), 0 0 16px rgba(255, 59, 48, 0.5);
 }
 
 .bible-card--mine {
-  box-shadow: 0 0 0 4px var(--warning), 0 0 12px rgba(255, 149, 0, 0.4);
+  box-shadow: 0 0 0 4px var(--warning), 0 0 16px rgba(255, 149, 0, 0.5);
 }
 
 .bible-card__inner {
@@ -217,6 +217,16 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.bible-card__back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .bible-card__back-pattern {
@@ -232,4 +242,51 @@
 .bible-card__back-icon {
   font-size: 28px;
   color: rgba(255, 255, 255, 0.3);
+}
+
+/* === 3D Flip Animation === */
+.bible-card--flip-container {
+  perspective: 800px;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+.bible-card__flip-inner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+}
+
+.bible-card__flip-front {
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  backface-visibility: hidden;
+}
+
+.bible-card__flip-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+/* Glow effect on highlight for flipped cards */
+.bible-card--flip-container.bible-card--correct .bible-card__flip-front {
+  box-shadow: 0 0 0 4px var(--success), 0 0 20px rgba(52, 199, 89, 0.5);
+}
+
+.bible-card--flip-container.bible-card--wrong .bible-card__flip-front {
+  box-shadow: 0 0 0 4px var(--danger), 0 0 20px rgba(255, 59, 48, 0.5);
+}
+
+.bible-card--flip-container.bible-card--mine .bible-card__flip-front {
+  box-shadow: 0 0 0 4px var(--warning), 0 0 20px rgba(255, 149, 0, 0.5);
 }

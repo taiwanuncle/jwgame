@@ -131,7 +131,7 @@
   padding: 10px 8px;
 }
 
-/* Room list */
+/* Room list — card style */
 .lobby-room-list {
   display: flex;
   flex-direction: column;
@@ -162,22 +162,26 @@
 .lobby-room-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
   background: var(--bg-secondary);
   border: 2px solid transparent;
   cursor: pointer;
   transition: var(--transition-fast);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .lobby-room-item:hover {
   background: var(--bg-tertiary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .lobby-room-item--selected {
   border-color: var(--accent);
   background: var(--accent-light);
+  box-shadow: 0 2px 12px rgba(0, 122, 255, 0.15);
 }
 
 .lobby-room-item-top {

@@ -13,6 +13,34 @@ interface GameOverPageProps {
   onBackToLobby: () => void;
 }
 
+/** Counting animation hook */
+function useCountUp(target: number, duration = 1200, delay = 0) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const start = Date.now();
+      const step = () => {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setValue(Math.round(eased * target));
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [target, duration, delay]);
+
+  return value;
+}
+
+function AnimatedScore({ target, delay = 0 }: { target: number; delay?: number }) {
+  const count = useCountUp(target, 1200, delay);
+  return <>{count}</>;
+}
+
 export default function GameOverPage({
   gameState,
   onPlayAgain,
@@ -38,37 +66,65 @@ export default function GameOverPage({
     return index + 1;
   };
 
+  // Enhanced confetti — 3 waves
   useEffect(() => {
-    const duration = 3000;
+    const duration = 4000;
     const end = Date.now() + duration;
     let cancelled = false;
 
+    // Wave 1: Side cannons
     const frame = () => {
       if (cancelled) return;
       confetti({
-        particleCount: 3,
+        particleCount: 4,
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.7 },
-        colors: ["#007AFF", "#34C759", "#FF9500", "#FF3B30", "#AF52DE"],
+        colors: ["#007AFF", "#34C759", "#FF9500", "#FF3B30", "#AF52DE", "#FFD700"],
       });
       confetti({
-        particleCount: 3,
+        particleCount: 4,
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.7 },
-        colors: ["#007AFF", "#34C759", "#FF9500", "#FF3B30", "#AF52DE"],
+        colors: ["#007AFF", "#34C759", "#FF9500", "#FF3B30", "#AF52DE", "#FFD700"],
       });
 
       if (Date.now() < end && !cancelled) {
         requestAnimationFrame(frame);
       }
     };
-
     frame();
+
+    // Wave 2: Center burst after 500ms
+    const burst1 = setTimeout(() => {
+      if (cancelled) return;
+      confetti({
+        particleCount: 50,
+        spread: 100,
+        origin: { x: 0.5, y: 0.4 },
+        colors: ["#FFD700", "#FFA500", "#FF6B6B", "#7C4DFF"],
+        startVelocity: 30,
+      });
+    }, 500);
+
+    // Wave 3: Gold burst after 1.5s
+    const burst2 = setTimeout(() => {
+      if (cancelled) return;
+      confetti({
+        particleCount: 30,
+        spread: 120,
+        origin: { x: 0.5, y: 0.3 },
+        colors: ["#FFD700", "#FFF176", "#FFE082"],
+        startVelocity: 25,
+        shapes: ["circle"],
+      });
+    }, 1500);
 
     return () => {
       cancelled = true;
+      clearTimeout(burst1);
+      clearTimeout(burst2);
       confetti.reset();
     };
   }, []);
@@ -110,16 +166,28 @@ export default function GameOverPage({
         >
           <span className="gameover-congrats">{t("result.coWinners")}</span>
           <div className="gameover-co-winner-list">
-            {winners.map((w) => (
-              <div key={w.id} className="gameover-co-winner-item">
-                <span className="gameover-co-winner-avatar">
+            {winners.map((w, i) => (
+              <motion.div
+                key={w.id}
+                className="gameover-co-winner-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 + i * 0.15 }}
+              >
+                <motion.span
+                  className="gameover-co-winner-avatar"
+                  animate={{ rotate: [0, -8, 8, -5, 5, 0] }}
+                  transition={{ duration: 0.8, delay: 1 + i * 0.2 }}
+                >
                   <AvatarIcon index={w.avatarIndex} size={36} />
-                </span>
+                </motion.span>
                 <span className="gameover-co-winner-name">{w.nickname}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
-          <span className="gameover-winner-score">{topScore} pts</span>
+          <span className="gameover-winner-score">
+            <AnimatedScore target={topScore} delay={1000} /> pts
+          </span>
         </motion.div>
       ) : (
         <motion.div
@@ -128,13 +196,19 @@ export default function GameOverPage({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.7 }}
         >
-          <div className="gameover-winner-avatar">
+          <motion.div
+            className="gameover-winner-avatar"
+            animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
+            transition={{ duration: 0.8, delay: 1 }}
+          >
             <AvatarIcon index={winners[0].avatarIndex} size={56} />
-          </div>
+          </motion.div>
           <div className="gameover-winner-info">
             <span className="gameover-congrats">{t("result.congratulations")}</span>
             <span className="gameover-winner-name">{winners[0].nickname}</span>
-            <span className="gameover-winner-score">{topScore} pts</span>
+            <span className="gameover-winner-score">
+              <AnimatedScore target={topScore} delay={1000} /> pts
+            </span>
           </div>
         </motion.div>
       )}
@@ -156,7 +230,7 @@ export default function GameOverPage({
               }`}
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.1 + index * 0.1 }}
+              transition={{ delay: 1.1 + index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
             >
               <div className="gameover-rank-position">
                 {getRankEmoji(rank)}
@@ -165,7 +239,9 @@ export default function GameOverPage({
                 <AvatarIcon index={player.avatarIndex} size={28} />
               </div>
               <div className="gameover-rank-name">{player.nickname}</div>
-              <div className="gameover-rank-score">{player.score}</div>
+              <div className="gameover-rank-score">
+                <AnimatedScore target={player.score} delay={1200 + index * 100} />
+              </div>
             </motion.div>
           );
         })}

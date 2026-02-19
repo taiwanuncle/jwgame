@@ -296,6 +296,42 @@
   display: inline-block;
 }
 
+/* Typing cursor */
+.typing-cursor {
+  display: inline-block;
+  animation: blink 0.8s step-end infinite;
+  font-weight: 300;
+  opacity: 0.8;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Particle burst for vote selection */
+.vote-card-wrapper {
+  position: relative;
+}
+
+.particle-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.particle {
+  position: absolute;
+  will-change: transform, opacity;
+}
+
+/* Result card spacer for consistent layout */
+.game-result-card-label--spacer {
+  height: 18px;
+}
+
 /* Round result */
 .game-result-header {
   text-align: center;

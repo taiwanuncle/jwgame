@@ -13,15 +13,33 @@
   left: 0;
   top: 0;
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent) 0%, #5856D6 100%);
   transition: width 0.2s linear;
-  opacity: 0.2;
+  opacity: 0.25;
+}
+
+/* Glow line at the edge of the fill */
+.countdown-bar__fill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent), 0 0 16px rgba(0, 122, 255, 0.4);
+  opacity: 0.8;
 }
 
 .countdown-bar__fill--urgent {
-  background: #FF3B30;
-  opacity: 0.25;
+  background: linear-gradient(90deg, #FF3B30 0%, #FF6B6B 100%);
+  opacity: 0.3;
   animation: urgentPulse 0.5s infinite alternate;
+}
+
+.countdown-bar__fill--urgent::after {
+  background: #FF3B30;
+  box-shadow: 0 0 8px #FF3B30, 0 0 16px rgba(255, 59, 48, 0.5);
 }
 
 .countdown-bar__text {
@@ -38,9 +56,15 @@
 .countdown-bar__text--urgent {
   color: #FF3B30;
   font-size: 14px;
+  animation: urgentTextPulse 0.5s infinite alternate;
 }
 
 @keyframes urgentPulse {
-  from { opacity: 0.25; }
+  from { opacity: 0.3; }
   to { opacity: 0.15; }
+}
+
+@keyframes urgentTextPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
 }
