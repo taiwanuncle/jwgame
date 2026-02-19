@@ -103,7 +103,7 @@ const ko = {
       everyoneCorrect: "모두 정답! 제시자 0점, 나머지 각 2점",
       nobodyCorrect: "모두 오답! 제시자 0점, 나머지 각 2점",
       someCorrect: "제시자 +3점, 맞춘 사람 +3점",
-      bonus: "추가!",
+      bonus: "보너스!",
       bonusPoint: "의 카드를 선택받아 +1점",
       summary: "합산",
       detail: "라운드별",

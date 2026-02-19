@@ -105,9 +105,9 @@ export default function GamePage({
     }
   }, [gameState.currentRound, gameState.totalRounds, gameState.phase, showToast, t]);
 
-  // Round result tips
+  // Round result tips — show after guide is dismissed
   useEffect(() => {
-    if (gameState.phase === "round_result" && roundResult) {
+    if (gameState.phase === "round_result" && roundResult && !showGuide) {
       if (roundResult.allCorrect) {
         showToast(t("toast.everyoneCorrectTip"), "warning");
       } else if (roundResult.noneCorrect) {
@@ -116,7 +116,7 @@ export default function GamePage({
         showToast(t("toast.someCorrectTip"), "success");
       }
     }
-  }, [gameState.phase, roundResult, showToast, t]);
+  }, [gameState.phase, roundResult, showGuide, showToast, t]);
 
   const handleSubmitClue = () => {
     if (selectedCard === null || !clue.trim()) return;
