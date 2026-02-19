@@ -229,12 +229,18 @@ class AudioManager {
   togglePlay() {
     if (this._playing) {
       this.pause();
-    } else if (this.audio) {
-      this.resume();
-    } else if (this._pendingCategory) {
+    } else {
       this._userPaused = false;
-      this._currentCategory = null;
-      this.playCategory(this._pendingCategory);
+      // If pending category differs from current, switch to the correct one
+      if (this._pendingCategory && this._pendingCategory !== this._currentCategory) {
+        this._currentCategory = null;
+        this.playCategory(this._pendingCategory);
+      } else if (this.audio) {
+        this.resume();
+      } else if (this._pendingCategory) {
+        this._currentCategory = null;
+        this.playCategory(this._pendingCategory);
+      }
     }
   }
 

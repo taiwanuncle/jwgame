@@ -103,6 +103,7 @@ const en = {
       everyoneCorrect: "Everyone guessed! Storyteller 0pts, others 2pts each",
       nobodyCorrect: "Nobody guessed! Storyteller 0pts, others 2pts each",
       someCorrect: "Storyteller +3pts, correct guessers +3pts",
+      bonus: "Bonus!",
       bonusPoint: "'s card was chosen, +1pt",
       summary: "Summary",
       detail: "By Round",
@@ -123,6 +124,7 @@ const en = {
     },
     guide: {
       ok: "Got it!",
+      hideToday: "Don't show guides for today",
       storyteller_turn_title: "You are the Storyteller!",
       storyteller_turn_desc: "Pick a card from your hand and\nwrite a clue that describes it.",
       storyteller_turn_tip: "💡 Too easy or too hard = 0 points! Find the right balance!",

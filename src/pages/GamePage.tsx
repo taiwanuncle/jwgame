@@ -35,6 +35,15 @@ export default function GamePage({
   const [showScores, setShowScores] = useState(false);
   const [toast, setToast] = useState({ message: "", visible: false, type: "info" as "info" | "warning" | "success" });
   const [phaseGuideAcked, setPhaseGuideAcked] = useState<string | null>(null);
+  const [guideDisabledToday, setGuideDisabledToday] = useState(() => {
+    try {
+      const hideUntil = localStorage.getItem("guide_hide_today");
+      if (hideUntil) {
+        return new Date() < new Date(hideUntil);
+      }
+    } catch { /* */ }
+    return false;
+  });
 
   const myId = gameState.myId;
   const me = gameState.players.find((p) => p.id === myId);
@@ -53,12 +62,19 @@ export default function GamePage({
     return null;
   };
   const currentGuideKey = getGuideKey();
-  const showGuide = currentGuideKey !== null && phaseGuideAcked !== currentGuideKey;
+  const showGuide = currentGuideKey !== null && phaseGuideAcked !== currentGuideKey && !guideDisabledToday;
 
   // Reset guide on phase/round change
   useEffect(() => {
     setPhaseGuideAcked(null);
   }, [gameState.phase, gameState.currentRound]);
+
+  // If guide is disabled today, auto-send phase_ready immediately
+  useEffect(() => {
+    if (guideDisabledToday && currentGuideKey !== null && currentGuideKey !== "shuffle") {
+      onPhaseReady();
+    }
+  }, [guideDisabledToday, currentGuideKey, onPhaseReady]);
 
   // Auto-dismiss shuffle guide after 1.5s
   useEffect(() => {
@@ -512,10 +528,13 @@ export default function GamePage({
                     const player = gameState.players.find(
                       (p) => p.id === sc.playerId
                     );
+                    const isBonus = sc.reason === "bonus";
                     return (
-                      <div key={`${sc.playerId}-${sc.reason}`} className="game-result-score-item">
+                      <div key={`${sc.playerId}-${sc.reason}`} className={`game-result-score-item ${isBonus ? "game-result-score-item--bonus" : ""}`}>
                         <span>{player?.nickname}</span>
-                        <span className="game-result-points">+{sc.points}</span>
+                        <span className={`game-result-points ${isBonus ? "game-result-points--bonus" : ""}`}>
+                          +{sc.points}{isBonus ? ` ${t("score.bonus")}` : ""}
+                        </span>
                       </div>
                     );
                   })}
@@ -726,6 +745,25 @@ export default function GamePage({
               >
                 {t("guide.ok")}
               </button>
+              <label className="phase-guide-hide-today">
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setGuideDisabledToday(checked);
+                    try {
+                      if (checked) {
+                        const eod = new Date();
+                        eod.setHours(23, 59, 59, 999);
+                        localStorage.setItem("guide_hide_today", eod.toISOString());
+                      } else {
+                        localStorage.removeItem("guide_hide_today");
+                      }
+                    } catch { /* */ }
+                  }}
+                />
+                <span>{t("guide.hideToday")}</span>
+              </label>
             </motion.div>
           </motion.div>
         )}

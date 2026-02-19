@@ -103,6 +103,7 @@ const ko = {
       everyoneCorrect: "모두 정답! 제시자 0점, 나머지 각 2점",
       nobodyCorrect: "모두 오답! 제시자 0점, 나머지 각 2점",
       someCorrect: "제시자 +3점, 맞춘 사람 +3점",
+      bonus: "추가!",
       bonusPoint: "의 카드를 선택받아 +1점",
       summary: "합산",
       detail: "라운드별",
@@ -123,6 +124,7 @@ const ko = {
     },
     guide: {
       ok: "확인!",
+      hideToday: "오늘은 더 이상 설명을 듣지 않습니다",
       storyteller_turn_title: "당신은 출제자입니다!",
       storyteller_turn_desc: "손패에서 카드 한 장을 선택하고,\n그 카드에 어울리는 제시어를 적어주세요.",
       storyteller_turn_tip: "💡 너무 쉽거나 어려운 제시어를 내면 점수를 얻지 못해요!",

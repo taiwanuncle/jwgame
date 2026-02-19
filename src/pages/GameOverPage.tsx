@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import AvatarIcon from "../components/AvatarIcon";
+import ScoreBoard from "../components/ScoreBoard";
 import type { GameStateFromServer } from "../hooks/useSocket";
 import "./GameOverPage.css";
 
@@ -18,6 +19,7 @@ export default function GameOverPage({
   onBackToLobby,
 }: GameOverPageProps) {
   const { t } = useTranslation();
+  const [showScores, setShowScores] = useState(false);
 
   const me = gameState.players.find((p) => p.id === gameState.myId);
   const isHost = me?.isHost || false;
@@ -175,6 +177,9 @@ export default function GameOverPage({
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
       >
+        <button className="btn-ghost gameover-score-btn" onClick={() => setShowScores(true)}>
+          📊 {t("game.scores")}
+        </button>
         {isHost && (
           <button className="btn-primary" onClick={onPlayAgain}>
             {t("result.playAgain")}
@@ -184,6 +189,14 @@ export default function GameOverPage({
           {t("result.backToLobby")}
         </button>
       </motion.div>
+
+      <ScoreBoard
+        players={gameState.players}
+        isOpen={showScores}
+        onClose={() => setShowScores(false)}
+        currentPlayerId={gameState.myId}
+        roundHistory={(gameState as any).roundHistory}
+      />
     </div>
   );
 }

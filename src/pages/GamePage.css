@@ -372,6 +372,15 @@
   border-radius: var(--radius-full);
 }
 
+.game-result-score-item--bonus {
+  border-color: #FF9500;
+  background: #FFF8EE;
+}
+
+.game-result-points--bonus {
+  background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+}
+
 /* Fixed bottom action bar — sits above chat bar */
 .game-bottombar {
   position: fixed;
@@ -489,4 +498,21 @@
   font-size: 17px;
   font-weight: 700;
   border-radius: var(--radius-full);
+}
+
+.phase-guide-hide-today {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+}
+
+.phase-guide-hide-today input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent);
 }

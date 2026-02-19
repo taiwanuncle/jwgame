@@ -103,6 +103,7 @@ const zh = {
       everyoneCorrect: "全部猜对! 出题者0分，其他人各2分",
       nobodyCorrect: "全部猜错! 出题者0分，其他人各2分",
       someCorrect: "出题者+3分，猜对的人+3分",
+      bonus: "额外!",
       bonusPoint: "的卡牌被选中，+1分",
       summary: "总览",
       detail: "各轮详情",
@@ -123,6 +124,7 @@ const zh = {
     },
     guide: {
       ok: "知道了！",
+      hideToday: "今天不再显示说明",
       storyteller_turn_title: "你是出题者！",
       storyteller_turn_desc: "从手牌中选一张卡，\n然后写一个与之相关的提示词。",
       storyteller_turn_tip: "💡 提示词太简单或太难都会得0分！",
