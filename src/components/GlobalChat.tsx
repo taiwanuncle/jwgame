@@ -10,12 +10,25 @@ interface GlobalChatProps {
   myId?: string;
 }
 
+const MIN_MSG_HEIGHT = 120;
+const MAX_MSG_HEIGHT = 500;
+const DEFAULT_MSG_HEIGHT = 250;
+const DEFAULT_MSG_HEIGHT_MOBILE = 200;
+
+function getDefaultHeight() {
+  return window.innerWidth <= 480 ? DEFAULT_MSG_HEIGHT_MOBILE : DEFAULT_MSG_HEIGHT;
+}
+
 export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) {
   const [expanded, setExpanded] = useState(false);
   const [input, setInput] = useState("");
+  const [msgHeight, setMsgHeight] = useState(getDefaultHeight);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const dragStartY = useRef(0);
+  const dragStartHeight = useRef(0);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -42,13 +55,66 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
     updateBarHeight();
     const timer = setTimeout(updateBarHeight, 350);
     return () => clearTimeout(timer);
-  }, [expanded, messages.length, updateBarHeight]);
+  }, [expanded, messages.length, updateBarHeight, msgHeight]);
 
   // Toggle body class
   useEffect(() => {
     document.body.classList.toggle("gchat-is-expanded", expanded);
     return () => document.body.classList.remove("gchat-is-expanded");
   }, [expanded]);
+
+  // Drag handlers for resize handle
+  const handleDragStart = useCallback((clientY: number) => {
+    isDragging.current = true;
+    dragStartY.current = clientY;
+    dragStartHeight.current = msgHeight;
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "ns-resize";
+  }, [msgHeight]);
+
+  const handleDragMove = useCallback((clientY: number) => {
+    if (!isDragging.current) return;
+    // Dragging up = increasing height (startY - currentY is positive when moving up)
+    const delta = dragStartY.current - clientY;
+    const newHeight = Math.min(MAX_MSG_HEIGHT, Math.max(MIN_MSG_HEIGHT, dragStartHeight.current + delta));
+    setMsgHeight(newHeight);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    isDragging.current = false;
+    document.body.style.userSelect = "";
+    document.body.style.cursor = "";
+  }, []);
+
+  // Mouse events
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDragStart(e.clientY);
+  }, [handleDragStart]);
+
+  // Touch events
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    handleDragStart(e.touches[0].clientY);
+  }, [handleDragStart]);
+
+  // Global move/end listeners
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => handleDragMove(e.clientY);
+    const onTouchMove = (e: TouchEvent) => handleDragMove(e.touches[0].clientY);
+    const onEnd = () => handleDragEnd();
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onEnd);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onEnd);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onEnd);
+    };
+  }, [handleDragMove, handleDragEnd]);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -108,6 +174,15 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
             onAnimationComplete={updateBarHeight}
           >
+            {/* Drag handle for resizing */}
+            <div
+              className="gchat-resize-handle"
+              onMouseDown={onMouseDown}
+              onTouchStart={onTouchStart}
+            >
+              <div className="gchat-resize-bar" />
+            </div>
+
             <div className="gchat-expanded-header">
               <span className="gchat-expanded-title">💬 채팅</span>
               <button
@@ -117,7 +192,10 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
                 ▼
               </button>
             </div>
-            <div className="gchat-messages">
+            <div
+              className="gchat-messages"
+              style={{ height: msgHeight }}
+            >
               {messages.length === 0 && (
                 <div className="gchat-empty">메시지가 없습니다</div>
               )}
