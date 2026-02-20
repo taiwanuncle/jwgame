@@ -20,6 +20,7 @@ const ko = {
       joinByCode: "방 코드로 참여",
       host: "방장",
       roundsSuffix: "라운드",
+      language: "언어",
     },
     waiting: {
       waitingRoom: "대기실",

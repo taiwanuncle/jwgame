@@ -20,6 +20,7 @@ const my = {
       joinByCode: "ကုဒ်ဖြင့်ဝင်မည်",
       host: "အိမ်ရှင်",
       roundsSuffix: "အကြိမ်",
+      language: "ဘာသာစကား",
     },
     waiting: {
       waitingRoom: "စောင့်ဆိုင်းခန်း",

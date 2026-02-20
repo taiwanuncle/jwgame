@@ -28,8 +28,16 @@
 
 .lobby-lang-selector {
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
   margin-top: 10px;
+}
+
+.lobby-lang-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .lobby-lang-dropdown {
@@ -48,11 +56,6 @@
 .lobby-lang-dropdown:hover {
   border-color: var(--accent);
   background: var(--accent-light);
-}
-
-.lobby-lang-icon {
-  font-size: 16px;
-  pointer-events: none;
 }
 
 .lobby-lang-select {

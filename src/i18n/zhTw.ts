@@ -20,6 +20,7 @@ const zhTw = {
       joinByCode: "透過代碼加入",
       host: "房主",
       roundsSuffix: "輪",
+      language: "語言",
     },
     waiting: {
       waitingRoom: "等候室",

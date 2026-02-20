@@ -97,8 +97,8 @@ export default function LobbyPage({
         <h1 className="lobby-title">{t("app.title")}</h1>
         <p className="lobby-subtitle">{t("app.subtitle")}</p>
         <div className="lobby-lang-selector">
+          <span className="lobby-lang-label">🌐 {t("lobby.language")}</span>
           <div className="lobby-lang-dropdown">
-            <span className="lobby-lang-icon">🌐</span>
             <select
               className="lobby-lang-select"
               value={i18n.language}

@@ -20,6 +20,7 @@ const en = {
       joinByCode: "Join by code",
       host: "Host",
       roundsSuffix: "rounds",
+      language: "Language",
     },
     waiting: {
       waitingRoom: "Waiting Room",
