@@ -11,6 +11,7 @@ const LANGUAGES = [
   { code: "ko", label: "한국어" },
   { code: "en", label: "EN" },
   { code: "zh", label: "中文" },
+  { code: "my", label: "မြန်မာ" },
 ] as const;
 
 interface LobbyPageProps {

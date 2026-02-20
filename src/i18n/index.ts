@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 import ko from "./ko";
 import en from "./en";
 import zh from "./zh";
+import my from "./my";
 
 // Restore saved language preference
 const savedLng = (() => {
@@ -14,6 +15,7 @@ i18n.use(initReactI18next).init({
     ko,
     en,
     zh,
+    my,
   },
   lng: savedLng,
   fallbackLng: "ko",
