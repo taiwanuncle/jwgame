@@ -9,8 +9,9 @@ import "./LobbyPage.css";
 
 const LANGUAGES = [
   { code: "ko", label: "한국어" },
-  { code: "en", label: "EN" },
-  { code: "zh", label: "中文" },
+  { code: "en", label: "English" },
+  { code: "zh", label: "简体中文" },
+  { code: "zh-TW", label: "繁體中文" },
   { code: "my", label: "မြန်မာ" },
 ] as const;
 
@@ -96,18 +97,23 @@ export default function LobbyPage({
         <h1 className="lobby-title">{t("app.title")}</h1>
         <p className="lobby-subtitle">{t("app.subtitle")}</p>
         <div className="lobby-lang-selector">
-          {LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              className={`lobby-lang-btn ${i18n.language === lang.code ? "lobby-lang-btn--active" : ""}`}
-              onClick={() => {
-                i18n.changeLanguage(lang.code);
-                try { localStorage.setItem("app_lang", lang.code); } catch { /* */ }
+          <div className="lobby-lang-dropdown">
+            <span className="lobby-lang-icon">🌐</span>
+            <select
+              className="lobby-lang-select"
+              value={i18n.language}
+              onChange={(e) => {
+                i18n.changeLanguage(e.target.value);
+                try { localStorage.setItem("app_lang", e.target.value); } catch { /* */ }
               }}
             >
-              {lang.label}
-            </button>
-          ))}
+              {LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </motion.div>
 

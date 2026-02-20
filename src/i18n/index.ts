@@ -4,6 +4,7 @@ import ko from "./ko";
 import en from "./en";
 import zh from "./zh";
 import my from "./my";
+import zhTw from "./zhTw";
 
 // Restore saved language preference
 const savedLng = (() => {
@@ -15,6 +16,7 @@ i18n.use(initReactI18next).init({
     ko,
     en,
     zh,
+    "zh-TW": zhTw,
     my,
   },
   lng: savedLng,

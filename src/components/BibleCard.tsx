@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import characters from "../data/characters";
+import type { BibleCharacter } from "../data/characters";
 import "./BibleCard.css";
 
 interface BibleCardProps {
@@ -20,6 +22,33 @@ interface BibleCardProps {
   dealDelay?: number;
 }
 
+/** Determine which names to show on card based on current language */
+function getCardNames(character: BibleCharacter, lang: string) {
+  const nameMap: Record<string, string> = {
+    ko: character.nameKo,
+    en: character.nameEn,
+    zh: character.nameZh,
+    "zh-TW": character.nameZhTw,
+  };
+
+  const primaryName = nameMap[lang] || character.nameKo;
+
+  let secondaryNames: string[];
+  if (lang === "ko") {
+    secondaryNames = [character.nameEn, character.nameZh];
+  } else if (lang === "en") {
+    secondaryNames = [character.nameKo, character.nameZh];
+  } else {
+    // zh, zh-TW, my, etc.
+    secondaryNames = [character.nameKo, character.nameEn];
+  }
+
+  // Remove duplicates with primary
+  secondaryNames = secondaryNames.filter((n) => n !== primaryName);
+
+  return { primaryName, secondaryNames };
+}
+
 export default function BibleCard({
   cardId,
   selected = false,
@@ -34,6 +63,7 @@ export default function BibleCard({
   dealDelay,
 }: BibleCardProps) {
   const [imgError, setImgError] = useState(false);
+  const { i18n } = useTranslation();
   const character = characters.find((c) => c.id === cardId);
 
   if (!character) return null;
@@ -98,11 +128,17 @@ export default function BibleCard({
                   />
                 )}
               </div>
-              <div className="bible-card__info">
-                <span className="bible-card__name-ko">{character.nameKo}</span>
-                <span className="bible-card__name-en">{character.nameEn}</span>
-                <span className="bible-card__name-zh">{character.nameZh}</span>
-              </div>
+              {(() => {
+                const { primaryName, secondaryNames } = getCardNames(character, i18n.language);
+                return (
+                  <div className="bible-card__info">
+                    <span className="bible-card__name-primary">{primaryName}</span>
+                    {secondaryNames.map((name, idx) => (
+                      <span key={idx} className="bible-card__name-secondary">{name}</span>
+                    ))}
+                  </div>
+                );
+              })()}
               {showVoteCount !== undefined && showVoteCount > 0 && (
                 <motion.div
                   className="bible-card__vote-count"
@@ -191,11 +227,17 @@ export default function BibleCard({
             />
           )}
         </div>
-        <div className="bible-card__info">
-          <span className="bible-card__name-ko">{character.nameKo}</span>
-          <span className="bible-card__name-en">{character.nameEn}</span>
-          <span className="bible-card__name-zh">{character.nameZh}</span>
-        </div>
+        {(() => {
+          const { primaryName, secondaryNames } = getCardNames(character, i18n.language);
+          return (
+            <div className="bible-card__info">
+              <span className="bible-card__name-primary">{primaryName}</span>
+              {secondaryNames.map((name, idx) => (
+                <span key={idx} className="bible-card__name-secondary">{name}</span>
+              ))}
+            </div>
+          );
+        })()}
         {selected && (
           <motion.div
             className="bible-card__check"
