@@ -28,7 +28,7 @@ const MAX_PLAYERS = 10;
 // Timer durations (seconds)
 const TIMER = {
   storyteller_turn: 60,
-  players_submit: 20,
+  players_submit: 30,
   voting: 20,
   // round_result: no timer - host manually proceeds (chat time)
 };
