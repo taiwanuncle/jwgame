@@ -13,6 +13,7 @@ const LANGUAGES = [
   { code: "zh", label: "简体中文" },
   { code: "zh-TW", label: "繁體中文" },
   { code: "my", label: "မြန်မာ" },
+  { code: "th", label: "ไทย" },
 ] as const;
 
 interface LobbyPageProps {
