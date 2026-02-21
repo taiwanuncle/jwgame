@@ -22,8 +22,24 @@ interface BibleCardProps {
   dealDelay?: number;
 }
 
+/** Normalize i18n.language to our known codes */
+function normalizeLang(lang: string): string {
+  if (!lang) return "ko";
+  // Exact match first
+  const known = ["ko", "en", "zh", "zh-TW", "my", "th"];
+  if (known.includes(lang)) return lang;
+  // Handle variants like ko-KR → ko, en-US → en, zh-Hans → zh, zh-Hant → zh-TW
+  if (lang.startsWith("zh-Hant") || lang.startsWith("zh-TW")) return "zh-TW";
+  if (lang.startsWith("zh")) return "zh";
+  const base = lang.split("-")[0];
+  if (known.includes(base)) return base;
+  return "ko";
+}
+
 /** Determine which names to show on card based on current language */
 function getCardNames(character: BibleCharacter, lang: string) {
+  const resolved = normalizeLang(lang);
+
   const nameMap: Record<string, string> = {
     ko: character.nameKo,
     en: character.nameEn,
@@ -31,15 +47,15 @@ function getCardNames(character: BibleCharacter, lang: string) {
     "zh-TW": character.nameZhTw,
   };
 
-  const primaryName = nameMap[lang] || character.nameKo;
+  const primaryName = nameMap[resolved] || character.nameKo;
 
   let secondaryNames: string[];
-  if (lang === "ko") {
+  if (resolved === "ko") {
     secondaryNames = [character.nameEn, character.nameZh];
-  } else if (lang === "en") {
+  } else if (resolved === "en") {
     secondaryNames = [character.nameKo, character.nameZh];
   } else {
-    // zh, zh-TW, my, etc.
+    // zh, zh-TW, my, th, etc.
     secondaryNames = [character.nameKo, character.nameEn];
   }
 
