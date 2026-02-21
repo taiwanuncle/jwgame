@@ -49,13 +49,19 @@ function getCardNames(character: BibleCharacter, lang: string) {
 
   const primaryName = nameMap[resolved] || character.nameKo;
 
+  // Determine secondary names based on what primary actually is:
+  // - Primary is Korean (ko, or fallback) → English + Chinese(simplified)
+  // - Primary is English → Korean + Chinese(simplified)
+  // - Primary is anything else (zh, zh-TW) → Korean + English
+  const isKoPrimary = primaryName === character.nameKo;
+  const isEnPrimary = primaryName === character.nameEn;
+
   let secondaryNames: string[];
-  if (resolved === "ko") {
+  if (isKoPrimary) {
     secondaryNames = [character.nameEn, character.nameZh];
-  } else if (resolved === "en") {
+  } else if (isEnPrimary) {
     secondaryNames = [character.nameKo, character.nameZh];
   } else {
-    // zh, zh-TW, my, th, etc.
     secondaryNames = [character.nameKo, character.nameEn];
   }
 
