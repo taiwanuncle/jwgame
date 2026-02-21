@@ -45,6 +45,8 @@ function getCardNames(character: BibleCharacter, lang: string) {
     en: character.nameEn,
     zh: character.nameZh,
     "zh-TW": character.nameZhTw,
+    my: character.nameMy,
+    th: character.nameTh,
   };
 
   const primaryName = nameMap[resolved] || character.nameKo;
