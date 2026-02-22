@@ -306,7 +306,7 @@ export default function GamePage({
         <div className="game-topbar-actions">
           <div className="game-lang-wrap">
             <button className="game-lang-btn" onClick={() => setShowLang(!showLang)}>
-              🌐
+              🌐 Lang
             </button>
             <AnimatePresence>
               {showLang && (
@@ -345,7 +345,7 @@ export default function GamePage({
             </AnimatePresence>
           </div>
           <button className="game-size-btn" onClick={cycleCardSize}>
-            🖼 {cardSize.toUpperCase()}
+            Size {cardSize.toUpperCase()}
           </button>
           <button
             className="game-score-btn"
