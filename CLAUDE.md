@@ -14,6 +14,7 @@ Dixit-style multiplayer web card game using Bible character AI-generated illustr
 - `npm run dev` — run both client + server concurrently
 - `npm run build` — `tsc -b && vite build`
 - `npm run dev:client` / `npm run dev:server` — run separately
+- **Preview server**: DO NOT use preview_start / launch.json — not configured for this project
 
 ## Architecture
 
@@ -22,13 +23,15 @@ Dixit-style multiplayer web card game using Bible character AI-generated illustr
 src/
 ├── App.tsx              # Main app, routing by gameState phase, music + chat integration
 ├── types.ts             # GamePhase, RoundResult types
+├── data/
+│   └── characters.ts    # 128 Bible characters with multi-language names (ko/en/zh/zhTw/my/th)
 ├── pages/
-│   ├── LobbyPage.tsx    # Room create/join, room browser, language selector, info modals
+│   ├── LobbyPage.tsx    # Room create/join, room browser, language dropdown, info modals
 │   ├── WaitingRoom.tsx  # Player list, ready system, round selection, animated states
 │   ├── GamePage.tsx     # All game phases with animations (storyteller→submit→vote→result)
 │   └── GameOverPage.tsx # Rankings with counting animation, confetti, play again
 ├── components/
-│   ├── BibleCard.tsx    # Card with 3D flip, deal animation, highlight, vote count badge
+│   ├── BibleCard.tsx    # Card with 3D flip, deal animation, dynamic multi-lang names
 │   ├── AvatarIcon.tsx   # Individual PNG avatars (/icons/0-15.png) — DO NOT REGENERATE
 │   ├── AvatarPicker.tsx # Avatar selection grid (58px items, 40px icons)
 │   ├── GlobalChat.tsx   # Fixed bottom chat bar (collapsed/expanded), drag-resize handle
@@ -48,7 +51,10 @@ src/
 │   ├── index.ts         # i18n config, localStorage language restore
 │   ├── ko.ts            # Korean (primary)
 │   ├── en.ts            # English
-│   └── zh.ts            # Chinese (Simplified)
+│   ├── zh.ts            # Chinese (Simplified)
+│   ├── zhTw.ts          # Chinese (Traditional) — registered as "zh-TW"
+│   ├── my.ts            # Myanmar (Burmese)
+│   └── th.ts            # Thai
 └── styles/
     └── global.css       # CSS variables, fonts, button ripple effects, page-container
 ```
@@ -56,7 +62,7 @@ src/
 ### Backend (server/index.js)
 - Single file, ~860+ lines
 - Socket.IO events: room management, game flow, chat, timers
-- **Timer system**: storyteller_turn (60s), players_submit (20s), voting (20s)
+- **Timer system**: storyteller_turn (60s), players_submit (30s), voting (20s)
 - **Timer deferral**: `phase_ready` event from clients + 5s safety fallback (`guideTimeout`)
 - **Auto-vote**: Players who don't vote in time get random auto-vote
 - **Disconnect handling**: Auto-advance if only disconnected players remain
@@ -73,12 +79,36 @@ src/
 - **NEVER regenerate or overwrite these files** — user manually centered each one
 - AvatarIcon uses `<img>` tag (not CSS sprite)
 
+### Card Name Display System (BibleCard.tsx)
+- **Dynamic multi-language names** based on `i18n.language`
+- `normalizeLang()`: Normalizes browser locale codes (e.g., `ko-KR` → `ko`, `zh-Hant` → `zh-TW`)
+- `getCardNames()`: Returns `{ primaryName, secondaryNames }` — always 3 names displayed
+- **Display rules** (primary = large, secondary = small):
+  - Korean selected → primary: 한국어, secondary: English + 简体中文
+  - English selected → primary: English, secondary: 한국어 + 简体中文
+  - Other languages (zh, zh-TW, my, th, etc.) → primary: 해당언어, secondary: 한국어 + English
+- Secondary names are determined by what the **primary name value** actually is (not by lang code), so fallback cases work correctly
+- **When adding new languages**: add to `nameMap` in `getCardNames()`, add to `known` array in `normalizeLang()`, the display rule automatically falls into the "Other" category (primary + Korean + English)
+
+### Character Data (src/data/characters.ts)
+- 128 Bible characters with interface:
+  ```typescript
+  { id, nameKo, nameEn, nameZh, nameZhTw, nameMy, nameTh, image }
+  ```
+- Myanmar/Thai names may need verification against 신세계역 (New World Translation)
+- Card images at `/public/cards/001_아담_Adam.png` ~ `128_실라_Silas.png`
+
 ### Card Animations (BibleCard.tsx)
 - **3D Flip**: `flipReveal` prop — card starts face-down and flips to face-up with spring animation
 - **Deal Effect**: `dealDelay` prop — cards fly in from below with rotation, staggered by delay
 - **Sequential Reveal**: Round result cards flip one-by-one (0.15s intervals)
 - Vote count badges and highlight badges animate in after flip completes
 - Uses `perspective: 800px` and `transform-style: preserve-3d` for 3D effect
+
+### Card Name CSS (BibleCard.css)
+- `.bible-card__name-primary`: 14px, bold (11px for sm, 16px for lg)
+- `.bible-card__name-secondary`: 10px, tertiary color (8px for sm, 12px for lg)
+- `.bible-card__info`: flex column, centered text, 8px 10px padding
 
 ### Game Visual Effects (GamePage.tsx)
 - **TypingText Component**: Clue text appears one character at a time (60ms/char) with blinking cursor
@@ -155,11 +185,26 @@ src/
 - Email: atshane81@gmail.com
 - KakaoTalk Channel: https://pf.kakao.com/_exghAX
 
-### i18n
-- 3 languages: Korean (ko), English (en), Chinese Simplified (zh)
+### i18n (Internationalization)
+- **6 languages**: Korean (ko), English (en), Chinese Simplified (zh), Chinese Traditional (zh-TW), Myanmar (my), Thai (th)
+- i18n resource registration: `{ ko, en, zh, "zh-TW": zhTw, my, th }`
 - Language saved to localStorage (`app_lang`)
-- Fonts: Inter + Noto Sans KR + Noto Sans SC via Google Fonts
-- Keys include: guide.*, pwa.*, score.bonus, toast.* sections
+- **Language selector**: Dropdown (`<select>`) in LobbyPage with `🌐 {t("lobby.language")}` label
+- All translation files have `lobby.language` key for the label
+- **Fonts**: Inter + Noto Sans KR + Noto Sans SC + Noto Sans TC + Noto Sans Thai + Noto Sans Myanmar via Google Fonts
+- Font-family chain: `'Inter', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', 'Noto Sans Myanmar', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
+- Keys include: guide.*, pwa.*, score.bonus, toast.*, lobby.language sections
+
+#### Adding a New Language
+1. Create `src/i18n/{langCode}.ts` — copy structure from `ko.ts`, translate all keys
+2. Register in `src/i18n/index.ts`: import + add to resources
+3. Add `name{LangCode}` field to `BibleCharacter` interface in `src/data/characters.ts`
+4. Add translations for all 128 characters in `characters.ts`
+5. Add to `nameMap` in `BibleCard.tsx` `getCardNames()` function
+6. Add to `known` array in `BibleCard.tsx` `normalizeLang()` function
+7. Add to `LANGUAGES` array in `LobbyPage.tsx`
+8. Add Google Font (Noto Sans variant) to `global.css` import + font-family chain
+9. Card display automatically shows: selected language (primary) + Korean + English (secondary)
 
 ## CSS Architecture
 - CSS variables defined in `global.css` (--accent, --bg-primary, etc.)
@@ -186,12 +231,18 @@ src/
 ## Deployment Notes
 - **Frontend (Vercel)**: Auto-deploys on push to master
 - **Backend (Render)**: Manual deploy required when `server/index.js` changes
+  - Dashboard: https://dashboard.render.com → `jwgame` service → Manual Deploy
 - Render free tier spins down on inactivity (~50s cold start)
 - Backend URL configured in `useSocket.ts`
-- Workflow: work on `claude/eager-greider` branch → merge to master → push
+- **Workflow**: work on `claude/eager-greider` branch → merge to master → push
+  - Worktree can't checkout master directly
+  - Must: `cd "C:\Users\atsha\jwgame" && git merge claude/eager-greider && git push origin master`
+- **node_modules**: Lives in main repo (`C:\Users\atsha\jwgame\node_modules`), NOT in worktree
+  - Build/dev commands work from worktree because Vite resolves from project root
 
 ## Known Issues / Warnings
 - CRLF warnings on git commit (Windows) — harmless
-- Chunk size warning on build (~512KB) — framer-motion is the main contributor
+- Chunk size warning on build (~540KB) — framer-motion is the main contributor
 - `ChatOverlay.tsx` still exists but is unused (replaced by GlobalChat) — can be removed later
 - Copyright notice: "사용되는 모든 그림과 음악은 AI로 제작되었습니다"
+- Myanmar/Thai character names (nameMy, nameTh) may not match 신세계역 — pending user verification
