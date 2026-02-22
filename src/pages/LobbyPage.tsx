@@ -4,17 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import AvatarPicker from "../components/AvatarPicker";
 import InfoModal from "../components/InfoModal";
 import InstallPrompt from "../components/InstallPrompt";
+import CharacterGallery from "../components/CharacterGallery";
 import type { AvailableRoom } from "../hooks/useSocket";
 import "./LobbyPage.css";
-
-const LANGUAGES = [
-  { code: "ko", label: "한국어" },
-  { code: "en", label: "English" },
-  { code: "zh", label: "简体中文" },
-  { code: "zh-TW", label: "繁體中文" },
-  { code: "my", label: "မြန်မာ" },
-  { code: "th", label: "ไทย" },
-] as const;
 
 interface LobbyPageProps {
   onCreateRoom: (nickname: string, avatarIndex: number) => void;
@@ -31,7 +23,7 @@ export default function LobbyPage({
   errorMsg,
   availableRooms,
 }: LobbyPageProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>("menu");
   const [nickname, setNickname] = useState("");
   const [roomCode, setRoomCode] = useState("");
@@ -39,6 +31,7 @@ export default function LobbyPage({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [showGallery, setShowGallery] = useState(false);
   const [showKakaoWarning, setShowKakaoWarning] = useState(false);
   const [kakaoHideToday, setKakaoHideToday] = useState(false);
 
@@ -97,25 +90,6 @@ export default function LobbyPage({
       >
         <h1 className="lobby-title">{t("app.title")}</h1>
         <p className="lobby-subtitle">{t("app.subtitle")}</p>
-        <div className="lobby-lang-selector">
-          <span className="lobby-lang-label">🌐 {t("lobby.language")}</span>
-          <div className="lobby-lang-dropdown">
-            <select
-              className="lobby-lang-select"
-              value={i18n.language}
-              onChange={(e) => {
-                i18n.changeLanguage(e.target.value);
-                try { localStorage.setItem("app_lang", e.target.value); } catch { /* */ }
-              }}
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
       </motion.div>
 
       <AnimatePresence mode="wait">
@@ -142,6 +116,12 @@ export default function LobbyPage({
                 {t("lobby.joinRoom")}
               </button>
               <div className="lobby-info-btns">
+                <button
+                  className="btn-ghost lobby-info-btn"
+                  onClick={() => setShowGallery(true)}
+                >
+                  {t("gallery.button")}
+                </button>
                 <button
                   className="btn-ghost lobby-info-btn"
                   onClick={() => setShowHowToPlay(true)}
@@ -410,6 +390,9 @@ export default function LobbyPage({
           ※ 사용되는 모든 그림과 음악은 AI로 제작되었습니다.
         </p>
       </InfoModal>
+
+      {/* 캐릭터 갤러리 */}
+      <CharacterGallery isOpen={showGallery} onClose={() => setShowGallery(false)} />
 
       {/* PWA 홈 화면 추가 안내 */}
       <InstallPrompt />

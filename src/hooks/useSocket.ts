@@ -83,6 +83,8 @@ export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const leavingRef = useRef(false);
   const rejoinAttemptedRef = useRef(false);
+  // Keep session credentials in memory so we can re-save after "play again"
+  const sessionRef = useRef<SavedSession | null>(null);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState<GameStateFromServer | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
@@ -117,6 +119,16 @@ export function useSocket() {
       // Ignore game_state updates after user chose to leave
       if (leavingRef.current) return;
       setGameState(state);
+
+      if (state.phase === "game_over") {
+        // Clear localStorage so browser restart won't show celebration again,
+        // but keep credentials in memory for "play again"
+        clearSession();
+      } else if (!loadSession() && sessionRef.current) {
+        // New game started after game_over (e.g. "play again"):
+        // re-save session so mid-game refresh can rejoin
+        saveSession(sessionRef.current.roomCode, sessionRef.current.persistentId);
+      }
     });
 
     socket.on("round_result", (result: RoundResult) => {
@@ -131,14 +143,17 @@ export function useSocket() {
 
     socket.on("room_created", ({ persistentId, roomCode }: { persistentId: string; roomCode: string }) => {
       leavingRef.current = false;
+      sessionRef.current = { roomCode, persistentId };
       saveSession(roomCode, persistentId);
     });
     socket.on("room_joined", ({ persistentId, roomCode }: { persistentId: string; roomCode: string }) => {
       leavingRef.current = false;
+      sessionRef.current = { roomCode, persistentId };
       saveSession(roomCode, persistentId);
     });
     socket.on("rejoin_success", ({ persistentId, roomCode }: { persistentId: string; roomCode: string }) => {
       leavingRef.current = false;
+      sessionRef.current = { roomCode, persistentId };
       saveSession(roomCode, persistentId);
     });
     socket.on("game_started", () => {
@@ -228,6 +243,7 @@ export function useSocket() {
     setGameState(null);
     setRoundResult(null);
     setChatMessages([]);
+    sessionRef.current = null;
     clearSession();
   }, []);
 

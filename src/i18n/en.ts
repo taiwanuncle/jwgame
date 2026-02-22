@@ -155,6 +155,16 @@ const en = {
       dontShowAgain: "Don't show again",
       close: "Close",
     },
+    chat: {
+      title: "Chat",
+      me: "Me",
+      inputPlaceholder: "Type a message...",
+      empty: "No messages yet",
+    },
+    gallery: {
+      title: "Card Gallery",
+      button: "Card Gallery",
+    },
     info: {
       howToPlay: "How to Play",
       about: "About & Support",

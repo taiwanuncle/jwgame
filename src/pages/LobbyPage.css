@@ -26,61 +26,6 @@
   letter-spacing: 0.5px;
 }
 
-.lobby-lang-selector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.lobby-lang-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.lobby-lang-dropdown {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--bg-tertiary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.lobby-lang-dropdown:hover {
-  border-color: var(--accent);
-  background: var(--accent-light);
-}
-
-.lobby-lang-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding-right: 16px;
-  outline: none;
-  font-family: inherit;
-}
-
-.lobby-lang-dropdown::after {
-  content: "▾";
-  position: absolute;
-  right: 12px;
-  font-size: 10px;
-  color: var(--text-tertiary);
-  pointer-events: none;
-}
-
 .lobby-menu {
   display: flex;
   flex-direction: column;

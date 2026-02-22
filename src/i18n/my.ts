@@ -155,6 +155,16 @@ const my = {
       dontShowAgain: "ထပ်မပြပါနှင့်",
       close: "ပိတ်မည်",
     },
+    chat: {
+      title: "ချတ်",
+      me: "ငါ",
+      inputPlaceholder: "စာရိုက်ပါ...",
+      empty: "မက်ဆေ့ချ်မရှိသေးပါ",
+    },
+    gallery: {
+      title: "ကတ်ပြခန်း",
+      button: "ကတ်ပြခန်း",
+    },
     info: {
       howToPlay: "ကစားနည်း",
       about: "အကြောင်းနှင့် ပံ့ပိုးမှု",

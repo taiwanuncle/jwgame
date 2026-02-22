@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import AvatarIcon from "./AvatarIcon";
 import type { ChatMessage } from "../hooks/useSocket";
@@ -20,6 +21,7 @@ function getDefaultHeight() {
 }
 
 export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [input, setInput] = useState("");
   const [msgHeight, setMsgHeight] = useState(getDefaultHeight);
@@ -30,15 +32,23 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
   const dragStartY = useRef(0);
   const dragStartHeight = useRef(0);
 
-  // Auto-scroll on new messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Focus input when expanding
+  // Auto-scroll on new messages (only when expanded & ref is mounted)
   useEffect(() => {
     if (expanded) {
-      setTimeout(() => inputRef.current?.focus(), 200);
+      // Use setTimeout to ensure the DOM has rendered the new message
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+  }, [messages, expanded]);
+
+  // Focus input and scroll to bottom when expanding
+  useEffect(() => {
+    if (expanded) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      }, 200);
     }
   }, [expanded]);
 
@@ -136,16 +146,16 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
           <div className="gchat-preview" onClick={() => setExpanded(true)}>
             {lastMsg ? (
               <span className="gchat-preview-text">
-                <strong>{lastMsg.playerId === myId ? "나" : lastMsg.nickname}</strong>: {lastMsg.message}
+                <strong>{lastMsg.playerId === myId ? t("chat.me") : lastMsg.nickname}</strong>: {lastMsg.message}
               </span>
             ) : (
-              <span className="gchat-preview-empty">💬 채팅</span>
+              <span className="gchat-preview-empty">💬 {t("chat.title")}</span>
             )}
           </div>
           <div className="gchat-input-row">
             <input
               className="gchat-input"
-              placeholder="메시지 입력..."
+              placeholder={t("chat.inputPlaceholder")}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               maxLength={100}
@@ -184,7 +194,7 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
             </div>
 
             <div className="gchat-expanded-header">
-              <span className="gchat-expanded-title">💬 채팅</span>
+              <span className="gchat-expanded-title">💬 {t("chat.title")}</span>
               <button
                 className="gchat-collapse-btn"
                 onClick={() => setExpanded(false)}
@@ -197,7 +207,7 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
               style={{ height: msgHeight }}
             >
               {messages.length === 0 && (
-                <div className="gchat-empty">메시지가 없습니다</div>
+                <div className="gchat-empty">{t("chat.empty")}</div>
               )}
               {messages.map((msg, i) => {
                 const isMine = msg.playerId === myId;
@@ -222,7 +232,7 @@ export default function GlobalChat({ messages, onSend, myId }: GlobalChatProps) 
               <input
                 ref={inputRef}
                 className="gchat-input"
-                placeholder="메시지 입력..."
+                placeholder={t("chat.inputPlaceholder")}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={100}

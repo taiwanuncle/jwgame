@@ -155,6 +155,16 @@ const zh = {
       dontShowAgain: "不再显示",
       close: "关闭",
     },
+    chat: {
+      title: "聊天",
+      me: "我",
+      inputPlaceholder: "输入消息...",
+      empty: "暂无消息",
+    },
+    gallery: {
+      title: "卡牌画廊",
+      button: "卡牌画廊",
+    },
     info: {
       howToPlay: "游戏说明",
       about: "关于 & 支持",

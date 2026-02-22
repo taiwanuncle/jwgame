@@ -8,6 +8,7 @@ import GamePage from "./pages/GamePage";
 import GameOverPage from "./pages/GameOverPage";
 import MusicPlayer from "./components/MusicPlayer";
 import GlobalChat from "./components/GlobalChat";
+import LanguageToggle from "./components/LanguageToggle";
 import { audioManager } from "./utils/audioManager";
 
 function App() {
@@ -101,6 +102,7 @@ function App() {
   return (
     <>
       {page}
+      <LanguageToggle />
       <MusicPlayer isLobby={isLobby || isWaiting} />
       {inRoom && (
         <GlobalChat

@@ -155,6 +155,16 @@ const ko = {
       dontShowAgain: "다시 보지 않기",
       close: "닫기",
     },
+    chat: {
+      title: "채팅",
+      me: "나",
+      inputPlaceholder: "메시지 입력...",
+      empty: "메시지가 없습니다",
+    },
+    gallery: {
+      title: "카드 갤러리",
+      button: "카드 갤러리",
+    },
     info: {
       howToPlay: "게임 방법",
       about: "제작계기 & 후원",

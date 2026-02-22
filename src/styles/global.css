@@ -269,8 +269,9 @@ input {
   justify-content: center;
   min-height: 100vh;
   padding: 24px;
-  padding-bottom: 64px;
+  padding-bottom: calc(var(--gchat-bar-h, 48px) + 16px);
   gap: 24px;
+  transition: padding-bottom 0.3s ease;
 }
 
 .card-container {

@@ -155,6 +155,16 @@ const th = {
       dontShowAgain: "ไม่แสดงอีก",
       close: "ปิด",
     },
+    chat: {
+      title: "แชท",
+      me: "ฉัน",
+      inputPlaceholder: "พิมพ์ข้อความ...",
+      empty: "ยังไม่มีข้อความ",
+    },
+    gallery: {
+      title: "แกลเลอรีการ์ด",
+      button: "แกลเลอรีการ์ด",
+    },
     info: {
       howToPlay: "วิธีเล่น",
       about: "เกี่ยวกับ & สนับสนุน",

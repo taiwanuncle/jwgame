@@ -29,7 +29,7 @@ const characters: BibleCharacter[] = [
   { id: 17, nameKo: "라헬", nameEn: "Rachel", nameZh: "拉结", nameZhTw: "拉結", nameMy: "ရာခေလ", nameTh: "ราเชล", image: "/cards/017_라헬_Rachel.png" },
   { id: 18, nameKo: "레아", nameEn: "Leah", nameZh: "利亚", nameZhTw: "利亞", nameMy: "လေအာ", nameTh: "เลอาห์", image: "/cards/018_레아_Leah.png" },
   { id: 19, nameKo: "요셉", nameEn: "Joseph", nameZh: "约瑟", nameZhTw: "約瑟", nameMy: "ယောသပ", nameTh: "โยเซฟ", image: "/cards/019_요셉_Joseph.png" },
-  { id: 20, nameKo: "유다", nameEn: "Judah", nameZh: "犹大", nameZhTw: "猶大", nameMy: "ယုဒ", nameTh: "ยูดาห์", image: "/cards/020_유다_Judah.png" },
+  { id: 20, nameKo: "유다(야곱의 넷째)", nameEn: "Judah (Jacob's 4th)", nameZh: "犹大（雅各第四子）", nameZhTw: "猶大（雅各第四子）", nameMy: "ယုဒ(ယာကုပ၏သားအမှတ်၄)", nameTh: "ยูดาห์(บุตรคนที่4ของยาโคบ)", image: "/cards/020_유다_Judah.png" },
   { id: 21, nameKo: "다말", nameEn: "Tamar", nameZh: "他玛", nameZhTw: "他瑪", nameMy: "တာမာ", nameTh: "ทามาร์", image: "/cards/021_다말_Tamar.png" },
   { id: 22, nameKo: "르우벤", nameEn: "Reuben", nameZh: "流便", nameZhTw: "流便", nameMy: "ရူဗင", nameTh: "รูเบน", image: "/cards/022_르우벤_Reuben.png" },
   { id: 23, nameKo: "베냐민", nameEn: "Benjamin", nameZh: "便雅悯", nameZhTw: "便雅憫", nameMy: "ဗင်္ယာမိန", nameTh: "เบนยามิน", image: "/cards/023_베냐민_Benjamin.png" },

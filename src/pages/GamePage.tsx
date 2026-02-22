@@ -113,6 +113,20 @@ export default function GamePage({
     } catch { /* */ }
     return false;
   });
+  const [cardSize, setCardSize] = useState<"sm" | "md" | "lg">(() => {
+    try {
+      const saved = localStorage.getItem("card_size_pref");
+      if (saved === "sm" || saved === "md" || saved === "lg") return saved;
+    } catch { /* */ }
+    return "md";
+  });
+
+  const cycleCardSize = () => {
+    const next = cardSize === "sm" ? "md" : cardSize === "md" ? "lg" : "sm";
+    setCardSize(next);
+    try { localStorage.setItem("card_size_pref", next); } catch { /* */ }
+    playClick();
+  };
 
   const myId = gameState.myId;
   const me = gameState.players.find((p) => p.id === myId);
@@ -288,12 +302,17 @@ export default function GamePage({
             </span>
           )}
         </div>
-        <button
-          className="game-score-btn"
-          onClick={() => setShowScores(true)}
-        >
-          {t("game.scores")}
-        </button>
+        <div className="game-topbar-actions">
+          <button className="game-size-btn" onClick={cycleCardSize}>
+            {cardSize.toUpperCase()}
+          </button>
+          <button
+            className="game-score-btn"
+            onClick={() => setShowScores(true)}
+          >
+            {t("game.scores")}
+          </button>
+        </div>
       </div>
 
       {/* Timer bar */}
@@ -357,7 +376,7 @@ export default function GamePage({
                     cardId={cardId}
                     selected={selectedCard === cardId}
                     onClick={() => { playSelect(); setSelectedCard(cardId); }}
-                    size="md"
+                    size={cardSize}
                     dealDelay={index * 0.08}
                   />
                 ))}
@@ -409,7 +428,7 @@ export default function GamePage({
                         cardId={cardId}
                         selected={selectedCard === cardId}
                         onClick={() => { playSelect(); setSelectedCard(cardId); }}
-                        size="md"
+                        size={cardSize}
                         dealDelay={index * 0.08}
                       />
                     ))}
@@ -517,7 +536,7 @@ export default function GamePage({
                           cardId={cardId}
                           selected={selectedCard === cardId}
                           onClick={() => handleVoteClick(cardId)}
-                          size="md"
+                          size={cardSize}
                           dealDelay={index * 0.1}
                         />
                         {selectedCard === cardId && showParticles && (
@@ -662,7 +681,7 @@ export default function GamePage({
                         cardId={cardId}
                         highlight={highlight}
                         showVoteCount={getVoteCountForCard(cardId)}
-                        size="md"
+                        size={cardSize}
                         disabled
                         flipReveal
                         flipDelay={index * 0.15}

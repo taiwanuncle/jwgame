@@ -41,6 +41,34 @@
   font-weight: 500;
 }
 
+.game-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-size-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  padding: 0;
+}
+
+.game-size-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .game-score-btn {
   background: var(--bg-tertiary);
   color: var(--text-primary);
@@ -115,8 +143,10 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  padding-bottom: 140px; /* space for bottom bar + chat bar */
+  /* bottom bar (~92px) sits above chat bar; use dynamic chat height */
+  padding-bottom: calc(var(--gchat-bar-h, 48px) + 92px);
   overflow-y: auto;
+  transition: padding-bottom 0.3s ease;
 }
 
 .game-phase {

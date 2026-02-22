@@ -71,6 +71,7 @@ export default function GameOverPage({
     const duration = 4000;
     const end = Date.now() + duration;
     let cancelled = false;
+    let frameId = 0;
 
     // Wave 1: Side cannons
     const frame = () => {
@@ -91,10 +92,10 @@ export default function GameOverPage({
       });
 
       if (Date.now() < end && !cancelled) {
-        requestAnimationFrame(frame);
+        frameId = requestAnimationFrame(frame);
       }
     };
-    frame();
+    frameId = requestAnimationFrame(frame);
 
     // Wave 2: Center burst after 500ms
     const burst1 = setTimeout(() => {
@@ -123,6 +124,7 @@ export default function GameOverPage({
 
     return () => {
       cancelled = true;
+      cancelAnimationFrame(frameId);
       clearTimeout(burst1);
       clearTimeout(burst2);
       confetti.reset();
