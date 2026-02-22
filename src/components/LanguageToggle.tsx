@@ -12,7 +12,7 @@ const LANGUAGES = [
   { code: "th", label: "ไทย" },
 ] as const;
 
-export default function LanguageToggle() {
+export default function LanguageToggle({ hide }: { hide?: boolean }) {
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -21,6 +21,8 @@ export default function LanguageToggle() {
     try { localStorage.setItem("app_lang", code); } catch { /* */ }
     setOpen(false);
   };
+
+  if (hide) return null;
 
   return (
     <>

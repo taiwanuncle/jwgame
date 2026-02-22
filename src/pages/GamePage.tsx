@@ -97,8 +97,9 @@ export default function GamePage({
   onNextRound,
   onPhaseReady,
 }: GamePageProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
+  const [showLang, setShowLang] = useState(false);
   const [clue, setClue] = useState("");
   const [showScores, setShowScores] = useState(false);
   const [toast, setToast] = useState({ message: "", visible: false, type: "info" as "info" | "warning" | "success" });
@@ -303,8 +304,48 @@ export default function GamePage({
           )}
         </div>
         <div className="game-topbar-actions">
+          <div className="game-lang-wrap">
+            <button className="game-lang-btn" onClick={() => setShowLang(!showLang)}>
+              🌐
+            </button>
+            <AnimatePresence>
+              {showLang && (
+                <>
+                  <div className="game-lang-backdrop" onClick={() => setShowLang(false)} />
+                  <motion.div
+                    className="game-lang-dropdown"
+                    initial={{ opacity: 0, scale: 0.9, y: -6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: -6 }}
+                    transition={{ duration: 0.12 }}
+                  >
+                    {([
+                      { code: "ko", label: "한국어" },
+                      { code: "en", label: "English" },
+                      { code: "zh", label: "简体中文" },
+                      { code: "zh-TW", label: "繁體中文" },
+                      { code: "my", label: "မြန်မာ" },
+                      { code: "th", label: "ไทย" },
+                    ] as const).map((lang) => (
+                      <button
+                        key={lang.code}
+                        className={`game-lang-item ${i18n.language === lang.code ? "game-lang-item--active" : ""}`}
+                        onClick={() => {
+                          i18n.changeLanguage(lang.code);
+                          try { localStorage.setItem("app_lang", lang.code); } catch { /* */ }
+                          setShowLang(false);
+                        }}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
           <button className="game-size-btn" onClick={cycleCardSize}>
-            {cardSize.toUpperCase()}
+            🖼 {cardSize.toUpperCase()}
           </button>
           <button
             className="game-score-btn"

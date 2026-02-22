@@ -102,7 +102,7 @@ function App() {
   return (
     <>
       {page}
-      <LanguageToggle />
+      <LanguageToggle hide={!isLobby && !isWaiting && gameState?.phase !== "game_over"} />
       <MusicPlayer isLobby={isLobby || isWaiting} />
       {inRoom && (
         <GlobalChat
