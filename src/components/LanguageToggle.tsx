@@ -27,7 +27,7 @@ export default function LanguageToggle({ hide }: { hide?: boolean }) {
   return (
     <>
       <button className="lang-toggle-fab" onClick={() => setOpen(!open)}>
-        🌐
+        🌐 Lang
       </button>
 
       <AnimatePresence>

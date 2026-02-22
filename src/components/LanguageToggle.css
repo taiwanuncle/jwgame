@@ -2,22 +2,25 @@
   position: fixed;
   top: 12px;
   right: 12px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  height: 36px;
+  border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
   box-shadow: var(--shadow-md);
   cursor: pointer;
   z-index: 1000;
   border: 1px solid var(--border);
   transition: var(--transition);
-  padding: 0;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .lang-toggle-fab:hover {
@@ -27,7 +30,7 @@
 
 .lang-toggle-dropdown {
   position: fixed;
-  top: 56px;
+  top: 54px;
   right: 12px;
   width: 150px;
   background: rgba(255, 255, 255, 0.96);
