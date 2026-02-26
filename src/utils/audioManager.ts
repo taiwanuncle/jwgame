@@ -7,9 +7,13 @@
  * 2. Playlist mode: User manually picks a track from playlist modal.
  *    In playlist mode, auto category switching is ignored.
  *    When playlist mode ends, auto mode resumes with the pending category.
+ *
+ * Repeat modes: "all" (loop queue), "one" (repeat single track), "off" (stop after queue)
+ * Shuffle: toggle on/off
  */
 
 export type MusicCategory = "start" | "playing" | "celebration" | "secret";
+export type RepeatMode = "all" | "one" | "off";
 
 export interface Track {
   id: string;
@@ -40,7 +44,7 @@ export const ALL_TRACKS: Track[] = [
 ];
 
 // Fisher-Yates shuffle
-function shuffle<T>(arr: T[]): T[] {
+function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -64,15 +68,23 @@ class AudioManager {
   private _pendingCategory: MusicCategory | null = null;
   private listeners = new Set<Listener>();
   private _userInteracted = false;
-  private _userPaused = false; // true if user explicitly paused/stopped
+  private _userPaused = false;
+  private _shuffle = true;
+  private _repeat: RepeatMode = "all";
 
   constructor() {
-    // Restore volume & muted from localStorage
+    // Restore settings from localStorage
     try {
       const savedVol = localStorage.getItem("bgm_volume");
       const savedMuted = localStorage.getItem("bgm_muted");
+      const savedShuffle = localStorage.getItem("bgm_shuffle");
+      const savedRepeat = localStorage.getItem("bgm_repeat");
       if (savedVol !== null) this._volume = Number(savedVol);
       if (savedMuted !== null) this._muted = savedMuted === "true";
+      if (savedShuffle !== null) this._shuffle = savedShuffle !== "false";
+      if (savedRepeat === "all" || savedRepeat === "one" || savedRepeat === "off") {
+        this._repeat = savedRepeat;
+      }
     } catch { /* ignore */ }
 
     // Listen for first user interaction to unlock audio playback
@@ -81,9 +93,8 @@ class AudioManager {
       window.removeEventListener("click", onInteract);
       window.removeEventListener("touchstart", onInteract);
       window.removeEventListener("keydown", onInteract);
-      // If a category was queued before interaction, play it now
       if (this._pendingCategory && !this._playing && !this._playlistMode) {
-        this._currentCategory = null; // reset so playCategory runs
+        this._currentCategory = null;
         this.playCategory(this._pendingCategory);
       }
     };
@@ -92,7 +103,6 @@ class AudioManager {
     window.addEventListener("keydown", onInteract);
   }
 
-  /** Subscribe to state changes */
   subscribe(fn: Listener) {
     this.listeners.add(fn);
     return () => { this.listeners.delete(fn); };
@@ -108,62 +118,72 @@ class AudioManager {
   get playing() { return this._playing; }
   get currentCategory() { return this._currentCategory; }
   get playlistMode() { return this._playlistMode; }
+  get shuffleOn() { return this._shuffle; }
+  get repeatMode() { return this._repeat; }
+
+  toggleShuffle() {
+    this._shuffle = !this._shuffle;
+    try { localStorage.setItem("bgm_shuffle", String(this._shuffle)); } catch { /* */ }
+    // Re-shuffle remaining queue if turning on
+    if (this._shuffle && this.queue.length > 1) {
+      const current = this.queue[this.queueIndex];
+      const rest = this.queue.filter((_, i) => i !== this.queueIndex);
+      this.queue = [current, ...shuffleArray(rest)];
+      this.queueIndex = 0;
+    }
+    this.notify();
+  }
+
+  cycleRepeat() {
+    if (this._repeat === "all") {
+      this._repeat = "one";
+    } else if (this._repeat === "one") {
+      this._repeat = "off";
+    } else {
+      this._repeat = "all";
+    }
+    try { localStorage.setItem("bgm_repeat", this._repeat); } catch { /* */ }
+    this.notify();
+  }
 
   /**
    * Auto mode: play a category (shuffled).
-   * If same category already playing, do nothing.
-   * If in playlist mode, just remember the pending category.
    */
   playCategory(category: MusicCategory) {
-    // Always update pending so we know what to resume after playlist
     this._pendingCategory = category;
-
-    // If in playlist mode, don't interrupt — just save pending
     if (this._playlistMode) return;
-
-    // If user hasn't interacted yet, defer — will auto-play on first click
     if (!this._userInteracted) return;
-
-    // If user explicitly paused or muted, don't auto-play on category change
     if (this._userPaused || this._muted) return;
-
-    // If same category already playing, skip
     if (this._currentCategory === category && this._playing) return;
 
     const tracks = ALL_TRACKS.filter((t) => t.category === category);
     if (tracks.length === 0) return;
     this._currentCategory = category;
-    this.queue = shuffle(tracks);
+    this.queue = this._shuffle ? shuffleArray(tracks) : [...tracks];
     this.queueIndex = 0;
     this.playTrack(this.queue[0]);
   }
 
   /**
    * Playlist mode: user picks a track manually.
-   * Stops auto music and plays selected track, then shuffles through all tracks.
    */
   playFromPlaylist(track: Track) {
     this._playlistMode = true;
     this._currentCategory = track.category;
-    // Queue: selected first, then rest shuffled
     const rest = ALL_TRACKS.filter((t) => t.id !== track.id);
-    this.queue = [track, ...shuffle(rest)];
+    this.queue = [track, ...(this._shuffle ? shuffleArray(rest) : rest)];
     this.queueIndex = 0;
     this.playTrack(track);
   }
 
-  /**
-   * Exit playlist mode: stop playlist music, resume auto category.
-   */
   exitPlaylistMode() {
     if (!this._playlistMode) return;
     this._playlistMode = false;
     this.stop();
     this.notify();
-    // Resume the pending auto category
     if (this._pendingCategory) {
       const cat = this._pendingCategory;
-      this._currentCategory = null; // reset so playCategory doesn't skip
+      this._currentCategory = null;
       this.playCategory(cat);
     }
   }
@@ -179,7 +199,6 @@ class AudioManager {
       this._playing = true;
       this.notify();
     }).catch(() => {
-      // Autoplay blocked — mark not playing
       this._playing = false;
       this.notify();
     });
@@ -187,12 +206,31 @@ class AudioManager {
   }
 
   private handleEnded = () => {
-    // Auto-next: play next in queue (loop back if at end)
-    this.queueIndex = (this.queueIndex + 1) % this.queue.length;
-    // If we've looped, re-shuffle
-    if (this.queueIndex === 0) {
-      this.queue = shuffle(this.queue);
+    if (this._repeat === "one") {
+      // Repeat same track
+      if (this._currentTrack) {
+        this.playTrack(this._currentTrack);
+      }
+      return;
     }
+
+    const nextIndex = this.queueIndex + 1;
+    if (nextIndex >= this.queue.length) {
+      if (this._repeat === "off") {
+        // Stop after queue ends
+        this._playing = false;
+        this.notify();
+        return;
+      }
+      // "all": loop — re-shuffle if needed
+      this.queueIndex = 0;
+      if (this._shuffle) {
+        this.queue = shuffleArray(this.queue);
+      }
+    } else {
+      this.queueIndex = nextIndex;
+    }
+
     this.playTrack(this.queue[this.queueIndex]);
   };
 
@@ -231,7 +269,6 @@ class AudioManager {
       this.pause();
     } else {
       this._userPaused = false;
-      // If pending category differs from current, switch to the correct one
       if (this._pendingCategory && this._pendingCategory !== this._currentCategory) {
         this._currentCategory = null;
         this.playCategory(this._pendingCategory);
@@ -247,7 +284,7 @@ class AudioManager {
   next() {
     if (this.queue.length === 0) return;
     this.queueIndex = (this.queueIndex + 1) % this.queue.length;
-    if (this.queueIndex === 0) this.queue = shuffle(this.queue);
+    if (this.queueIndex === 0 && this._shuffle) this.queue = shuffleArray(this.queue);
     this.playTrack(this.queue[this.queueIndex]);
   }
 

@@ -1,10 +1,10 @@
 .install-prompt-banner {
   position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
+  margin: auto;
   width: calc(100% - 32px);
   max-width: 420px;
+  height: fit-content;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -88,7 +88,6 @@
 @media (max-width: 480px) {
   .install-prompt-banner {
     width: calc(100% - 24px);
-    bottom: 70px;
     padding: 14px;
   }
 

@@ -13,6 +13,7 @@ interface LobbyPageProps {
   onJoinRoom: (roomCode: string, nickname: string, avatarIndex: number) => void;
   errorMsg: string;
   availableRooms: AvailableRoom[];
+  onShowPlaylist?: () => void;
 }
 
 type Mode = "menu" | "create" | "join" | "join-code";
@@ -22,6 +23,7 @@ export default function LobbyPage({
   onJoinRoom,
   errorMsg,
   availableRooms,
+  onShowPlaylist,
 }: LobbyPageProps) {
   const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>("menu");
@@ -127,6 +129,14 @@ export default function LobbyPage({
                   onClick={() => setShowHowToPlay(true)}
                 >
                   {t("info.howToPlay")}
+                </button>
+              </div>
+              <div className="lobby-info-btns">
+                <button
+                  className="btn-ghost lobby-info-btn"
+                  onClick={onShowPlaylist}
+                >
+                  {t("music.playlist")}
                 </button>
                 <button
                   className="btn-ghost lobby-info-btn"

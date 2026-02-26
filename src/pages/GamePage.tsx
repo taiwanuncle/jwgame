@@ -8,6 +8,7 @@ import CountdownBar from "../components/CountdownBar";
 import type { GameStateFromServer } from "../hooks/useSocket";
 import type { RoundResult } from "../types";
 import { playClick, playSelect, playSubmit, playError } from "../utils/sfx";
+import { audioManager } from "../utils/audioManager";
 import "./GamePage.css";
 
 interface GamePageProps {
@@ -100,6 +101,12 @@ export default function GamePage({
   const { t, i18n } = useTranslation();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [showLang, setShowLang] = useState(false);
+  const [musicPlaying, setMusicPlaying] = useState(audioManager.playing);
+
+  useEffect(() => {
+    const unsub = audioManager.subscribe(() => setMusicPlaying(audioManager.playing));
+    return unsub;
+  }, []);
   const [clue, setClue] = useState("");
   const [showScores, setShowScores] = useState(false);
   const [toast, setToast] = useState({ message: "", visible: false, type: "info" as "info" | "warning" | "success" });
@@ -304,6 +311,9 @@ export default function GamePage({
           )}
         </div>
         <div className="game-topbar-actions">
+          <button className="game-music-btn" onClick={() => audioManager.togglePlay()}>
+            {musicPlaying ? "🔊" : "🔇"}
+          </button>
           <div className="game-lang-wrap">
             <button className="game-lang-btn" onClick={() => setShowLang(!showLang)}>
               🌐 Lang

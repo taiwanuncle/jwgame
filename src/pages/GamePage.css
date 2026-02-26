@@ -47,6 +47,25 @@
   gap: 6px;
 }
 
+.game-music-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  padding: 0;
+}
+
+.game-music-btn:hover {
+  border-color: var(--accent);
+}
+
 .game-size-btn {
   height: 34px;
   border-radius: var(--radius-full);

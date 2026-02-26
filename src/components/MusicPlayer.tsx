@@ -1,46 +1,40 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { audioManager, ALL_TRACKS, type Track } from "../utils/audioManager";
 import "./MusicPlayer.css";
 
 interface MusicPlayerProps {
-  /** Show playlist button only in lobby/waiting */
   isLobby: boolean;
+  hide?: boolean;
+  showPlaylist?: boolean;
+  onClosePlaylist?: () => void;
 }
 
-export default function MusicPlayer({ isLobby }: MusicPlayerProps) {
+export default function MusicPlayer({ isLobby, hide, showPlaylist, onClosePlaylist }: MusicPlayerProps) {
   const { t } = useTranslation();
   const [, forceUpdate] = useState(0);
-  const [expanded, setExpanded] = useState(false);
-  const [showPlaylist, setShowPlaylist] = useState(false);
 
-  // Subscribe to audioManager state changes
   useEffect(() => {
     const unsub = audioManager.subscribe(() => forceUpdate((n) => n + 1));
     return unsub;
   }, []);
 
-  // If we leave lobby while playlist is open, close it
   useEffect(() => {
-    if (!isLobby && showPlaylist) {
-      setShowPlaylist(false);
+    if (!isLobby && showPlaylist && onClosePlaylist) {
+      onClosePlaylist();
       audioManager.exitPlaylistMode();
     }
-  }, [isLobby, showPlaylist]);
+  }, [isLobby, showPlaylist, onClosePlaylist]);
 
   const track = audioManager.currentTrack;
   const playing = audioManager.playing;
-  const muted = audioManager.muted;
-  const volume = audioManager.volume;
   const inPlaylistMode = audioManager.playlistMode;
-
-  const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    audioManager.setVolume(Number(e.target.value));
-  }, []);
+  const shuffleOn = audioManager.shuffleOn;
+  const repeatMode = audioManager.repeatMode;
 
   const handleClosePlaylist = () => {
-    setShowPlaylist(false);
+    if (onClosePlaylist) onClosePlaylist();
     audioManager.exitPlaylistMode();
   };
 
@@ -75,93 +69,15 @@ export default function MusicPlayer({ isLobby }: MusicPlayerProps) {
 
   return (
     <>
-      {/* Floating music button */}
-      <motion.div
-        className="music-fab"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setExpanded(!expanded)}
-      >
-        {playing ? "♪" : "♪"}
-        {playing && <span className="music-fab-pulse" />}
-      </motion.div>
-
-      {/* Expanded mini-player */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            className="music-panel glass-card"
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            {/* Track info */}
-            <div className="music-track-info">
-              <span className="music-track-name">
-                {track ? trackDisplayName(track) : t("music.noTrack")}
-              </span>
-              {track && (
-                <span className="music-track-category">
-                  {categoryLabel(track.category)}
-                  {inPlaylistMode && " · Playlist"}
-                </span>
-              )}
-            </div>
-
-            {/* Controls */}
-            <div className="music-controls">
-              <button
-                className="music-ctrl-btn"
-                onClick={(e) => { e.stopPropagation(); audioManager.togglePlay(); }}
-                title={playing ? t("music.pause") : t("music.play")}
-              >
-                {playing ? "⏸" : "▶"}
-              </button>
-              <button
-                className="music-ctrl-btn"
-                onClick={(e) => { e.stopPropagation(); audioManager.next(); }}
-                title={t("music.next")}
-              >
-                ⏭
-              </button>
-              <button
-                className={`music-ctrl-btn ${muted ? "music-ctrl-btn--active" : ""}`}
-                onClick={(e) => { e.stopPropagation(); audioManager.toggleMute(); }}
-                title={muted ? t("music.unmute") : t("music.mute")}
-              >
-                {muted ? "🔇" : volume > 0.5 ? "🔊" : "🔉"}
-              </button>
-            </div>
-
-            {/* Volume slider */}
-            <div className="music-volume-row">
-              <span className="music-volume-icon">🔈</span>
-              <input
-                type="range"
-                className="music-volume-slider"
-                min={0}
-                max={1}
-                step={0.01}
-                value={volume}
-                onChange={handleVolumeChange}
-                onClick={(e) => e.stopPropagation()}
-              />
-              <span className="music-volume-icon">🔊</span>
-            </div>
-
-            {/* Playlist button — only in lobby/waiting */}
-            {isLobby && (
-              <button
-                className="music-playlist-btn"
-                onClick={(e) => { e.stopPropagation(); setShowPlaylist(true); setExpanded(false); }}
-              >
-                {t("music.playlist")}
-              </button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Fixed toggle button — hidden during game (shown in game topbar instead) */}
+      {!hide && (
+        <button
+          className="music-toggle-fab"
+          onClick={() => audioManager.togglePlay()}
+        >
+          {playing ? "🔊" : "🔇"}
+        </button>
+      )}
 
       {/* Playlist modal */}
       <AnimatePresence>
@@ -188,6 +104,34 @@ export default function MusicPlayer({ isLobby }: MusicPlayerProps) {
                 </button>
               </div>
 
+              {/* Playback controls */}
+              <div className="music-playlist-controls">
+                <button
+                  className={`music-ctrl-pill ${shuffleOn ? "music-ctrl-pill--active" : ""}`}
+                  onClick={() => audioManager.toggleShuffle()}
+                >
+                  🔀 {shuffleOn ? "ON" : "OFF"}
+                </button>
+                <button
+                  className={`music-ctrl-pill ${repeatMode !== "off" ? "music-ctrl-pill--active" : ""}`}
+                  onClick={() => audioManager.cycleRepeat()}
+                >
+                  {repeatMode === "one" ? "🔂 1" : repeatMode === "all" ? "🔁 All" : "➡️ Off"}
+                </button>
+                <button
+                  className="music-ctrl-pill"
+                  onClick={() => { audioManager.togglePlay(); }}
+                >
+                  {playing ? "⏸" : "▶"}
+                </button>
+                <button
+                  className="music-ctrl-pill"
+                  onClick={() => audioManager.next()}
+                >
+                  ⏭
+                </button>
+              </div>
+
               <div className="music-playlist-content">
                 {(["start", "playing", "celebration", "secret"] as const).map((cat) => {
                   const tracks = ALL_TRACKS.filter((t2) => t2.category === cat);
@@ -207,6 +151,9 @@ export default function MusicPlayer({ isLobby }: MusicPlayerProps) {
                           <span className="music-playlist-item-name">
                             {trackDisplayName(t2)}
                           </span>
+                          {track?.id === t2.id && inPlaylistMode && (
+                            <span className="music-playlist-item-badge">Now</span>
+                          )}
                         </button>
                       ))}
                     </div>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./i18n";
 import "./styles/global.css";
 import { useSocket } from "./hooks/useSocket";
@@ -33,9 +33,11 @@ function App() {
     leaveRoom,
   } = useSocket();
 
+  const [showPlaylist, setShowPlaylist] = useState(false);
   const isLobby = !gameState || !gameState.roomCode;
   const isWaiting = gameState?.phase === "waiting";
   const inRoom = !isLobby; // Show chat whenever player is in a room
+  const inGame = !isLobby && !isWaiting && gameState?.phase !== "game_over";
 
   // Music: switch category based on game phase
   useEffect(() => {
@@ -64,6 +66,7 @@ function App() {
         onJoinRoom={joinRoom}
         errorMsg={errorMsg}
         availableRooms={availableRooms}
+        onShowPlaylist={() => setShowPlaylist(true)}
       />
     );
   } else if (isWaiting) {
@@ -102,8 +105,13 @@ function App() {
   return (
     <>
       {page}
-      <LanguageToggle hide={!isLobby && !isWaiting && gameState?.phase !== "game_over"} />
-      <MusicPlayer isLobby={isLobby || isWaiting} />
+      <LanguageToggle hide={inGame} />
+      <MusicPlayer
+        isLobby={isLobby || isWaiting}
+        hide={inGame}
+        showPlaylist={showPlaylist}
+        onClosePlaylist={() => setShowPlaylist(false)}
+      />
       {inRoom && (
         <GlobalChat
           messages={chatMessages}
