@@ -16,17 +16,24 @@ function toLangKey(lang: string): string {
   return "en"; // fallback
 }
 
-/** Get character name in the given language */
+/** Strip parenthesized disambiguation, e.g. "마리아 (마르다의 동생)" → "마리아" */
+function stripParens(name: string): string {
+  return name.replace(/\s*\(.*\)$/, "").trim();
+}
+
+/** Get character name in the given language (without parenthesized notes) */
 function getCharName(char: (typeof characters)[0], langKey: string): string {
+  let name: string;
   switch (langKey) {
-    case "ko": return char.nameKo;
-    case "en": return char.nameEn;
-    case "zh": return char.nameZh;
-    case "zhTw": return char.nameZhTw;
-    case "my": return char.nameMy;
-    case "th": return char.nameTh;
-    default: return char.nameEn;
+    case "ko": name = char.nameKo; break;
+    case "en": name = char.nameEn; break;
+    case "zh": name = char.nameZh; break;
+    case "zhTw": name = char.nameZhTw; break;
+    case "my": name = char.nameMy; break;
+    case "th": name = char.nameTh; break;
+    default: name = char.nameEn;
   }
+  return stripParens(name);
 }
 
 /** Pick a random element from an array */
