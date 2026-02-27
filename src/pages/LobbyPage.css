@@ -64,6 +64,42 @@
   letter-spacing: 0.5px;
 }
 
+.lobby-nickname-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lobby-nickname-row .input-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-random {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--accent);
+  background: var(--accent-light);
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.btn-random:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+.btn-random:active {
+  transform: translateY(0);
+}
+
 .lobby-room-code-input {
   text-align: center;
   font-size: 24px;

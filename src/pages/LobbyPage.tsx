@@ -5,6 +5,7 @@ import AvatarPicker from "../components/AvatarPicker";
 import InfoModal from "../components/InfoModal";
 import InstallPrompt from "../components/InstallPrompt";
 import CharacterGallery from "../components/CharacterGallery";
+import { generateRandomName } from "../utils/randomName";
 import type { AvailableRoom } from "../hooks/useSocket";
 import "./LobbyPage.css";
 
@@ -25,7 +26,7 @@ export default function LobbyPage({
   availableRooms,
   onShowPlaylist,
 }: LobbyPageProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<Mode>("menu");
   const [nickname, setNickname] = useState("");
   const [roomCode, setRoomCode] = useState("");
@@ -65,6 +66,12 @@ export default function LobbyPage({
     // Try to open in external browser
     const url = window.location.href;
     window.location.href = `intent://${url.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+  };
+
+  const handleRandom = () => {
+    const result = generateRandomName(i18n.language);
+    setAvatarIndex(result.avatarIndex);
+    setNickname(result.nickname);
   };
 
   const handleCreate = () => {
@@ -168,14 +175,24 @@ export default function LobbyPage({
 
               <div className="lobby-form-section">
                 <label className="lobby-label">{t("lobby.nickname")}</label>
-                <input
-                  className="input-field"
-                  placeholder={t("lobby.enterNickname")}
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  maxLength={12}
-                  onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                />
+                <div className="lobby-nickname-row">
+                  <input
+                    className="input-field"
+                    placeholder={t("lobby.enterNickname")}
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    maxLength={16}
+                    onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                  />
+                  <motion.button
+                    className="btn-random"
+                    onClick={handleRandom}
+                    whileTap={{ scale: 0.9, rotate: 180 }}
+                    title={t("lobby.randomNickname")}
+                  >
+                    🎲
+                  </motion.button>
+                </div>
               </div>
 
               {errorMsg && <div className="lobby-error">{errorMsg}</div>}
@@ -215,13 +232,23 @@ export default function LobbyPage({
 
               <div className="lobby-form-section">
                 <label className="lobby-label">{t("lobby.nickname")}</label>
-                <input
-                  className="input-field"
-                  placeholder={t("lobby.enterNickname")}
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  maxLength={12}
-                />
+                <div className="lobby-nickname-row">
+                  <input
+                    className="input-field"
+                    placeholder={t("lobby.enterNickname")}
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    maxLength={16}
+                  />
+                  <motion.button
+                    className="btn-random"
+                    onClick={handleRandom}
+                    whileTap={{ scale: 0.9, rotate: 180 }}
+                    title={t("lobby.randomNickname")}
+                  >
+                    🎲
+                  </motion.button>
+                </div>
               </div>
 
               <div className="lobby-form-section">

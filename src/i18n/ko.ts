@@ -21,6 +21,7 @@ const ko = {
       host: "방장",
       roundsSuffix: "라운드",
       language: "언어",
+      randomNickname: "랜덤",
     },
     waiting: {
       waitingRoom: "대기실",

@@ -21,6 +21,7 @@ const zh = {
       host: "房主",
       roundsSuffix: "轮",
       language: "语言",
+      randomNickname: "随机",
     },
     waiting: {
       waitingRoom: "等候室",

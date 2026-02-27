@@ -21,6 +21,7 @@ const en = {
       host: "Host",
       roundsSuffix: "rounds",
       language: "Language",
+      randomNickname: "Random",
     },
     waiting: {
       waitingRoom: "Waiting Room",

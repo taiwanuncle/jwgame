@@ -21,6 +21,7 @@ const th = {
       host: "เจ้าของห้อง",
       roundsSuffix: "รอบ",
       language: "ภาษา",
+      randomNickname: "สุ่ม",
     },
     waiting: {
       waitingRoom: "ห้องรอ",

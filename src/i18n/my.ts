@@ -21,6 +21,7 @@ const my = {
       host: "အိမ်ရှင်",
       roundsSuffix: "အကြိမ်",
       language: "ဘာသာစကား",
+      randomNickname: "ကျပန်း",
     },
     waiting: {
       waitingRoom: "စောင့်ဆိုင်းခန်း",
