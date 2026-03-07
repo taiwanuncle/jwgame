@@ -63,9 +63,17 @@ export default function LobbyPage({
   };
 
   const handleOpenExternal = () => {
-    // Try to open in external browser
     const url = window.location.href;
-    window.location.href = `intent://${url.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+    const ua = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+
+    if (isIOS) {
+      // iOS KakaoTalk in-app browser: use KakaoTalk's openExternal scheme
+      window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(url)}`;
+    } else {
+      // Android: use intent scheme to open in Chrome
+      window.location.href = `intent://${url.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+    }
   };
 
   const handleRandom = () => {
