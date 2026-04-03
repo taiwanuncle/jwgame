@@ -10,9 +10,9 @@ import type { AvailableRoom } from "../hooks/useSocket";
 import "./LobbyPage.css";
 
 interface LobbyPageProps {
-  onCreateRoom: (nickname: string, avatarIndex: number) => void;
+  onCreateRoom: (nickname: string, avatarIndex: number, lang?: string) => void;
   onJoinRoom: (roomCode: string, nickname: string, avatarIndex: number) => void;
-  onCreateSoloRoom: (nickname: string, avatarIndex: number, botCount: number) => void;
+  onCreateSoloRoom: (nickname: string, avatarIndex: number, botCount: number, lang?: string) => void;
   errorMsg: string;
   availableRooms: AvailableRoom[];
   onShowPlaylist?: () => void;
@@ -87,7 +87,7 @@ export default function LobbyPage({
 
   const handleCreate = () => {
     if (!nickname.trim()) return;
-    onCreateRoom(nickname.trim(), avatarIndex);
+    onCreateRoom(nickname.trim(), avatarIndex, i18n.language);
   };
 
   const handleJoin = () => {
@@ -102,7 +102,7 @@ export default function LobbyPage({
 
   const handleSoloStart = () => {
     if (!nickname.trim()) return;
-    onCreateSoloRoom(nickname.trim(), avatarIndex, botCount);
+    onCreateSoloRoom(nickname.trim(), avatarIndex, botCount, i18n.language);
   };
 
   return (

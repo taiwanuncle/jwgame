@@ -179,8 +179,8 @@ export function useSocket() {
   }, []);
 
   const createRoom = useCallback(
-    (nickname: string, avatarIndex: number) => {
-      socketRef.current?.emit("create_room", { nickname, avatarIndex });
+    (nickname: string, avatarIndex: number, lang?: string) => {
+      socketRef.current?.emit("create_room", { nickname, avatarIndex, lang });
     },
     []
   );
@@ -239,8 +239,8 @@ export function useSocket() {
   }, []);
 
   const createSoloRoom = useCallback(
-    (nickname: string, avatarIndex: number, botCount: number) => {
-      socketRef.current?.emit("create_solo_room", { nickname, avatarIndex, botCount });
+    (nickname: string, avatarIndex: number, botCount: number, lang?: string) => {
+      socketRef.current?.emit("create_solo_room", { nickname, avatarIndex, botCount, lang });
     },
     []
   );
