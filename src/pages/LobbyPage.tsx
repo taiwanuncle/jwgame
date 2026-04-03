@@ -377,63 +377,53 @@ export default function LobbyPage({
         onClose={() => setShowHowToPlay(false)}
         title={t("info.howToPlay")}
       >
-        <h3>게임 개요</h3>
-        <p>
-          성서인물게임은 성서 인물 카드를 사용하는 상상력 제시어 게임입니다.
-          3~10명이 함께 즐길 수 있으며, 총 10라운드로 진행됩니다.
-        </p>
+        <h3>{t("info.overviewTitle")}</h3>
+        <p style={{ whiteSpace: "pre-line" }}>{t("info.overviewDesc")}</p>
 
-        <h3>게임 진행 방법</h3>
+        <h3>{t("info.stepsTitle")}</h3>
         <ol>
-          <li>각 플레이어에게 <span className="highlight">6장</span>의 카드가 배분됩니다.</li>
-          <li>순서대로 한 명이 <strong>제시자</strong>가 됩니다.</li>
-          <li>제시자는 자기 카드 중 1장을 고르고, 그 카드를 떠올리게 하는 <strong>제시어</strong>를 입력합니다.</li>
-          <li>다른 플레이어들은 제시어를 보고, 자기 카드 중 가장 어울리는 카드 1장을 제출합니다.</li>
-          <li>모든 카드가 섞여서 공개되면, 제시자를 제외한 플레이어들이 <strong>"이게 제시자의 카드다!"</strong>라고 생각하는 카드에 투표합니다.</li>
-          <li>투표 결과에 따라 점수가 계산됩니다.</li>
-          <li>새 카드 1장을 보충받고 다음 라운드로!</li>
+          <li>{t("info.step1", { count: 6 })}</li>
+          <li>{t("info.step2")}</li>
+          <li>{t("info.step3")}</li>
+          <li>{t("info.step4")}</li>
+          <li>{t("info.step5")}</li>
+          <li>{t("info.step6")}</li>
+          <li>{t("info.step7")}</li>
         </ol>
 
-        <h3>점수 계산</h3>
+        <h3>{t("info.scoringTitle")}</h3>
         <table className="score-table">
           <thead>
             <tr>
-              <th>상황</th>
-              <th>제시자</th>
-              <th>나머지</th>
+              <th>{t("info.scoreSituation")}</th>
+              <th>{t("info.scoreStoryteller")}</th>
+              <th>{t("info.scoreOthers")}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>모두 정답</strong></td>
-              <td>0점</td>
-              <td>각 2점</td>
+              <td><strong>{t("info.scoreAllCorrect")}</strong></td>
+              <td>{t("info.score0")}</td>
+              <td>{t("info.score2each")}</td>
             </tr>
             <tr>
-              <td><strong>모두 오답</strong></td>
-              <td>0점</td>
-              <td>각 2점</td>
+              <td><strong>{t("info.scoreAllWrong")}</strong></td>
+              <td>{t("info.score0")}</td>
+              <td>{t("info.score2each")}</td>
             </tr>
             <tr>
-              <td><strong>일부 정답</strong></td>
-              <td>3점</td>
-              <td>맞춘 사람 3점</td>
+              <td><strong>{t("info.scoreSomeCorrect")}</strong></td>
+              <td>{t("info.score3")}</td>
+              <td>{t("info.score3correct")}</td>
             </tr>
           </tbody>
         </table>
-        <p>
-          추가로, 다른 플레이어의 카드가 선택될 때마다 그 카드의 주인에게 <span className="highlight">+1점</span>이 부여됩니다!
-        </p>
+        <p>{t("info.bonusNote")}</p>
 
-        <h3>팁</h3>
-        <p>
-          제시어는 너무 쉬우면 모두가 맞춰서 0점, 너무 어려우면 아무도 못 맞춰서 0점!
-          적절한 난이도의 제시어를 내는 것이 핵심입니다.
-        </p>
+        <h3>{t("info.tipsTitle")}</h3>
+        <p style={{ whiteSpace: "pre-line" }}>{t("info.tipsDesc")}</p>
 
-        <p className="copyright-notice">
-          ※ 사용되는 모든 그림과 음악은 AI로 제작되었습니다.
-        </p>
+        <p className="copyright-notice">{t("info.aiNotice")}</p>
       </InfoModal>
 
       {/* 캐릭터 갤러리 */}
@@ -458,14 +448,14 @@ export default function LobbyPage({
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
             >
               <div className="kakao-popup-icon">⚠️</div>
-              <h3 className="kakao-popup-title">카카오톡 브라우저 안내</h3>
+              <h3 className="kakao-popup-title">{t("info.kakaoTitle")}</h3>
               <p className="kakao-popup-text">
-                카카오톡 브라우저에서 접속하셨습니다.<br />
-                카톡 알림이 오면 게임이 튕길 수 있어요!<br />
-                <strong>다른 브라우저</strong>로 열면 안정적으로 즐길 수 있습니다.
+                {t("info.kakaoLine1")}<br />
+                {t("info.kakaoLine2")}<br />
+                <strong>{t("info.kakaoLine3")}</strong>
               </p>
               <button className="btn-primary kakao-popup-btn" onClick={handleOpenExternal}>
-                🌐 외부 브라우저로 열기
+                {t("info.kakaoOpen")}
               </button>
               <div className="kakao-popup-bottom">
                 <label className="kakao-popup-checkbox">
@@ -474,10 +464,10 @@ export default function LobbyPage({
                     checked={kakaoHideToday}
                     onChange={(e) => setKakaoHideToday(e.target.checked)}
                   />
-                  <span>오늘 하루 보지 않기</span>
+                  <span>{t("info.kakaoHide")}</span>
                 </label>
                 <button className="btn-ghost kakao-popup-close" onClick={handleKakaoClose}>
-                  닫기
+                  {t("info.kakaoClose")}
                 </button>
               </div>
             </motion.div>
@@ -491,22 +481,16 @@ export default function LobbyPage({
         onClose={() => setShowAbout(false)}
         title={t("info.about")}
       >
-        <h3>제작 계기</h3>
-        <p>
-          이 게임은 성서 인물들을 더 친숙하고 재미있게 알아가자는 취지에서 만들어졌습니다.
-          모임이나 가족 숭배 시간에 함께 즐기면서 성서 인물들에 대해 생각해볼 수 있는 기회가 되길 바랍니다.
-        </p>
+        <h3>{t("info.motivationTitle")}</h3>
+        <p style={{ whiteSpace: "pre-line" }}>{t("info.motivationDesc")}</p>
 
-        <h3>만든 사람</h3>
-        <p>
-          이 게임은 사랑하는 형제 자매들을 위해 제작되었습니다.
-          개선 사항이나 건의가 있다면 언제든 연락해 주세요.
-        </p>
+        <h3>{t("info.creatorTitle")}</h3>
+        <p style={{ whiteSpace: "pre-line" }}>{t("info.creatorDesc")}</p>
 
-        <h3>개발자에게 연락하기</h3>
+        <h3>{t("info.contactTitle")}</h3>
         <div className="contact-section">
           <div className="contact-row">
-            <span className="contact-label">📧 이메일</span>
+            <span className="contact-label">{t("info.contactEmail")}</span>
             <a href="mailto:atshane81@gmail.com" className="contact-value">
               atshane81@gmail.com
             </a>
@@ -517,13 +501,13 @@ export default function LobbyPage({
             rel="noopener noreferrer"
             className="contact-kakao-btn"
           >
-            💬 카카오톡 채널
+            {t("info.contactKakao")}
           </a>
         </div>
 
-        <h3>후원</h3>
+        <h3>{t("info.supportTitle")}</h3>
         <div className="donate-section">
-          <p>이 게임이 도움이 되셨다면 후원으로 응원해 주세요!</p>
+          <p>{t("info.supportDesc")}</p>
           {/* Mobile: direct link / Desktop: QR code to scan */}
           <a
             href="https://qr.kakaopay.com/FN0023EGr"
@@ -531,25 +515,22 @@ export default function LobbyPage({
             rel="noopener noreferrer"
             className="donate-link donate-link--mobile"
           >
-            💛 카카오페이로 후원하기
+            {t("info.supportBtn")}
           </a>
           <div className="donate-qr-desktop">
-            <p className="donate-qr-label">PC에서는 QR코드를 스캔해 주세요</p>
+            <p className="donate-qr-label">{t("info.supportQr")}</p>
             <img
               className="donate-qr-img"
               src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent("https://qr.kakaopay.com/FN0023EGr")}`}
-              alt="카카오페이 후원 QR코드"
+              alt={t("info.supportQrAlt")}
               width={180}
               height={180}
             />
           </div>
         </div>
 
-        <h3>저작권 안내</h3>
-        <p>
-          사용되는 모든 그림과 음악은 AI로 제작되었습니다.
-          본 게임은 비영리 목적으로 제작되었습니다.
-        </p>
+        <h3>{t("info.copyrightTitle")}</h3>
+        <p style={{ whiteSpace: "pre-line" }}>{t("info.copyrightDesc")}</p>
       </InfoModal>
     </div>
   );
