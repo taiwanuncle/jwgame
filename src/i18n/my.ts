@@ -22,6 +22,11 @@ const my = {
       roundsSuffix: "အကြိမ်",
       language: "ဘာသာစကား",
       randomNickname: "ကျပန်း",
+      soloMode: "တစ်ယောက်တည်းလေ့ကျင့်မည်",
+      botCount: "ဘော့အရေအတွက်",
+      startSolo: "စတင်မည်",
+      addBot: "ဘော့ထည့်မည်",
+      removeBot: "ဘော့ဖယ်မည်",
     },
     waiting: {
       waitingRoom: "စောင့်ဆိုင်းခန်း",

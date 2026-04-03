@@ -11,6 +11,8 @@ interface WaitingRoomProps {
   onSetRounds: (rounds: number) => void;
   onStartGame: () => void;
   onLeave: () => void;
+  onAddBot: () => void;
+  onRemoveBot: () => void;
   errorMsg: string;
 }
 
@@ -20,6 +22,8 @@ export default function WaitingRoom({
   onSetRounds,
   onStartGame,
   onLeave,
+  onAddBot,
+  onRemoveBot,
   errorMsg,
 }: WaitingRoomProps) {
   const { t } = useTranslation();
@@ -44,8 +48,9 @@ export default function WaitingRoom({
 
   const allReady = gameState.players
     .filter((p) => !p.isHost)
-    .every((p) => p.ready);
+    .every((p) => p.ready || p.isBot);
   const canStart = gameState.players.length >= 3 && allReady;
+  const botCount = gameState.players.filter((p) => p.isBot).length;
 
   return (
     <div className="page-container waiting-page">
@@ -105,7 +110,7 @@ export default function WaitingRoom({
         <div className="waiting-players-list">
           <AnimatePresence>
             {gameState.players.map((player, index) => {
-              const isReady = player.isHost || player.ready;
+              const isReady = player.isHost || player.ready || player.isBot;
               return (
                 <motion.div
                   key={player.id}
@@ -131,7 +136,7 @@ export default function WaitingRoom({
                     <AvatarIcon index={player.avatarIndex} size={26} />
                   </motion.span>
                   <span className="waiting-player-name">
-                    {player.nickname}
+                    {player.isBot && "🤖 "}{player.nickname}
                     {player.isHost && (
                       <span className="badge badge-warning">{t("waiting.host")}</span>
                     )}
@@ -173,6 +178,27 @@ export default function WaitingRoom({
             })}
           </AnimatePresence>
         </div>
+
+        {isHost && (
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 12 }}>
+            <button
+              className="btn-ghost"
+              style={{ fontSize: 13, padding: "6px 14px" }}
+              onClick={onRemoveBot}
+              disabled={botCount === 0}
+            >
+              🤖 {t("lobby.removeBot")}
+            </button>
+            <button
+              className="btn-ghost"
+              style={{ fontSize: 13, padding: "6px 14px", border: "1px solid var(--accent)", color: "var(--accent)" }}
+              onClick={onAddBot}
+              disabled={gameState.players.length >= 10}
+            >
+              🤖 {t("lobby.addBot")}
+            </button>
+          </div>
+        )}
 
         {errorMsg && <div className="lobby-error">{errorMsg}</div>}
 

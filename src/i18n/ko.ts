@@ -22,6 +22,11 @@ const ko = {
       roundsSuffix: "라운드",
       language: "언어",
       randomNickname: "랜덤",
+      soloMode: "혼자 연습하기",
+      botCount: "봇 수",
+      startSolo: "시작",
+      addBot: "봇 추가",
+      removeBot: "봇 제거",
     },
     waiting: {
       waitingRoom: "대기실",

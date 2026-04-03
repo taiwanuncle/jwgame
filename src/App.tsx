@@ -31,6 +31,9 @@ function App() {
     sendChat,
     phaseReady,
     leaveRoom,
+    createSoloRoom,
+    addBot,
+    removeBot,
   } = useSocket();
 
   const [showPlaylist, setShowPlaylist] = useState(false);
@@ -64,6 +67,7 @@ function App() {
       <LobbyPage
         onCreateRoom={createRoom}
         onJoinRoom={joinRoom}
+        onCreateSoloRoom={createSoloRoom}
         errorMsg={errorMsg}
         availableRooms={availableRooms}
         onShowPlaylist={() => setShowPlaylist(true)}
@@ -77,6 +81,8 @@ function App() {
         onSetRounds={setRounds}
         onStartGame={startGame}
         onLeave={leaveRoom}
+        onAddBot={addBot}
+        onRemoveBot={removeBot}
         errorMsg={errorMsg}
       />
     );

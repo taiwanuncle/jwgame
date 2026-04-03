@@ -22,6 +22,11 @@ const en = {
       roundsSuffix: "rounds",
       language: "Language",
       randomNickname: "Random",
+      soloMode: "Practice Solo",
+      botCount: "Bot Count",
+      startSolo: "Start",
+      addBot: "Add Bot",
+      removeBot: "Remove Bot",
     },
     waiting: {
       waitingRoom: "Waiting Room",

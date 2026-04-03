@@ -815,8 +815,8 @@ export default function GamePage({
           </motion.div>
         )}
 
-        {/* Next round - host only */}
-        {gameState.phase === "round_result" && roundResult && me?.isHost && (
+        {/* Next round - host or any human when storyteller is bot */}
+        {gameState.phase === "round_result" && roundResult && (me?.isHost || storyteller?.isBot) && (
           <motion.div
             key="bar-next"
             className="game-bottombar"
@@ -835,7 +835,7 @@ export default function GamePage({
         )}
 
         {/* Waiting for host to proceed */}
-        {gameState.phase === "round_result" && roundResult && !me?.isHost && (
+        {gameState.phase === "round_result" && roundResult && !me?.isHost && !storyteller?.isBot && (
           <motion.div
             key="bar-wait"
             className="game-bottombar game-bottombar--waiting"

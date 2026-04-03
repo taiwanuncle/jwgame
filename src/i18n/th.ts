@@ -22,6 +22,11 @@ const th = {
       roundsSuffix: "รอบ",
       language: "ภาษา",
       randomNickname: "สุ่ม",
+      soloMode: "ฝึกเล่นคนเดียว",
+      botCount: "จำนวนบอท",
+      startSolo: "เริ่มเกม",
+      addBot: "เพิ่มบอท",
+      removeBot: "ลบบอท",
     },
     waiting: {
       waitingRoom: "ห้องรอ",

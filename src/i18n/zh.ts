@@ -22,6 +22,11 @@ const zh = {
       roundsSuffix: "轮",
       language: "语言",
       randomNickname: "随机",
+      soloMode: "单人练习",
+      botCount: "机器人数量",
+      startSolo: "开始",
+      addBot: "添加机器人",
+      removeBot: "移除机器人",
     },
     waiting: {
       waitingRoom: "等候室",

@@ -59,6 +59,7 @@ export interface GameStateFromServer {
     score: number;
     handCount: number;
     connected: boolean;
+    isBot?: boolean;
   }[];
   phase: string;
   currentRound: number;
@@ -237,6 +238,21 @@ export function useSocket() {
     socketRef.current?.emit("phase_ready");
   }, []);
 
+  const createSoloRoom = useCallback(
+    (nickname: string, avatarIndex: number, botCount: number) => {
+      socketRef.current?.emit("create_solo_room", { nickname, avatarIndex, botCount });
+    },
+    []
+  );
+
+  const addBot = useCallback(() => {
+    socketRef.current?.emit("add_bot");
+  }, []);
+
+  const removeBot = useCallback(() => {
+    socketRef.current?.emit("remove_bot");
+  }, []);
+
   const leaveRoom = useCallback(() => {
     leavingRef.current = true;
     socketRef.current?.emit("leave_room");
@@ -269,5 +285,8 @@ export function useSocket() {
     refreshRooms,
     phaseReady,
     leaveRoom,
+    createSoloRoom,
+    addBot,
+    removeBot,
   };
 }

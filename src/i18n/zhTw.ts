@@ -22,6 +22,11 @@ const zhTw = {
       roundsSuffix: "輪",
       language: "語言",
       randomNickname: "隨機",
+      soloMode: "單人練習",
+      botCount: "機器人數量",
+      startSolo: "開始",
+      addBot: "新增機器人",
+      removeBot: "移除機器人",
     },
     waiting: {
       waitingRoom: "等候室",

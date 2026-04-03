@@ -12,16 +12,18 @@ import "./LobbyPage.css";
 interface LobbyPageProps {
   onCreateRoom: (nickname: string, avatarIndex: number) => void;
   onJoinRoom: (roomCode: string, nickname: string, avatarIndex: number) => void;
+  onCreateSoloRoom: (nickname: string, avatarIndex: number, botCount: number) => void;
   errorMsg: string;
   availableRooms: AvailableRoom[];
   onShowPlaylist?: () => void;
 }
 
-type Mode = "menu" | "create" | "join" | "join-code";
+type Mode = "menu" | "create" | "join" | "join-code" | "solo";
 
 export default function LobbyPage({
   onCreateRoom,
   onJoinRoom,
+  onCreateSoloRoom,
   errorMsg,
   availableRooms,
   onShowPlaylist,
@@ -37,6 +39,7 @@ export default function LobbyPage({
   const [showGallery, setShowGallery] = useState(false);
   const [showKakaoWarning, setShowKakaoWarning] = useState(false);
   const [kakaoHideToday, setKakaoHideToday] = useState(false);
+  const [botCount, setBotCount] = useState(3);
 
   // Detect KakaoTalk in-app browser
   useEffect(() => {
@@ -97,6 +100,11 @@ export default function LobbyPage({
     onJoinRoom(selectedRoom, nickname.trim(), avatarIndex);
   };
 
+  const handleSoloStart = () => {
+    if (!nickname.trim()) return;
+    onCreateSoloRoom(nickname.trim(), avatarIndex, botCount);
+  };
+
   return (
     <div className="page-container lobby-page">
       <motion.div
@@ -131,6 +139,13 @@ export default function LobbyPage({
                 onClick={() => setMode("join")}
               >
                 {t("lobby.joinRoom")}
+              </button>
+              <button
+                className="btn-ghost lobby-menu-btn"
+                style={{ border: "1px solid var(--accent)", color: "var(--accent)" }}
+                onClick={() => setMode("solo")}
+              >
+                🤖 {t("lobby.soloMode")}
               </button>
               <div className="lobby-info-btns">
                 <button
@@ -364,6 +379,88 @@ export default function LobbyPage({
                   disabled={!nickname.trim() || !roomCode.trim()}
                 >
                   {t("lobby.join")}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {mode === "solo" && (
+          <motion.div
+            key="solo"
+            className="card-container"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="lobby-form">
+              <h2 className="lobby-form-title">🤖 {t("lobby.soloMode")}</h2>
+
+              <div className="lobby-form-section">
+                <label className="lobby-label">{t("lobby.selectAvatar")}</label>
+                <AvatarPicker selected={avatarIndex} onSelect={setAvatarIndex} />
+              </div>
+
+              <div className="lobby-form-section">
+                <label className="lobby-label">{t("lobby.nickname")}</label>
+                <div className="lobby-nickname-row">
+                  <input
+                    className="input-field"
+                    placeholder={t("lobby.enterNickname")}
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    maxLength={16}
+                    onKeyDown={(e) => e.key === "Enter" && handleSoloStart()}
+                  />
+                  <motion.button
+                    className="btn-random"
+                    onClick={handleRandom}
+                    whileTap={{ scale: 0.9, rotate: 180 }}
+                    title={t("lobby.randomNickname")}
+                  >
+                    🎲
+                  </motion.button>
+                </div>
+              </div>
+
+              <div className="lobby-form-section">
+                <label className="lobby-label">{t("lobby.botCount")}</label>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "center" }}>
+                  <button
+                    className="btn-ghost"
+                    style={{ width: 40, height: 40, padding: 0 }}
+                    onClick={() => setBotCount((c) => Math.max(2, c - 1))}
+                    disabled={botCount <= 2}
+                  >
+                    -
+                  </button>
+                  <span style={{ fontSize: 20, fontWeight: 700, minWidth: 40, textAlign: "center" }}>
+                    {botCount}
+                  </span>
+                  <button
+                    className="btn-ghost"
+                    style={{ width: 40, height: 40, padding: 0 }}
+                    onClick={() => setBotCount((c) => Math.min(5, c + 1))}
+                    disabled={botCount >= 5}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {errorMsg && <div className="lobby-error">{errorMsg}</div>}
+
+              <div className="lobby-actions">
+                <button className="btn-ghost" onClick={() => setMode("menu")}>
+                  {t("lobby.back")}
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={handleSoloStart}
+                  disabled={!nickname.trim()}
+                >
+                  {t("lobby.startSolo")}
                 </button>
               </div>
             </div>
