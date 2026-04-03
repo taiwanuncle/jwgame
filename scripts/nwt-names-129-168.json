@@ -1,0 +1,520 @@
+Processing 40 characters (id 129-168)...
+[129/168] Methuselah... {"en":"Methuselah","ko":"므두셀라","zh":"玛土撒拉","zhTw":"瑪土撒拉"}
+[130/168] Japheth... {"en":"Japheth","ko":"야벳","zh":"雅弗","zhTw":"雅弗"}
+[131/168] Melchizedek... {"en":"Melchizedek","ko":"멜기세덱","zh":"麦基洗德","zhTw":"麥基洗德"}
+[132/168] Zipporah... {"en":"Zipporah","ko":"십보라","zh":"西坡拉","zhTw":"西坡拉"}
+[133/168] Phinehas... {"en":"Phinehas","ko":"비느하스","zh":"非尼哈","zhTw":"非尼哈"}
+[134/168] Achan... {"en":"Achan","ko":"아간","zh":"亚干","zhTw":"亞干"}
+[135/168] Abimelech... {"en":"Abimelech","ko":"아비멜렉","zh":"亚比米勒","zhTw":"亞比米勒"}
+[136/168] Delilah... {"en":"Delilah","ko":"들릴라","zh":"大利拉","zhTw":"大利拉"}
+[137/168] Jesse... {"en":"Jesse","ko":"이새","zh":"耶西","zhTw":"耶西"}
+[138/168] Uriah... {"en":"Uriah","ko":"우리아","zh":"乌利亚","zhTw":"烏利亞"}
+[139/168] Mephibosheth... {"en":"Mephibosheth","ko":"므비보셋","zh":"米非波设","zhTw":"米非波設"}
+[140/168] Joab... {"en":"Joab","ko":"요압","zh":"约押","zhTw":"約押"}
+[141/168] Ahithophel... {"en":"Absalom","ko":"압살롬","zh":"押沙龙","zhTw":"押沙龍"}
+[142/168] Shunammite... {"en":"Gehazi","ko":"게하시","zh":"基哈西","zhTw":"基哈西"}
+[143/168] Jehu... {"en":"Jehu","ko":"예후","zh":"耶户","zhTw":"耶戶"}
+[144/168] Athaliah... {"en":"Athaliah","ko":"아달랴","zh":"亚他利雅","zhTw":"亞他利雅"}
+[145/168] Jehoiada... {"en":"Jehoiada","ko":"여호야다","zh":"耶何耶大","zhTw":"耶何耶大"}
+[146/168] Joash... {"en":"Jehoash","ko":"여호아스","zh":"约阿施","zhTw":"約阿施"}
+[147/168] Manasseh... {"en":"Manasseh","ko":"므낫세","zh":"玛拿西","zhTw":"瑪拿西"}
+[148/168] Joel... {"en":"Joel, Book of","ko":"요엘서","zh":"约珥书","zhTw":"約珥書"}
+[149/168] Nahum... {"en":"Nahum, Book of","ko":"나훔서","zh":"那鸿书","zhTw":"那鴻書"}
+[150/168] Zerubbabel... {"en":"Genealogy of Jesus Christ","ko":"예수 그리스도의 족보","zh":"耶稣基督的世系","zhTw":"耶穌基督的世系"}
+[151/168] Haggai... {"en":"Haggai","ko":"학개","zh":"哈该","zhTw":"哈該"}
+[152/168] Elizabeth... {"en":"Mary","ko":"마리아","zh":"马利亚","zhTw":"馬利亞"}
+[153/168] Anna... {"ko":"안나","zh":"安娜","zhTw":"安娜"}
+[154/168] Simeon... {"en":"Simeon","ko":"시므온, I","zh":"西缅","zhTw":"西緬"}
+[155/168] Andrew... {"en":"Andrew","ko":"안드레","zh":"安得烈","zhTw":"安得烈"}
+[156/168] Jairus... {"en":"Jairus","ko":"야이로","zh":"崖鲁","zhTw":"崖魯"}
+[157/168] Orpah... {"en":"Orpah","ko":"오르바","zh":"俄珥巴","zhTw":"俄珥巴"}
+[158/168] Pilate wife... {"en":"Pilate","ko":"빌라도","zh":"彼拉多","zhTw":"彼拉多"}
+[159/168] Mark... {"en":"Mark, Good News According to","ko":"마가에 의한 좋은 소식","zh":"马可福音","zhTw":"馬可福音"}
+[160/168] James brother of Jesus... {"en":"James","ko":"야고보"}
+[161/168] Ananias... {"en":"High Priest","ko":"대제사장","zh":"大祭司","zhTw":"大祭司"}
+[162/168] Sapphira... {"en":"Sapphira","ko":"삽비라","zh":"撒非拉","zhTw":"撒非拉"}
+[163/168] Gamaliel... {"en":"Gamaliel","ko":"가말리엘","zh":"迦玛列","zhTw":"迦瑪列"}
+[164/168] Herod Agrippa... {"en":"Herod","ko":"헤롯","zh":"希律","zhTw":"希律"}
+[165/168] Philemon... {"en":"Philemon, Letter to","ko":"빌레몬에게 보낸 편지","zh":"腓利门书","zhTw":"腓利門書"}
+[166/168] Onesimus... {"en":"Onesimus","ko":"오네시모","zh":"奥尼西慕","zhTw":"奧尼西慕"}
+[167/168] Titus... {"en":"Titus","ko":"디도","zh":"提多","zhTw":"提多"}
+[168/168] Epaphras... {"en":"Epaphras","ko":"에바브라","zh":"以巴弗","zhTw":"以巴弗"}
+[
+  {
+    "id": 129,
+    "nameKo": "므두셀라",
+    "nameEn": "Methuselah",
+    "nwt": {
+      "en": "Methuselah",
+      "ko": "므두셀라",
+      "zh": "玛土撒拉",
+      "zhTw": "瑪土撒拉"
+    },
+    "insightDocId": "1200003022"
+  },
+  {
+    "id": 130,
+    "nameKo": "야벳",
+    "nameEn": "Japheth",
+    "nwt": {
+      "en": "Japheth",
+      "ko": "야벳",
+      "zh": "雅弗",
+      "zhTw": "雅弗"
+    },
+    "insightDocId": "1200002323"
+  },
+  {
+    "id": 131,
+    "nameKo": "멜기세덱",
+    "nameEn": "Melchizedek",
+    "nwt": {
+      "en": "Melchizedek",
+      "ko": "멜기세덱",
+      "zh": "麦基洗德",
+      "zhTw": "麥基洗德"
+    },
+    "insightDocId": "1200002970"
+  },
+  {
+    "id": 132,
+    "nameKo": "십보라",
+    "nameEn": "Zipporah",
+    "nwt": {
+      "en": "Zipporah",
+      "ko": "십보라",
+      "zh": "西坡拉",
+      "zhTw": "西坡拉"
+    },
+    "insightDocId": "1200004748"
+  },
+  {
+    "id": 133,
+    "nameKo": "비느하스",
+    "nameEn": "Phinehas",
+    "nwt": {
+      "en": "Phinehas",
+      "ko": "비느하스",
+      "zh": "非尼哈",
+      "zhTw": "非尼哈"
+    },
+    "insightDocId": "1200003472"
+  },
+  {
+    "id": 134,
+    "nameKo": "아간",
+    "nameEn": "Achan",
+    "nwt": {
+      "en": "Achan",
+      "ko": "아간",
+      "zh": "亚干",
+      "zhTw": "亞干"
+    },
+    "insightDocId": "1200000074"
+  },
+  {
+    "id": 135,
+    "nameKo": "아비멜렉",
+    "nameEn": "Abimelech",
+    "nwt": {
+      "en": "Abimelech",
+      "ko": "아비멜렉",
+      "zh": "亚比米勒",
+      "zhTw": "亞比米勒"
+    },
+    "insightDocId": "1200000045"
+  },
+  {
+    "id": 136,
+    "nameKo": "들릴라",
+    "nameEn": "Delilah",
+    "nwt": {
+      "en": "Delilah",
+      "ko": "들릴라",
+      "zh": "大利拉",
+      "zhTw": "大利拉"
+    },
+    "insightDocId": "1200001149"
+  },
+  {
+    "id": 137,
+    "nameKo": "이새",
+    "nameEn": "Jesse",
+    "nwt": {
+      "en": "Jesse",
+      "ko": "이새",
+      "zh": "耶西",
+      "zhTw": "耶西"
+    },
+    "insightDocId": "1200002449"
+  },
+  {
+    "id": 138,
+    "nameKo": "우리아",
+    "nameEn": "Uriah",
+    "nwt": {
+      "en": "Uriah",
+      "ko": "우리아",
+      "zh": "乌利亚",
+      "zhTw": "烏利亞"
+    },
+    "insightDocId": "1200004521"
+  },
+  {
+    "id": 139,
+    "nameKo": "므비보셋",
+    "nameEn": "Mephibosheth",
+    "nwt": {
+      "en": "Mephibosheth",
+      "ko": "므비보셋",
+      "zh": "米非波设",
+      "zhTw": "米非波設"
+    },
+    "insightDocId": "1200002986"
+  },
+  {
+    "id": 140,
+    "nameKo": "요압",
+    "nameEn": "Joab",
+    "nwt": {
+      "en": "Joab",
+      "ko": "요압",
+      "zh": "约押",
+      "zhTw": "約押"
+    },
+    "insightDocId": "1200002469"
+  },
+  {
+    "id": 141,
+    "nameKo": "아히도벨",
+    "nameEn": "Ahithophel",
+    "nwt": {
+      "en": "Absalom",
+      "ko": "압살롬",
+      "zh": "押沙龙",
+      "zhTw": "押沙龍"
+    },
+    "insightDocId": "1200000063"
+  },
+  {
+    "id": 142,
+    "nameKo": "수넴 여인",
+    "nameEn": "Shunammite",
+    "nwt": {
+      "en": "Gehazi",
+      "ko": "게하시",
+      "zh": "基哈西",
+      "zhTw": "基哈西"
+    },
+    "insightDocId": "1200001641"
+  },
+  {
+    "id": 143,
+    "nameKo": "예후",
+    "nameEn": "Jehu",
+    "nwt": {
+      "en": "Jehu",
+      "ko": "예후",
+      "zh": "耶户",
+      "zhTw": "耶戶"
+    },
+    "insightDocId": "1200002401"
+  },
+  {
+    "id": 144,
+    "nameKo": "아달리야",
+    "nameEn": "Athaliah",
+    "nwt": {
+      "en": "Athaliah",
+      "ko": "아달랴",
+      "zh": "亚他利雅",
+      "zhTw": "亞他利雅"
+    },
+    "insightDocId": "1200000457"
+  },
+  {
+    "id": 145,
+    "nameKo": "여호야다",
+    "nameEn": "Jehoiada",
+    "nwt": {
+      "en": "Jehoiada",
+      "ko": "여호야다",
+      "zh": "耶何耶大",
+      "zhTw": "耶何耶大"
+    },
+    "insightDocId": "1200002376"
+  },
+  {
+    "id": 146,
+    "nameKo": "요아스",
+    "nameEn": "Joash",
+    "nwt": {
+      "en": "Jehoash",
+      "ko": "여호아스",
+      "zh": "约阿施",
+      "zhTw": "約阿施"
+    },
+    "insightDocId": "1200002373"
+  },
+  {
+    "id": 147,
+    "nameKo": "므낫세",
+    "nameEn": "Manasseh",
+    "nwt": {
+      "en": "Manasseh",
+      "ko": "므낫세",
+      "zh": "玛拿西",
+      "zhTw": "瑪拿西"
+    },
+    "insightDocId": "1200002882"
+  },
+  {
+    "id": 148,
+    "nameKo": "요엘",
+    "nameEn": "Joel",
+    "nwt": {
+      "en": "Joel, Book of",
+      "ko": "요엘서",
+      "zh": "约珥书",
+      "zhTw": "約珥書"
+    },
+    "insightDocId": "1200002482"
+  },
+  {
+    "id": 149,
+    "nameKo": "나훔",
+    "nameEn": "Nahum",
+    "nwt": {
+      "en": "Nahum, Book of",
+      "ko": "나훔서",
+      "zh": "那鸿书",
+      "zhTw": "那鴻書"
+    },
+    "insightDocId": "1200003173"
+  },
+  {
+    "id": 150,
+    "nameKo": "스룹바벨",
+    "nameEn": "Zerubbabel",
+    "nwt": {
+      "en": "Genealogy of Jesus Christ",
+      "ko": "예수 그리스도의 족보",
+      "zh": "耶稣基督的世系",
+      "zhTw": "耶穌基督的世系"
+    },
+    "insightDocId": "1200001647"
+  },
+  {
+    "id": 151,
+    "nameKo": "학개",
+    "nameEn": "Haggai",
+    "nwt": {
+      "en": "Haggai",
+      "ko": "학개",
+      "zh": "哈该",
+      "zhTw": "哈該"
+    },
+    "insightDocId": "1200001812"
+  },
+  {
+    "id": 152,
+    "nameKo": "엘리사벳",
+    "nameEn": "Elizabeth",
+    "nwt": {
+      "en": "Mary",
+      "ko": "마리아",
+      "zh": "马利亚",
+      "zhTw": "馬利亞"
+    },
+    "insightDocId": "1200002918"
+  },
+  {
+    "id": 153,
+    "nameKo": "안나",
+    "nameEn": "Anna",
+    "nwt": {
+      "ko": "안나",
+      "zh": "安娜",
+      "zhTw": "安娜"
+    },
+    "noInsight": true
+  },
+  {
+    "id": 154,
+    "nameKo": "시므온",
+    "nameEn": "Simeon",
+    "nwt": {
+      "en": "Simeon",
+      "ko": "시므온, I",
+      "zh": "西缅",
+      "zhTw": "西緬"
+    },
+    "insightDocId": "1200004124"
+  },
+  {
+    "id": 155,
+    "nameKo": "안드레",
+    "nameEn": "Andrew",
+    "nwt": {
+      "en": "Andrew",
+      "ko": "안드레",
+      "zh": "安得烈",
+      "zhTw": "安得烈"
+    },
+    "insightDocId": "1200000273"
+  },
+  {
+    "id": 156,
+    "nameKo": "야이로",
+    "nameEn": "Jairus",
+    "nwt": {
+      "en": "Jairus",
+      "ko": "야이로",
+      "zh": "崖鲁",
+      "zhTw": "崖魯"
+    },
+    "insightDocId": "1200002307"
+  },
+  {
+    "id": 157,
+    "nameKo": "오르바",
+    "nameEn": "Orpah",
+    "nwt": {
+      "en": "Orpah",
+      "ko": "오르바",
+      "zh": "俄珥巴",
+      "zhTw": "俄珥巴"
+    },
+    "insightDocId": "1200003344"
+  },
+  {
+    "id": 158,
+    "nameKo": "빌라도의 아내",
+    "nameEn": "Pilate wife",
+    "nwt": {
+      "en": "Pilate",
+      "ko": "빌라도",
+      "zh": "彼拉多",
+      "zhTw": "彼拉多"
+    },
+    "insightDocId": "1200003485"
+  },
+  {
+    "id": 159,
+    "nameKo": "마가",
+    "nameEn": "Mark",
+    "nwt": {
+      "en": "Mark, Good News According to",
+      "ko": "마가에 의한 좋은 소식",
+      "zh": "马可福音",
+      "zhTw": "馬可福音"
+    },
+    "insightDocId": "1200002909"
+  },
+  {
+    "id": 160,
+    "nameKo": "예수의 형제 야고보",
+    "nameEn": "James brother of Jesus",
+    "nwt": {
+      "en": "James",
+      "ko": "야고보"
+    },
+    "insightDocId": "1200002313"
+  },
+  {
+    "id": 161,
+    "nameKo": "아나니아",
+    "nameEn": "Ananias",
+    "nwt": {
+      "en": "High Priest",
+      "ko": "대제사장",
+      "zh": "大祭司",
+      "zhTw": "大祭司"
+    },
+    "insightDocId": "1200002023"
+  },
+  {
+    "id": 162,
+    "nameKo": "삽비라",
+    "nameEn": "Sapphira",
+    "nwt": {
+      "en": "Sapphira",
+      "ko": "삽비라",
+      "zh": "撒非拉",
+      "zhTw": "撒非拉"
+    },
+    "insightDocId": "1200003835"
+  },
+  {
+    "id": 163,
+    "nameKo": "가말리엘",
+    "nameEn": "Gamaliel",
+    "nwt": {
+      "en": "Gamaliel",
+      "ko": "가말리엘",
+      "zh": "迦玛列",
+      "zhTw": "迦瑪列"
+    },
+    "insightDocId": "1200001604"
+  },
+  {
+    "id": 164,
+    "nameKo": "헤롯 아그립바",
+    "nameEn": "Herod Agrippa",
+    "nwt": {
+      "en": "Herod",
+      "ko": "헤롯",
+      "zh": "希律",
+      "zhTw": "希律"
+    },
+    "insightDocId": "1200002000"
+  },
+  {
+    "id": 165,
+    "nameKo": "빌레몬",
+    "nameEn": "Philemon",
+    "nwt": {
+      "en": "Philemon, Letter to",
+      "ko": "빌레몬에게 보낸 편지",
+      "zh": "腓利门书",
+      "zhTw": "腓利門書"
+    },
+    "insightDocId": "1200003464"
+  },
+  {
+    "id": 166,
+    "nameKo": "오네시모",
+    "nameEn": "Onesimus",
+    "nwt": {
+      "en": "Onesimus",
+      "ko": "오네시모",
+      "zh": "奥尼西慕",
+      "zhTw": "奧尼西慕"
+    },
+    "insightDocId": "1200003328"
+  },
+  {
+    "id": 167,
+    "nameKo": "디도",
+    "nameEn": "Titus",
+    "nwt": {
+      "en": "Titus",
+      "ko": "디도",
+      "zh": "提多",
+      "zhTw": "提多"
+    },
+    "insightDocId": "1200004431"
+  },
+  {
+    "id": 168,
+    "nameKo": "에바브라",
+    "nameEn": "Epaphras",
+    "nwt": {
+      "en": "Epaphras",
+      "ko": "에바브라",
+      "zh": "以巴弗",
+      "zhTw": "以巴弗"
+    },
+    "insightDocId": "1200001379"
+  }
+]

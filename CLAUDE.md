@@ -24,7 +24,7 @@ src/
 ├── App.tsx              # Main app, routing by gameState phase, music + chat integration
 ├── types.ts             # GamePhase, RoundResult types
 ├── data/
-│   └── characters.ts    # 128 Bible characters with multi-language names (ko/en/zh/zhTw/my/th)
+│   └── characters.ts    # 168 Bible characters with multi-language names (ko/en/zh/zhTw/my/th)
 ├── pages/
 │   ├── LobbyPage.tsx    # Room create/join, room browser, language dropdown, info modals
 │   ├── WaitingRoom.tsx  # Player list, ready system, round selection, animated states
@@ -91,12 +91,12 @@ src/
 - **When adding new languages**: add to `nameMap` in `getCardNames()`, add to `known` array in `normalizeLang()`, the display rule automatically falls into the "Other" category (primary + Korean + English)
 
 ### Character Data (src/data/characters.ts)
-- 128 Bible characters with interface:
+- 168 Bible characters with interface:
   ```typescript
   { id, nameKo, nameEn, nameZh, nameZhTw, nameMy, nameTh, image }
   ```
-- Myanmar/Thai names may need verification against 신세계역 (New World Translation)
-- Card images at `/public/cards/001_아담_Adam.png` ~ `128_실라_Silas.png`
+- Names verified against 신세계역(연구용) via WOL Insight API (`scripts/build-characters.mjs`)
+- Card images at `/public/cards/001_아담_Adam.png` ~ `168_에바브라_Epaphras.png`
 
 ### Card Animations (BibleCard.tsx)
 - **3D Flip**: `flipReveal` prop — card starts face-down and flips to face-up with spring animation
@@ -199,7 +199,7 @@ src/
 1. Create `src/i18n/{langCode}.ts` — copy structure from `ko.ts`, translate all keys
 2. Register in `src/i18n/index.ts`: import + add to resources
 3. Add `name{LangCode}` field to `BibleCharacter` interface in `src/data/characters.ts`
-4. Add translations for all 128 characters in `characters.ts`
+4. Add translations for all 168 characters in `characters.ts`
 5. Add to `nameMap` in `BibleCard.tsx` `getCardNames()` function
 6. Add to `known` array in `BibleCard.tsx` `normalizeLang()` function
 7. Add to `LANGUAGES` array in `LobbyPage.tsx`

@@ -1,0 +1,61 @@
+[
+  {
+    "id": 1,
+    "nameKo": "아담",
+    "nameEn": "Adam",
+    "nwt": {
+      "en": "Adam",
+      "ko": "아담",
+      "zh": "亚当",
+      "zhTw": "亞當"
+    },
+    "insightDocId": "1200000089"
+  },
+  {
+    "id": 2,
+    "nameKo": "하와",
+    "nameEn": "Eve",
+    "nwt": {
+      "ko": "하와",
+      "zh": "夏娃",
+      "zhTw": "夏娃"
+    },
+    "noInsight": true
+  },
+  {
+    "id": 3,
+    "nameKo": "아벨",
+    "nameEn": "Abel",
+    "nwt": {
+      "en": "Abel",
+      "ko": "아벨",
+      "zh": "亚伯",
+      "zhTw": "亞伯"
+    },
+    "insightDocId": "1200000018"
+  },
+  {
+    "id": 4,
+    "nameKo": "가인",
+    "nameEn": "Cain",
+    "nwt": {
+      "en": "Cain",
+      "ko": "카인",
+      "zh": "该隐",
+      "zhTw": "該隱"
+    },
+    "insightDocId": "1200000857"
+  },
+  {
+    "id": 5,
+    "nameKo": "에녹",
+    "nameEn": "Enoch",
+    "nwt": {
+      "en": "Enoch",
+      "ko": "에녹",
+      "zh": "以诺",
+      "zhTw": "以諾"
+    },
+    "insightDocId": "1200001371"
+  }
+]
